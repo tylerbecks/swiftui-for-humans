@@ -12,6 +12,13 @@ Project-specific rules for AI coding agents. Read [README.md](README.md) and [do
 - **Don't copy Apple's text.** Guidelines are paraphrased, and the section links to the HIG.
 - **No stock or Apple photos.** For anything behind glass, materials, or text, use `SceneryView(.lake)`, `.city`, `.meadow` (bright, for legibility Do / Don'ts), or `.wallpaper` from `Catalog/Scenery.swift`. Only `AsyncImage` demos load a photo from the web.
 
+## App Store requirements
+
+- **Privacy manifest.** `PrivacyInfo.xcprivacy` at the package root declares `UserDefaults` (reason CA92.1), used by `@AppStorage` and `@SceneStorage`. If you add another required-reason API (file timestamps, disk space, system boot time, active keyboards), declare it there too.
+- **The in-app browser only shows Apple's sites** (`AppleSites` in `App/DocsBrowser.swift`); other links open in Safari. Unrestricted web access would raise the App Store age rating.
+- **Privacy policy and support URLs** live in `AppInfo` (`App/AboutView.swift`).
+- **The name is a known, accepted trademark risk.** Swift and SwiftUI are Apple trademarks, and [Apple's trademark guidelines](https://www.apple.com/legal/intellectual-property/guidelinesfor3rdparties.html) say not to make up names that contain them, except in a referential phrase such as "Name for SwiftUI". "SwiftUI for Humans" leads with the mark, like the approved "SwiftUI Recipes", so App Review is unlikely to reject it, but Apple could ask for a rename later. The owner chose to keep it (October 2026). If a rename is ever needed, change `iOSApplication(name:)` in Package.swift; the referential fallback is a name like "Some View for SwiftUI". Keep the not-affiliated-with-Apple notice on the About screen.
+
 ## Building and checking
 
 - Build with `-jobs 4` and `ARCHS=arm64`, and don't run builds in parallel. The user's machine bogs down under load.

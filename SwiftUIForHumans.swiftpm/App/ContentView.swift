@@ -162,7 +162,8 @@ struct CatalogLinks: ViewModifier {
                     openPage(id)
                     return .handled
                 }
-                guard url.scheme == "https" || url.scheme == "http" else { return .systemAction }
+                // Apple's sites open in the in-app browser; anything else in Safari.
+                guard AppleSites.contains(url) else { return .systemAction }
                 browsing = BrowserPage(url: url)
                 return .handled
             })
@@ -222,6 +223,7 @@ private struct Sidebar: View {
     let tab: AppTab
     @Binding var selection: ComponentPage.ID?
     @Environment(\.horizontalSizeClass) private var sizeClass
+    @State private var showsAbout = false
 
     var body: some View {
         List(selection: $selection) {
@@ -242,8 +244,20 @@ private struct Sidebar: View {
                     }
                 }
             }
+            // Like Settings: About sits at the end of the list, in every tab.
+            Section {
+                Button {
+                    showsAbout = true
+                } label: {
+                    Label("About \(AppInfo.name)", systemImage: "info.circle")
+                }
+                .accessibilityIdentifier("row-about")
+            }
         }
         .openInNewWindowMenu()
+        .sheet(isPresented: $showsAbout) {
+            AboutView()
+        }
         .overlay {
             // On iPad the overview beside the sidebar already says so.
             if Catalog.pages(in: tab).isEmpty && sizeClass == .compact {
