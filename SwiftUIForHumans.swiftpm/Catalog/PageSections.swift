@@ -2,7 +2,7 @@ import SwiftUI
 
 // Optional page sections, filled in from a page's `ComponentPage` data:
 // `about`, `composition`, `api`, and `guidelines`. Plus `Aside`, the inline
-// note that sits under the example it explains. See CONTENT_GUIDE.md for
+// note that sits under the example it explains. See docs/content-guide.md for
 // when a page should use each one.
 
 // MARK: - Aside
