@@ -16,8 +16,21 @@ Project-specific rules for AI coding agents. Read [README.md](README.md) and [do
 
 - **Privacy manifest.** `PrivacyInfo.xcprivacy` at the package root declares `UserDefaults` (reason CA92.1), used by `@AppStorage` and `@SceneStorage`. If you add another required-reason API (file timestamps, disk space, system boot time, active keyboards), declare it there too.
 - **The in-app browser only shows Apple's sites** (`AppleSites` in `App/DocsBrowser.swift`); other links open in Safari. Unrestricted web access would raise the App Store age rating.
-- **Privacy policy and support URLs** live in `AppInfo` (`App/AboutView.swift`).
+- **Privacy policy and support URLs** live in `AppInfo` (`App/AboutView.swift`). The pages themselves are `website/privacy.html` and `website/support.html`.
+- **Keep the privacy policy true.** If the app starts storing something new or loading from a new service, update `website/privacy.html` (it lists Apple's sites, Lorem Picsum, and Apple Maps) and `PrivacyInfo.xcprivacy` in the same change.
 - **The name is a known, accepted trademark risk.** Swift and SwiftUI are Apple trademarks, and [Apple's trademark guidelines](https://www.apple.com/legal/intellectual-property/guidelinesfor3rdparties.html) say not to make up names that contain them, except in a referential phrase such as "Name for SwiftUI". "SwiftUI for Humans" leads with the mark, like the approved "SwiftUI Recipes", so App Review is unlikely to reject it, but Apple could ask for a rename later. The owner chose to keep it (October 2026). If a rename is ever needed, change `iOSApplication(name:)` in Package.swift; the referential fallback is a name like "Some View for SwiftUI". Keep the not-affiliated-with-Apple notice on the About screen.
+
+## Ratings, tips, and the buddy
+
+- **`App/Engagement.swift`** counts page views, active days, and small successes (copying code, ticking a checklist item) on the device, and decides when to ask. Change the thresholds there.
+- **Ratings use only Apple's prompt** (`requestReview`), at most once per version, at a natural break. App Review 5.6.1 disallows custom review prompts, so never put a rating ask in the buddy or behind a button.
+- **The buddy** (`App/Buddy.swift`) peeks in from the corner to ask "Enjoying the app?". "Love it" offers tips; "Not really" offers to email feedback. It's off until the tip products exist: flip `Engagement.isBuddyEnabled`.
+- **Tips are consumable in-app purchases** (`App/TipJar.swift`, IDs `com.gobimaps.SwiftUIForHumans.tip.small/medium/large`). Outside the US, App Review 3.1.1 doesn't allow linking to an outside payment page like Buy Me a Coffee from the app, so the app never shows that link. To try purchases from Xcode, set the scheme's StoreKit Configuration to `StoreKit/Tips.storekit`.
+- **Testing:** launch with `-buddy` to show the buddy right away, `-buddy tips` to open the tip card, and `-sampleTips` for stand-in tips without StoreKit.
+
+## Website
+
+`website/` is plain HTML and one stylesheet, with no build step. Vercel serves it with clean URLs (`/privacy`, `/support`), and every push to `main` redeploys it. Preview it with `python3 -m http.server` from that folder. Use real app screenshots in `website/images/`, made on the test simulators.
 
 ## Building and checking
 

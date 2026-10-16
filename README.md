@@ -36,6 +36,8 @@ SwiftUIForHumans.swiftpm/
   App/        App shell: tabs (Components, Design, Ship, Search), sidebars, overview grid, in-app browser
   Catalog/    Shared page building blocks: page layout, code blocks, guidelines
   Examples/   One file per page, grouped by category
+website/      Marketing site, privacy policy, and support page (static HTML, deployed on Vercel)
+StoreKit/     Tips.storekit, for trying the in-app tips in the simulator
 docs/
   content-guide.md   How every page is written
   building-pages.md  How pages are built in code
@@ -50,6 +52,10 @@ To add or improve a page:
 3. Copy one of the reference pages:
    - Button (`Examples/Controls/ButtonExample.swift`) for a simple control
    - NavigationStack (`Examples/Navigation/NavigationStackPage.swift`) for a container
+
+## Support the project
+
+SwiftUI for Humans is free. If it saved you some time, you can [buy me a coffee ☕](https://buymeacoffee.com/tylerbecks).
 
 ---
 

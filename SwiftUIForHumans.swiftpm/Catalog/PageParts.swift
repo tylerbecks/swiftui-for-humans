@@ -59,6 +59,7 @@ struct PageScaffold<Content: View>: View {
                 }
             }
             .scrollPosition($position)
+            .onAppear { Engagement.shared.recordPageView(page.id) }
             .onScrollGeometryChange(for: PageScrollMetrics.self) { geometry in
                 PageScrollMetrics(geometry)
             } action: { _, metrics in

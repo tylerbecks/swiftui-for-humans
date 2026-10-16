@@ -1,0 +1,64 @@
+{
+  "identifier": "6F4E940B-D7C2-4047-A077-B7602B98EB19",
+  "nonRenewingSubscriptions": [],
+  "products": [
+    {
+      "displayPrice": "2.99",
+      "familyShareable": false,
+      "internalID": "5FA20585-8CBE-4E48-B056-DE60C983A115",
+      "localizations": [
+        {
+          "description": "A small tip. Thank you!",
+          "displayName": "Coffee",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.gobimaps.SwiftUIForHumans.tip.small",
+      "referenceName": "Tip: Coffee",
+      "type": "Consumable"
+    },
+    {
+      "displayPrice": "4.99",
+      "familyShareable": false,
+      "internalID": "C04FFD11-0F17-4F74-AA62-67213472883D",
+      "localizations": [
+        {
+          "description": "A medium tip. Thank you!",
+          "displayName": "Coffee and a croissant",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.gobimaps.SwiftUIForHumans.tip.medium",
+      "referenceName": "Tip: Coffee and a croissant",
+      "type": "Consumable"
+    },
+    {
+      "displayPrice": "9.99",
+      "familyShareable": false,
+      "internalID": "60F8F90A-8D6A-4859-8C15-54C610031107",
+      "localizations": [
+        {
+          "description": "A large tip. Thank you!",
+          "displayName": "Coffee and cake",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.gobimaps.SwiftUIForHumans.tip.large",
+      "referenceName": "Tip: Coffee and cake",
+      "type": "Consumable"
+    }
+  ],
+  "settings": {
+    "_applicationInternalID": "",
+    "_developerTeamID": "",
+    "_failTransactionsEnabled": false,
+    "_locale": "en_US",
+    "_storefront": "USA",
+    "_storeKitErrors": []
+  },
+  "subscriptionGroups": [],
+  "version": {
+    "major": 4,
+    "minor": 0
+  }
+}

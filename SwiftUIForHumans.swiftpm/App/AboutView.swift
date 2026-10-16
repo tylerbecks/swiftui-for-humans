@@ -12,10 +12,17 @@ enum AppInfo {
 
     /// "Version 0.1 (1)": the App Store version and the build number.
     static var version: String {
-        let short = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
         let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "?"
-        return "Version \(short) (\(build))"
+        return "Version \(shortVersion) (\(build))"
     }
+
+    /// The App Store version, like "0.1".
+    static var shortVersion: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
+    }
+
+    /// Where "What should I fix?" sends feedback.
+    static let feedbackURL = URL(string: "mailto:tylerdbecks@gmail.com?subject=SwiftUI%20for%20Humans%20feedback")!
 
     // App Store Connect requires a privacy policy URL and a support URL.
     // Set both to the public pages before submitting; until then their rows
@@ -28,6 +35,7 @@ enum AppInfo {
 /// expects, and that it isn't made by Apple.
 struct AboutView: View {
     @Environment(\.dismiss) private var dismiss
+    @State private var thanked = false
 
     var body: some View {
         NavigationStack {
@@ -57,6 +65,15 @@ struct AboutView: View {
                         }
                     }
                 }
+                if !TipJar.shared.tips.isEmpty {
+                    Section {
+                        TipButtons { thanked = true }
+                    } header: {
+                        Text("Leave a Tip")
+                    } footer: {
+                        Text(thanked ? "Thank you! It really helps." : "\(AppInfo.name) is free. A tip helps keep the pages up to date with each new iOS release.")
+                    }
+                }
                 Section {
                     Text("\(AppInfo.name) doesn't collect any data. Your checklists and settings stay on this device.")
                 } header: {
@@ -68,6 +85,7 @@ struct AboutView: View {
                         .foregroundStyle(.secondary)
                 }
             }
+            .task { await TipJar.shared.load() }
             .navigationTitle("About")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

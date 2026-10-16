@@ -106,6 +106,7 @@ private struct ChecklistRow: View {
             Button {
                 isDone.toggle()
                 changed(isDone)
+                if isDone { Engagement.shared.recordSuccess() }
             } label: {
                 Image(systemName: isDone ? "checkmark.circle.fill" : "circle")
                     .font(.title2)

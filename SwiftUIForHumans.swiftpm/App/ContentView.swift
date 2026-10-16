@@ -1,4 +1,5 @@
 import SwiftUI
+import StoreKit
 
 /// The app's root: a tab bar with Components, Design, and Ship, plus a
 /// search tab at the trailing edge that searches all three.
@@ -47,6 +48,8 @@ struct ContentView: View {
             open(id)
         })
         .focusedSceneValue(\.catalogNavigator, navigator)
+        .overlay { BuddyOverlay() }
+        .modifier(ReviewPrompt())
         .onAppear(perform: restore)
     }
 
@@ -117,6 +120,22 @@ struct ContentView: View {
             searchText = query
             tab = .search
         }
+    }
+}
+
+/// Shows Apple's rating prompt when `Engagement` says it's a good moment,
+/// after a beat so it doesn't land on top of the tap that caused it.
+private struct ReviewPrompt: ViewModifier {
+    @Environment(\.requestReview) private var requestReview
+
+    func body(content: Content) -> some View {
+        content
+            .onChange(of: Engagement.shared.reviewRequest) {
+                Task {
+                    try? await Task.sleep(for: .seconds(1.5))
+                    requestReview()
+                }
+            }
     }
 }
 
