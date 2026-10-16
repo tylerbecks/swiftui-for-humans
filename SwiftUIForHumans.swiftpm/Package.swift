@@ -15,7 +15,7 @@ let package = Package(
             bundleIdentifier: "com.gobimaps.SwiftUIForHumans",
             displayVersion: "0.1",
             bundleVersion: "1",
-            appIcon: .placeholder(icon: .magicWand),
+            appIcon: .asset("AppIcon"),
             accentColor: .presetColor(.blue),
             supportedDeviceFamilies: [
                 .pad,
