@@ -5,7 +5,7 @@ extension ComponentPage {
         id: "shapes",
         title: "Shapes",
         summary: "Rectangles, circles, capsules, and your own paths, ready to fill, stroke, or clip with.",
-        category: .design,
+        category: .graphics,
         symbol: "square.on.circle",
         availability: ["iOS 13.0+", "macOS 10.15+", "visionOS 1.0+"],
         docsURL: "https://developer.apple.com/documentation/swiftui/shape",

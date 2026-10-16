@@ -6,12 +6,20 @@ Each component gets a live preview you can tweak, code you can copy, and Apple's
 
 ## What's inside
 
-- **84 pages:** controls, layout, navigation, modifiers, data flow, animation, design, and text and images
+117 pages in three tabs:
+
+- **Components (79):** controls, text, layout, navigation, modifiers, data flow, animation, and blocks
+- **Design (22):** foundations like color, type, dark mode, motion, and app icons; accessibility; and patterns like loading, feedback, and asking for permission
+- **Ship (16):** getting through App Review: what Apple requires, common rejections, App Store Connect forms, TestFlight, and release
+
+Across the app:
+
 - **Live demos** with a Customize panel. The code updates as you change options.
 - **Usage, examples, and Key APIs:** the 20% of each component you'll use 80% of the time
 - **Guidelines** from the HIG, rewritten in plain language, with live Do / Don't previews
 - **Blocks:** whole screens, like a login form, settings, or onboarding, to copy as a starting point
-- **Search** that understands web terms: try "dropdown", "modal", or "flexbox"
+- **Checklists** to tick off before you submit, with links to Apple's sources and the date each page was last checked
+- **Search** that understands web terms: try "dropdown", "modal", or "flexbox", or a guideline number like "5.1.1"
 
 ## Running it
 
@@ -25,7 +33,7 @@ You need Xcode 26 or later. The app targets iOS 26.
 
 ```
 SwiftUIForHumans.swiftpm/
-  App/        App shell: sidebar, search, overview grid, in-app browser
+  App/        App shell: tabs (Components, Design, Ship, Search), sidebars, overview grid, in-app browser
   Catalog/    Shared page building blocks: page layout, code blocks, guidelines
   Examples/   One file per page, grouped by category
 docs/

@@ -40,12 +40,10 @@ struct PageScaffold<Content: View>: View {
                         RelatedSection(ids: page.related)
                     }
                     VStack(alignment: .leading, spacing: 20) {
-                        PageFooterLinks(id: page.id)
-                        if !page.availability.isEmpty {
-                            Text(page.availability.joined(separator: " · "))
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
+                        if !page.sources.isEmpty || page.reviewed != nil || !page.availability.isEmpty {
+                            SourcesSection(sources: page.sources, reviewed: page.reviewed, availability: page.availability)
                         }
+                        PageFooterLinks(id: page.id)
                     }
                 }
                 .frame(maxWidth: 760, alignment: .leading)
@@ -92,9 +90,13 @@ struct PageScaffold<Content: View>: View {
                 }
             }
             .task {
-                if let anchor = LaunchOptions.takeValue(for: "-scrollTo") {
-                    try? await Task.sleep(for: .milliseconds(300))
-                    proxy.scrollTo(anchor, anchor: .top)
+                if let anchor = LaunchOptions.takeValue(for: "-scrollTo", page: page.id) {
+                    // Right after launch, layout is still settling and the
+                    // first jump can be lost. Repeat it a few times.
+                    for delay in [300, 500, 700] {
+                        try? await Task.sleep(for: .milliseconds(delay))
+                        proxy.scrollTo(anchor, anchor: .top)
+                    }
                 }
             }
         }
@@ -160,6 +162,7 @@ private struct FooterLink: View {
             }
         }
         .buttonStyle(.plain)
+        .hoverEffect(.highlight)
         .accessibilityLabel("\(isNext ? "Next" : "Previous"): \(page.title)")
     }
 }

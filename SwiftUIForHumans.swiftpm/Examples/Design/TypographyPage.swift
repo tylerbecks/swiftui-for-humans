@@ -6,7 +6,7 @@ extension ComponentPage {
         id: "typography",
         title: "Typography",
         summary: "Apple's built-in text styles, which resize automatically when people change their text size.",
-        category: .design,
+        category: .foundations,
         kind: .reference,
         symbol: "textformat.size",
         availability: ["iOS 13.0+", "macOS 10.15+", "visionOS 1.0+"],

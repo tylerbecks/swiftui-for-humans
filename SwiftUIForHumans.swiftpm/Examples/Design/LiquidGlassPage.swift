@@ -5,7 +5,7 @@ extension ComponentPage {
         id: "liquid-glass",
         title: "Liquid Glass",
         summary: "The iOS 26 glass look: a lens-like surface that bends light, reacts to touch, and morphs between shapes.",
-        category: .design,
+        category: .foundations,
         symbol: "drop.halffull",
         availability: ["iOS 26.0+", "macOS 26.0+", "tvOS 26.0+", "watchOS 26.0+"],
         docsURL: "https://developer.apple.com/documentation/swiftui/applying-liquid-glass-to-custom-views",
@@ -150,12 +150,15 @@ private enum GlassShapeOption: DemoOption {
 }
 
 private enum GlassBackdropOption: DemoOption {
-    case photo, shapes, plain
+    case shapes, sunset, night, bright, wallpaper, plain
 
     var label: String {
         switch self {
-        case .photo: "Photo"
         case .shapes: "Colorful shapes"
+        case .sunset: Scenery.lake.label
+        case .night: Scenery.city.label
+        case .bright: Scenery.meadow.label
+        case .wallpaper: Scenery.wallpaper.label
         case .plain: "Plain background"
         }
     }
@@ -189,22 +192,16 @@ private struct GlassShapesBackdrop: View {
     }
 }
 
-private struct GlassPhotoBackdrop: View {
-    var body: some View {
-        AsyncImage(url: URL(string: "https://picsum.photos/seed/glass/800/600")) { image in
-            image.resizable().scaledToFill()
-        } placeholder: {
-            GlassShapesBackdrop()
-        }
-    }
-}
 
 private struct GlassBackdrop: View {
     let option: GlassBackdropOption
 
     var body: some View {
         switch option {
-        case .photo: GlassPhotoBackdrop()
+        case .sunset: SceneryView(.lake)
+        case .night: SceneryView(.city)
+        case .bright: SceneryView(.meadow)
+        case .wallpaper: SceneryView(.wallpaper)
         case .shapes: GlassShapesBackdrop()
         case .plain: Rectangle().fill(.background)
         }
@@ -451,7 +448,7 @@ private struct FloatingBarExample: View {
             """,
             minHeight: 160
         ) {
-            GlassStage(backdrop: .photo, height: 160) {
+            GlassStage(backdrop: .night, height: 160) {
                 HStack(spacing: 4) {
                     ForEach(Array(["bold", "italic", "underline"].enumerated()), id: \.offset) { index, name in
                         Button {
@@ -460,7 +457,7 @@ private struct FloatingBarExample: View {
                             Image(systemName: name)
                                 .font(.title3.weight(.semibold))
                                 .frame(width: 44, height: 44)
-                                .foregroundStyle(selection == index ? Color.accentColor : Color.primary)
+                                .foregroundStyle(selection == index ? AnyShapeStyle(.tint) : AnyShapeStyle(.primary))
                         }
                         .buttonStyle(.plain)
                         .accessibilityLabel(name.capitalized)

@@ -15,6 +15,12 @@ enum Catalog {
         + animationPages
         + designPages
         + blockPages
+        + foundationsPages
+        + accessibilityPages
+        + patternsPages
+        + shipNativePages
+        + shipRequiredPages
+        + shipConnectPages
 
     static func page(id: ComponentPage.ID?) -> ComponentPage? {
         pages.first { $0.id == id }
@@ -24,11 +30,14 @@ enum Catalog {
         pages.filter { $0.category == category }
     }
 
-    /// Pages in sidebar order (by category), for previous/next links.
-    static let ordered: [ComponentPage] = ComponentCategory.allCases.flatMap { pages(in: $0) }
+    static func pages(in tab: AppTab) -> [ComponentPage] {
+        tab.categories.flatMap { pages(in: $0) }
+    }
 
-    /// The pages before and after `id` in sidebar order.
+    /// The pages before and after `id` in sidebar order, within its tab.
     static func neighbors(of id: ComponentPage.ID) -> (previous: ComponentPage?, next: ComponentPage?) {
+        guard let page = page(id: id) else { return (nil, nil) }
+        let ordered = pages(in: page.category.tab)
         guard let index = ordered.firstIndex(where: { $0.id == id }) else { return (nil, nil) }
         return (
             index > 0 ? ordered[index - 1] : nil,

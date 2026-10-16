@@ -5,7 +5,7 @@ extension ComponentPage {
         id: "gradients",
         title: "Gradients",
         summary: "Smooth blends between colors: in a line, outward from a point, around a circle, or across a mesh.",
-        category: .design,
+        category: .graphics,
         symbol: "circle.lefthalf.filled.righthalf.striped.horizontal",
         availability: ["iOS 13.0+", "macOS 10.15+", "visionOS 1.0+"],
         docsURL: "https://developer.apple.com/documentation/swiftui/gradient",
@@ -232,45 +232,39 @@ private struct GradientsDemo: View {
                 title: "Fade for readable text",
                 caption: "Lay a clear-to-black `LinearGradient` over a photo so white text reads on any image.",
                 code: """
-                AsyncImage(url: URL(string: "https://picsum.photos/800/600")) { image in
-                    image.resizable().scaledToFill()
-                } placeholder: {
-                    Color.gray
-                }
-                .frame(height: 220)
-                .overlay {
-                    LinearGradient(colors: [.clear, .black.opacity(0.7)],
-                                   startPoint: .center, endPoint: .bottom)
-                }
-                .overlay(alignment: .bottomLeading) {
-                    Text("Weekend Getaways")
-                        .font(.title2.bold())
-                        .foregroundStyle(.white)
-                        .padding()
-                }
-                .clipShape(.rect(cornerRadius: 20))
+                Image("photo")
+                    .resizable()
+                    .scaledToFill()
+                    .frame(height: 220)
+                    .overlay {
+                        LinearGradient(colors: [.clear, .black.opacity(0.7)],
+                                       startPoint: .center, endPoint: .bottom)
+                    }
+                    .overlay(alignment: .bottomLeading) {
+                        Text("Weekend Getaways")
+                            .font(.title2.bold())
+                            .foregroundStyle(.white)
+                            .padding()
+                    }
+                    .clipShape(.rect(cornerRadius: 20))
                 """,
                 minHeight: 220,
                 aside: Aside(.note, "Designers call this a scrim. Start it near the middle so the top of the photo stays bright.")
             ) {
-                AsyncImage(url: URL(string: "https://picsum.photos/seed/scrim/800/600")) { image in
-                    image.resizable().scaledToFill()
-                } placeholder: {
-                    MeshFill(palette: .ocean, animate: false)
-                }
-                .frame(height: 220)
-                .frame(maxWidth: 360)
-                .overlay {
-                    LinearGradient(colors: [.clear, .black.opacity(0.7)],
-                                   startPoint: .center, endPoint: .bottom)
-                }
-                .overlay(alignment: .bottomLeading) {
-                    Text("Weekend Getaways")
-                        .font(.title2.bold())
-                        .foregroundStyle(.white)
-                        .padding()
-                }
-                .clipShape(.rect(cornerRadius: 20))
+                SceneryView(.meadow)
+                    .frame(height: 220)
+                    .frame(maxWidth: 360)
+                    .overlay {
+                        LinearGradient(colors: [.clear, .black.opacity(0.7)],
+                                       startPoint: .center, endPoint: .bottom)
+                    }
+                    .overlay(alignment: .bottomLeading) {
+                        Text("Weekend Getaways")
+                            .font(.title2.bold())
+                            .foregroundStyle(.white)
+                            .padding()
+                    }
+                    .clipShape(.rect(cornerRadius: 20))
             }
 
             ExampleCard(

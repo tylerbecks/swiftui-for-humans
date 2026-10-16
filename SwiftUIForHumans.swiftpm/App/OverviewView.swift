@@ -1,14 +1,15 @@
 import SwiftUI
 
-/// The home page: every page in the catalog as a grid of live thumbnails,
+/// A tab's home page: every page in the tab as a grid of live thumbnails,
 /// grouped by category, with chips to jump to a single category.
 struct OverviewView: View {
+    let tab: AppTab
     @Environment(\.openPage) private var openPage
     @State private var filter: ComponentCategory?
     @Environment(\.horizontalSizeClass) private var sizeClass
 
     private var categories: [ComponentCategory] {
-        ComponentCategory.allCases.filter { !Catalog.pages(in: $0).isEmpty }
+        tab.categories.filter { !Catalog.pages(in: $0).isEmpty }
     }
 
     var body: some View {
@@ -30,7 +31,7 @@ struct OverviewView: View {
                     proxy.scrollTo(anchor, anchor: .top)
                 }
         }
-        .navigationTitle("SwiftUI for Humans")
+        .navigationTitle(tab.title)
         .toolbarTitleDisplayMode(.catalogPage(sizeClass))
     }
 
@@ -38,7 +39,12 @@ struct OverviewView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 36) {
                 hero
-                chips
+                if categories.isEmpty {
+                    ComingSoonView(tab: tab)
+                        .padding(.top, 40)
+                } else {
+                    chips
+                }
                 ForEach(categories.filter { filter == nil || $0 == filter }) { category in
                     CategorySection(category: category) { openPage($0) }
                         .id(category.rawValue)
@@ -54,16 +60,25 @@ struct OverviewView: View {
 
     private var hero: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Every SwiftUI component, live. Change it, see it, copy the code.")
+            Text(tab.intro)
                 .font(.title3)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
-            HStack(spacing: 16) {
-                stat(count: Catalog.pages.count, label: "pages")
-                stat(count: Catalog.pages.filter { $0.kind == .concept }.count, label: "concepts")
-                stat(count: Catalog.pages.filter { $0.kind == .block }.count, label: "blocks")
+            let pages = Catalog.pages(in: tab)
+            if !pages.isEmpty {
+                HStack(spacing: 16) {
+                    stat(count: pages.count, label: "pages")
+                    let concepts = pages.filter { $0.kind == .concept }.count
+                    if concepts > 0 {
+                        stat(count: concepts, label: "concepts")
+                    }
+                    let blocks = pages.filter { $0.kind == .block }.count
+                    if blocks > 0 {
+                        stat(count: blocks, label: "blocks")
+                    }
+                }
+                .padding(.top, 4)
             }
-            .padding(.top, 4)
         }
     }
 
@@ -128,6 +143,10 @@ private struct CategorySection: View {
                         GalleryCard(page: page)
                     }
                     .buttonStyle(CardButtonStyle())
+                    .hoverEffect(.lift)
+                    .contextMenu {
+                        OpenInNewWindowButton(id: page.id)
+                    }
                     .accessibilityIdentifier("card-\(page.id)")
                     .id("card-\(page.id)")
                 }

@@ -6,7 +6,7 @@ extension ComponentPage {
         id: "sf-symbols",
         title: "SF Symbols",
         summary: "Thousands of built-in icons that match the system font and scale with text.",
-        category: .design,
+        category: .foundations,
         symbol: "star.square.on.square",
         availability: ["iOS 13.0+", "macOS 11.0+", "visionOS 1.0+"],
         docsURL: "https://developer.apple.com/documentation/swiftui/image/init(systemname:)",

@@ -128,7 +128,7 @@ struct DemoPage<Config, Preview: View, Controls: View, Examples: View>: View {
             // readable beside them; otherwise they wait for the toolbar button.
             guard !didSetInitialControls else { return }
             didSetInitialControls = true
-            showControls = LaunchOptions.take("-showControls") || (sizeClass == .regular && width >= Self.inspectorMinWidth)
+            showControls = LaunchOptions.take("-showControls", page: page.id) || (sizeClass == .regular && width >= Self.inspectorMinWidth)
         }
         .onChange(of: showControls) { _, isShown in
             guard isShown else { return }
@@ -177,8 +177,11 @@ private struct ControlsPresentation<Panel: View>: ViewModifier {
                     panel
                         .inspectorColumnWidth(min: 280, ideal: 320, max: 400)
                 }
+                // The page scaffold's appearance button doesn't reach the
+                // bar once `.inspector` wraps the page, so it's added here.
                 .toolbar {
-                    ToolbarItem(placement: .primaryAction) {
+                    ToolbarItemGroup(placement: .primaryAction) {
+                        PreviewSchemeMenu()
                         Button("Controls", systemImage: "slider.horizontal.3") {
                             isPresented.toggle()
                         }

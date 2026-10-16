@@ -6,7 +6,7 @@ extension ComponentPage {
         id: "system-colors",
         title: "System Colors",
         summary: "Colors that adapt to light mode, dark mode, and accessibility settings for you.",
-        category: .design,
+        category: .foundations,
         kind: .reference,
         symbol: "swatchpalette",
         availability: ["iOS 13.0+", "macOS 10.15+", "visionOS 1.0+"],

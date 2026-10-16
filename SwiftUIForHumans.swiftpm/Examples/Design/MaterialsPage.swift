@@ -5,7 +5,7 @@ extension ComponentPage {
         id: "materials",
         title: "Materials",
         summary: "Frosted, blurred backgrounds that let the content behind them show through.",
-        category: .design,
+        category: .foundations,
         symbol: "square.stack.3d.down.forward",
         availability: ["iOS 15.0+", "macOS 12.0+", "visionOS 1.0+"],
         docsURL: "https://developer.apple.com/documentation/swiftui/material",
@@ -124,11 +124,12 @@ private enum MaterialShapeOption: DemoOption {
 }
 
 private enum BackdropOption: DemoOption {
-    case photo, shapes, text
+    case photo, brightPhoto, shapes, text
 
     var label: String {
         switch self {
-        case .photo: "Photo"
+        case .photo: Scenery.city.label
+        case .brightPhoto: Scenery.meadow.label
         case .shapes: "Colorful shapes"
         case .text: "Text"
         }
@@ -174,12 +175,10 @@ private struct TextBackdrop: View {
 }
 
 private struct PhotoBackdrop: View {
+    var scenery = Scenery.city
+
     var body: some View {
-        AsyncImage(url: URL(string: "https://picsum.photos/seed/catalog/800/600")) { image in
-            image.resizable().scaledToFill()
-        } placeholder: {
-            ColorfulBackdrop()
-        }
+        SceneryView(scenery)
     }
 }
 
@@ -189,6 +188,7 @@ private struct Backdrop: View {
     var body: some View {
         switch option {
         case .photo: PhotoBackdrop()
+        case .brightPhoto: PhotoBackdrop(scenery: .meadow)
         case .shapes: ColorfulBackdrop()
         case .text: TextBackdrop()
         }
@@ -276,26 +276,24 @@ private struct MaterialsDemo: View {
                 title: "Caption over a photo",
                 caption: "Put `.ultraThinMaterial` behind a caption so it stays readable on any image, light or dark.",
                 code: """
-                AsyncImage(url: URL(string: "https://picsum.photos/800/600")) { image in
-                    image.resizable().scaledToFill()
-                } placeholder: {
-                    Color.gray
-                }
-                .frame(height: 220)
-                .overlay(alignment: .bottom) {
-                    VStack(alignment: .leading) {
-                        Text("Photo of the Day").font(.headline)
-                        Text("Readable on any image").foregroundStyle(.secondary)
+                Image("photo")
+                    .resizable()
+                    .scaledToFill()
+                    .frame(height: 220)
+                    .overlay(alignment: .bottom) {
+                        VStack(alignment: .leading) {
+                            Text("Photo of the Day").font(.headline)
+                            Text("Readable on any image").foregroundStyle(.secondary)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding()
+                        .background(.ultraThinMaterial)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding()
-                    .background(.ultraThinMaterial)
-                }
-                .clipShape(.rect(cornerRadius: 20))
+                    .clipShape(.rect(cornerRadius: 20))
                 """,
                 minHeight: 220
             ) {
-                PhotoBackdrop()
+                PhotoBackdrop(scenery: .meadow)
                     .frame(height: 220)
                     .frame(maxWidth: 360)
                     .overlay(alignment: .bottom) {

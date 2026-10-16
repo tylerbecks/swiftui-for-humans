@@ -206,19 +206,28 @@ struct GuidelinesSection: View {
     }
 }
 
-/// Side by side on iPad, stacked on iPhone.
+/// Side by side when both fit, stacked otherwise. It goes by the space the
+/// page has, not the device: an iPad page column beside the sidebar, or a
+/// narrow window, can be as narrow as an iPhone. A pair that doesn't fit
+/// would widen the page and push it under the sidebar.
 private struct DoDontView: View {
     let pair: DoDontPair
     @Environment(\.horizontalSizeClass) private var sizeClass
 
     var body: some View {
-        let layout = sizeClass == .regular
-            ? AnyLayout(HStackLayout(alignment: .top, spacing: 12))
-            : AnyLayout(VStackLayout(spacing: 12))
-        layout {
-            DoDontCard(isGood: true, caption: pair.goodCaption, content: pair.good)
-            DoDontCard(isGood: false, caption: pair.badCaption, content: pair.bad)
+        if sizeClass == .regular {
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .top, spacing: 12) { cards }
+                VStack(spacing: 12) { cards }
+            }
+        } else {
+            VStack(spacing: 12) { cards }
         }
+    }
+
+    @ViewBuilder private var cards: some View {
+        DoDontCard(isGood: true, caption: pair.goodCaption, content: pair.good)
+        DoDontCard(isGood: false, caption: pair.badCaption, content: pair.bad)
     }
 }
 
@@ -249,5 +258,144 @@ private struct DoDontCard: View {
             .background(Surface.code)
         }
         .cardStyle()
+    }
+}
+
+// MARK: - Sources
+
+/// The page's footnote: platforms, how many official sources it's based
+/// on, and when they were last checked, on one quiet line. Tap it to list
+/// the sources. Rules and deadlines change, so readers can see how fresh a
+/// page is and go to the source, without a long list in the way.
+struct SourcesSection: View {
+    let sources: [URL]
+    let reviewed: String?
+    let availability: [String]
+    @State private var isExpanded = LaunchOptions.value(for: "-scrollTo") == "sources"
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            if sources.isEmpty {
+                Text(summary)
+            } else {
+                Button {
+                    withAnimation(.snappy) { isExpanded.toggle() }
+                } label: {
+                    HStack(alignment: .firstTextBaseline, spacing: 6) {
+                        Text(summary)
+                            .multilineTextAlignment(.leading)
+                        Image(systemName: "chevron.right")
+                            .font(.caption2.weight(.semibold))
+                            .rotationEffect(.degrees(isExpanded ? 90 : 0))
+                    }
+                    .contentShape(.rect)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(summary)
+                .accessibilityHint(isExpanded ? "Hides the sources." : "Lists the sources.")
+            }
+            if isExpanded {
+                VStack(alignment: .leading, spacing: 8) {
+                    ForEach(sources, id: \.self) { url in
+                        Link(destination: url) {
+                            Label(Self.title(for: url), systemImage: "arrow.up.right")
+                                .labelStyle(SourceLabelStyle())
+                                .multilineTextAlignment(.leading)
+                        }
+                    }
+                }
+                .transition(.opacity)
+            }
+        }
+        .font(.footnote)
+        .foregroundStyle(.secondary)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .id("sources")
+    }
+
+    /// "iOS 15.0+ · 9 sources · Checked October 2026"
+    private var summary: String {
+        var parts = availability
+        if !sources.isEmpty {
+            parts.append(sources.count == 1 ? "1 source" : "\(sources.count) sources")
+        }
+        if let reviewed {
+            // When the sources were last checked against Apple's pages.
+            parts.append("Checked \(reviewed)")
+        }
+        return parts.joined(separator: " · ")
+    }
+
+    /// A short, readable name for a source URL: "App Review Guidelines",
+    /// "HIG: Tab bars", "Docs: searchable", or the host and last path part.
+    static func title(for url: URL) -> String {
+        if let name = SourceTitles.byURL[url.absoluteString] {
+            let path = url.path()
+            if path.contains("/human-interface-guidelines/") { return "HIG: \(name)" }
+            if path.hasPrefix("/documentation/") { return "Docs: \(name)" }
+            if path.hasPrefix("/help/app-store-connect") { return "App Store Connect Help: \(name)" }
+            if path.hasPrefix("/help/app-review") { return "App Review Help: \(name)" }
+            return name
+        }
+        let host = (url.host() ?? "").replacingOccurrences(of: "www.", with: "")
+        let path = url.path()
+        let last = url.lastPathComponent
+        func words(_ slug: String) -> String {
+            // URLs drop apostrophes: "your-app-s-launch" reads "your app's launch".
+            slug.replacingOccurrences(of: "-", with: " ")
+                .replacing(/(\w) s\b/) { "\($0.output.1)'s" }
+        }
+        func readable(_ slug: String) -> String {
+            let text = words(slug)
+            return text.prefix(1).uppercased() + text.dropFirst()
+        }
+        if host == "developer.apple.com" {
+            if path.hasPrefix("/app-store/review/guidelines") {
+                return url.fragment().map { "App Review Guidelines: \(readable($0))" } ?? "App Review Guidelines"
+            }
+            if path.contains("/human-interface-guidelines/") {
+                return "HIG: \(readable(last))"
+            }
+            if path.hasPrefix("/documentation/") {
+                // Symbol pages end in a full signature; the name is enough.
+                let name = last.split(separator: "(").first.map(String.init) ?? last
+                return "Docs: \(words(name))"
+            }
+            if path.hasPrefix("/help/app-store-connect") {
+                return "App Store Connect Help: \(readable(last))"
+            }
+            if path.hasPrefix("/help/app-review") {
+                // "5-1-1-account-deletion" reads "5.1.1 Account deletion".
+                let slug = last.replacing(/^(\d+)-(\d+)-(\d+)-/) { "\($0.output.1).\($0.output.2).\($0.output.3) " }
+                return "App Review Help: \(readable(slug))"
+            }
+            if let match = path.firstMatch(of: /\/videos\/play\/wwdc\d\d(\d\d)\/(\d+)/) {
+                return "WWDC\(match.output.1) session \(match.output.2)"
+            }
+            let names = [
+                "testflight": "TestFlight",
+                "app-review": "App Review",
+                "news": "Apple Developer News",
+                "third-party-SDK-requirements": "Third-party SDK requirements",
+            ]
+            if let name = names[last] { return name }
+            if !last.isEmpty, last != "/" { return "Apple Developer: \(readable(last))" }
+        }
+        if host == "apple.com", path.hasPrefix("/legal/app-store/transparency/") {
+            return "App Store Transparency Report \(last)"
+        }
+        return last.isEmpty || last == "/" ? host : "\(host): \(readable(last))"
+    }
+}
+
+/// A small link arrow in front of each source, tinted like the link.
+private struct SourceLabelStyle: LabelStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 6) {
+            configuration.icon
+                .font(.caption2.weight(.semibold))
+            configuration.title
+        }
+        .foregroundStyle(.tint)
     }
 }

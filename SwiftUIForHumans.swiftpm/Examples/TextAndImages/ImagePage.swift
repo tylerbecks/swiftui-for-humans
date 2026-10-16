@@ -63,75 +63,12 @@ extension ComponentPage {
 }
 
 /// A generated landscape so the page works offline. In real code this is an
-/// image in the asset catalog, loaded with `Image("landscape")`. It's drawn
-/// with SwiftUI shapes once, then rendered to a bitmap with `ImageRenderer` so
+/// image in the asset catalog, loaded with `Image("landscape")`. It's the
+/// lake scene from `Scenery`, drawn in SwiftUI and rendered to a bitmap, so
 /// it behaves exactly like a real photo (`resizable`, `scaledToFill`, ...).
 @MainActor
 private enum CatalogLandscape {
-    static let photo: Image = {
-        let renderer = ImageRenderer(content: LandscapeArt())
-        renderer.scale = 2
-        guard let cgImage = renderer.cgImage else { return Image(systemName: "photo") }
-        return Image(decorative: cgImage, scale: 2)
-    }()
-}
-
-/// The 300x200 scene behind `CatalogLandscape.photo`: sky, sun, two mountain
-/// ranges, and a lake with the sun's reflection.
-private struct LandscapeArt: View {
-    var body: some View {
-        ZStack(alignment: .topLeading) {
-            LinearGradient(
-                stops: [
-                    .init(color: Color(hex: 0x3B5BA9), location: 0),
-                    .init(color: Color(hex: 0xE57A7A), location: 0.39),
-                    .init(color: Color(hex: 0xFFC07A), location: 0.65),
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            Circle()
-                .fill(Color(hex: 0xFFE7A8))
-                .frame(width: 50, height: 50)
-                .offset(x: 190, y: 62)
-            Ridge(points: [(0, 130), (0, 105), (55, 70), (110, 110), (165, 80), (230, 118), (300, 92), (300, 130)])
-                .fill(Color(hex: 0x6B4E8C))
-            Ridge(points: [(0, 140), (0, 122), (80, 100), (150, 128), (210, 112), (300, 130), (300, 140)])
-                .fill(Color(hex: 0x2F3D6B))
-            LinearGradient(colors: [Color(hex: 0x2A3560), Color(hex: 0x1B2340)], startPoint: .top, endPoint: .bottom)
-                .frame(width: 300, height: 64)
-                .offset(y: 136)
-            ForEach(Array([36.0, 26, 16, 8].enumerated()), id: \.offset) { index, width in
-                Rectangle()
-                    .fill(Color(hex: 0xFFC07A).opacity(0.6))
-                    .frame(width: width, height: 2.5)
-                    .offset(x: 215 - width / 2, y: 146 + Double(index) * 9)
-            }
-        }
-        .frame(width: 300, height: 200, alignment: .topLeading)
-    }
-}
-
-/// A closed polygon through points given in the 300x200 scene's coordinates.
-private struct Ridge: Shape {
-    let points: [(Double, Double)]
-
-    func path(in rect: CGRect) -> Path {
-        Path { path in
-            path.addLines(points.map { CGPoint(x: $0.0, y: $0.1) })
-            path.closeSubpath()
-        }
-    }
-}
-
-private extension Color {
-    init(hex: UInt32) {
-        self.init(
-            red: Double((hex >> 16) & 0xFF) / 255,
-            green: Double((hex >> 8) & 0xFF) / 255,
-            blue: Double(hex & 0xFF) / 255
-        )
-    }
+    static var photo: Image { Scenery.lake.image }
 }
 
 private struct ImageConfig {
