@@ -59,17 +59,6 @@ struct PageScaffold<Content: View>: View {
                 }
             }
             .scrollPosition($position)
-            .background(alignment: .top) {
-                // Behind the title and summary, under the navigation bar.
-                // It stays put and fades as the page scrolls over it.
-                PageWallpaper(
-                    page: page,
-                    fade: min(1, max(0, scroll.metrics.offset + scroll.metrics.topInset) / 220),
-                    titleBottom: scroll.metrics.topInset
-                )
-                    .frame(height: scroll.metrics.topInset + 200)
-                    .ignoresSafeArea(edges: .top)
-            }
             .onAppear { Engagement.shared.recordPageView(page.id) }
             .onScrollGeometryChange(for: PageScrollMetrics.self) { geometry in
                 PageScrollMetrics(geometry)
@@ -239,9 +228,6 @@ struct PageHeader: View {
                 .font(.title3)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
-                // A soft halo in the page color, so the summary stays
-                // readable where the wallpaper behind it is busy.
-                .shadow(color: Color(.systemBackground).opacity(0.9), radius: 6)
                 // Room for the page scrubber's handle at the right edge.
                 .padding(.trailing, 20)
 

@@ -62,23 +62,6 @@ struct Wallpaper: View {
     }
 }
 
-/// A page's wallpaper, behind its title. It fades into the page at the
-/// bottom, and away as the page scrolls.
-struct PageWallpaper: View {
-    let page: ComponentPage
-    /// 0 at the top of the page, 1 once it's scrolled away.
-    var fade: CGFloat = 0
-    /// Where the large title ends, from the top of the wallpaper.
-    var titleBottom: CGFloat = 0
-
-    var body: some View {
-        Wallpaper(seed: page.id, tab: page.category.tab, isPaused: fade >= 1)
-            .overlay(TextScrim(titleBottom: titleBottom, color: Color(.systemBackground)))
-            .mask(WallpaperFade())
-            .opacity(1 - fade)
-    }
-}
-
 /// A soft band of the background color behind a large title and the text
 /// under it, so they stay readable over a busy wallpaper (the HIG's advice
 /// for text over imagery). It's clear above the title, so the wallpaper
