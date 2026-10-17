@@ -43,24 +43,45 @@
       </div>
     </section>
 
-    <div class="wrap screens">
-      <figure>
-        <picture><source srcset="/images/screen-components-dark.jpg" media="(prefers-color-scheme: dark)"><img src="/images/screen-components-light.jpg" alt="The Components tab, with a board of live components above the list of controls" width="460" height="1000" loading="lazy"></picture>
-        <figcaption>Every component, one tap away</figcaption>
-      </figure>
-      <figure>
-        <picture><source srcset="/images/screen-button-dark.jpg" media="(prefers-color-scheme: dark)"><img src="/images/screen-button-light.jpg" alt="The Button page with a live preview, its code, and a Customize button" width="460" height="1000" loading="lazy"></picture>
-        <figcaption>Live previews with real code</figcaption>
-      </figure>
-      <figure>
-        <picture><source srcset="/images/screen-liquid-glass-dark.jpg" media="(prefers-color-scheme: dark)"><img src="/images/screen-liquid-glass-light.jpg" alt="The Liquid Glass page, showing a glass button over colored shapes" width="460" height="1000" loading="lazy"></picture>
-        <figcaption>Liquid Glass, explained</figcaption>
-      </figure>
-      <figure>
-        <picture><source srcset="/images/screen-checklist-dark.jpg" media="(prefers-color-scheme: dark)"><img src="/images/screen-checklist-light.jpg" alt="The Submission Checklist page with items to tick off before App Review" width="460" height="1000" loading="lazy"></picture>
-        <figcaption>Checklists for App Review</figcaption>
-      </figure>
-    </div>
+    <section class="showcase">
+      <div class="wrap">
+        <h2>Not screenshots. The real thing.</h2>
+        <p class="section-lede">Most docs show you a picture of a button. SwiftUI for Humans hands you the button. Every example is real SwiftUI you can tap, drag, and change, with the code updating beside it.</p>
+        <div class="feature">
+          <div class="phone"><video data-clip="typography" muted loop playsinline preload="none" aria-label="The Typography page: dragging the text size slider makes every text style grow and shrink" poster="/images/showcase/typography-light.jpg"></video></div>
+          <div class="feature-text"><h3>Drag it. Watch it change.</h3><p>Every example is live SwiftUI running on your phone, not a picture of it. Drag the text size on the Typography page and every style grows the way it will for someone who needs bigger text.</p></div>
+        </div>
+        <div class="feature flip">
+          <div class="phone"><video data-clip="geometry" muted loop playsinline preload="none" aria-label="The GeometryReader page: changing count and span re-flows a row of colored cards" poster="/images/showcase/geometry-light.jpg"></video></div>
+          <div class="feature-text"><h3>Layout you can poke at.</h3><p>Tap + and − on GeometryReader and the cards re-flow in real time. It's the same code you copy, so you learn what each number does by changing it.</p></div>
+        </div>
+        <div class="feature">
+          <div class="phone"><video data-clip="search" muted loop playsinline preload="none" aria-label="The Search tab: searching dropdown finds Picker and Menu, and dark mode finds pages across all three tabs" poster="/images/showcase/search-light.jpg"></video></div>
+          <div class="feature-text"><h3>Search the way you already think.</h3><p>Coming from the web? Search for “dropdown”, “modal”, or “flexbox” and land on Picker, sheet, or HStack. One search covers components, design advice, and App Store rules.</p></div>
+        </div>
+      </div>
+      <div class="wrap">
+        <h3 class="gallery-title">And 117 pages like these</h3>
+      </div>
+      <div class="gallery" tabindex="0" aria-label="Screens from the app">
+        <figure><picture><source srcset="/images/showcase/liquid-glass-dark.jpg" media="(prefers-color-scheme: dark)"><img src="/images/showcase/liquid-glass-light.jpg" alt="The Liquid Glass page" width="460" height="1000" loading="lazy"></picture><figcaption><strong>Liquid Glass</strong>The iOS 26 look, explained</figcaption></figure>
+        <figure><picture><source srcset="/images/showcase/image-dark.jpg" media="(prefers-color-scheme: dark)"><img src="/images/showcase/image-light.jpg" alt="The Do's and Don'ts page" width="460" height="1000" loading="lazy"></picture><figcaption><strong>Do's and Don'ts</strong>Guidelines drawn live, not described</figcaption></figure>
+        <figure><picture><source srcset="/images/showcase/paywall-dark.jpg" media="(prefers-color-scheme: dark)"><img src="/images/showcase/paywall-light.jpg" alt="The Paywall page" width="460" height="1000" loading="lazy"></picture><figcaption><strong>Paywall</strong>A whole screen, ready to copy</figcaption></figure>
+        <figure><picture><source srcset="/images/showcase/gauge-dark.jpg" media="(prefers-color-scheme: dark)"><img src="/images/showcase/gauge-light.jpg" alt="The Gauge page" width="460" height="1000" loading="lazy"></picture><figcaption><strong>Gauge</strong>Every component, with its options</figcaption></figure>
+        <figure><picture><source srcset="/images/showcase/color-and-contrast-dark.jpg" media="(prefers-color-scheme: dark)"><img src="/images/showcase/color-and-contrast-light.jpg" alt="The Color & Contrast page" width="460" height="1000" loading="lazy"></picture><figcaption><strong>Color & Contrast</strong>A contrast checker that grades as you pick</figcaption></figure>
+        <figure><picture><source srcset="/images/showcase/onboarding-dark.jpg" media="(prefers-color-scheme: dark)"><img src="/images/showcase/onboarding-light.jpg" alt="The Onboarding page" width="460" height="1000" loading="lazy"></picture><figcaption><strong>Onboarding</strong>Blocks for the screens every app needs</figcaption></figure>
+        <figure><picture><source srcset="/images/showcase/lazy-grids-dark.jpg" media="(prefers-color-scheme: dark)"><img src="/images/showcase/lazy-grids-light.jpg" alt="The Lazy Grids page" width="460" height="1000" loading="lazy"></picture><figcaption><strong>Lazy Grids</strong>See how the columns adapt</figcaption></figure>
+        <figure><picture><source srcset="/images/showcase/dark-mode-dark.jpg" media="(prefers-color-scheme: dark)"><img src="/images/showcase/dark-mode-light.jpg" alt="The Dark Mode page" width="460" height="1000" loading="lazy"></picture><figcaption><strong>Dark Mode</strong>Both appearances, side by side</figcaption></figure>
+        <figure><picture><source srcset="/images/showcase/profile-dark.jpg" media="(prefers-color-scheme: dark)"><img src="/images/showcase/profile-light.jpg" alt="The Profile page" width="460" height="1000" loading="lazy"></picture><figcaption><strong>Profile</strong>A social profile, built from parts</figcaption></figure>
+        <figure><picture><source srcset="/images/showcase/stacks-dark.jpg" media="(prefers-color-scheme: dark)"><img src="/images/showcase/stacks-light.jpg" alt="The Stacks page" width="460" height="1000" loading="lazy"></picture><figcaption><strong>Stacks</strong>Layout basics you can see</figcaption></figure>
+        <figure><picture><source srcset="/images/showcase/materials-dark.jpg" media="(prefers-color-scheme: dark)"><img src="/images/showcase/materials-light.jpg" alt="The Materials page" width="460" height="1000" loading="lazy"></picture><figcaption><strong>Materials</strong>Blur and vibrancy over a backdrop</figcaption></figure>
+        <figure><picture><source srcset="/images/showcase/login-form-dark.jpg" media="(prefers-color-scheme: dark)"><img src="/images/showcase/login-form-light.jpg" alt="The Login page" width="460" height="1000" loading="lazy"></picture><figcaption><strong>Login</strong>Email, password, and Sign in with Apple</figcaption></figure>
+        <figure><picture><source srcset="/images/showcase/safe-area-dark.jpg" media="(prefers-color-scheme: dark)"><img src="/images/showcase/safe-area-light.jpg" alt="The Safe Area page" width="460" height="1000" loading="lazy"></picture><figcaption><strong>Safe Area</strong>Where content can and can't go</figcaption></figure>
+        <figure><picture><source srcset="/images/showcase/settings-screen-dark.jpg" media="(prefers-color-scheme: dark)"><img src="/images/showcase/settings-screen-light.jpg" alt="The Settings page" width="460" height="1000" loading="lazy"></picture><figcaption><strong>Settings</strong>Toggles, pickers, and sections</figcaption></figure>
+        <figure><picture><source srcset="/images/showcase/sf-symbols-dark.jpg" media="(prefers-color-scheme: dark)"><img src="/images/showcase/sf-symbols-light.jpg" alt="The SF Symbols page" width="460" height="1000" loading="lazy"></picture><figcaption><strong>SF Symbols</strong>Symbols that animate and adapt</figcaption></figure>
+      </div>
+    </section>
+
 
     <section class="band soft">
       <div class="wrap">
@@ -108,5 +129,6 @@
   </footer>
   <script src="/images/hero/tiles.js" defer></script>
   <script src="/board.js" defer></script>
+  <script src="/showcase.js" defer></script>
 </body>
 </html>

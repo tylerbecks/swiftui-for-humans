@@ -30,7 +30,7 @@ Project-specific rules for AI coding agents. Read [README.md](README.md) and [do
 
 ## Website
 
-`website/` is plain HTML and one stylesheet, with no build step. Vercel serves it with clean URLs (`/privacy`, `/support`), and every push to `main` redeploys it. Preview it with `python3 -m http.server` from that folder. Use real app screenshots in `website/images/`, made on the test simulators, in both light and dark (`screen-<name>-light.jpg` and `-dark.jpg`); the page shows the set that matches the visitor's appearance.
+`website/` is plain HTML and one stylesheet, with no build step. Vercel serves it with clean URLs (`/privacy`, `/support`), and every push to `main` redeploys it. Preview it with `python3 -m http.server` from that folder. The home page's showcase (`website/images/showcase/`, played by `showcase.js`) uses real recordings and screenshots from the test simulators, in both light and dark (`<name>-light` and `-dark`); the page shows the set that matches the visitor's appearance.
 
 The home page's hero backdrop is a drifting masonry board (`board.js`, tiles in `website/images/hero/`) of real components from the app's debug-only `-heroReel` screen (`App/HeroReel.swift`). To add or change a tile, edit `HeroTile` there (each has a height; the width is 240 points), build, and run `scripts/hero-reel.sh <app> <iPad test sim udid>`. It needs an 11-inch iPad simulator, ffmpeg, ImageMagick, and jq. It replaces everything in `website/images/hero/`, including `tiles.js`, the list the page reads, so nothing else needs updating. The page shows stills and loads a tile's video only while it plays, so adding tiles costs little. `website/images/og.jpg` is the link preview image, a screenshot of the hero; retake it when the hero changes a lot.
 
