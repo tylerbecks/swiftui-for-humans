@@ -16,34 +16,49 @@ import SwiftUI
 struct Wallpaper: View {
     let seed: String
     let tab: AppTab
+    /// Stops the drift, for example once the wallpaper has scrolled away.
+    var isPaused = false
 
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var drifted = false
+    @State private var isOnScreen = false
 
     var body: some View {
-        let style = WallpaperStyle(seed: seed, tab: tab, dark: colorScheme == .dark)
-        MeshGradient(
-            width: 4,
-            height: 4,
-            points: drifted ? style.driftedPoints : style.points,
-            colors: style.colors,
-            smoothsColors: true
-        )
+        let dark = colorScheme == .dark
+        let mesh = WallpaperStyle(seed: seed, tab: tab, dark: dark)
+        let ribbons = RibbonStyle(seed: seed, tab: tab, dark: dark)
+        // The drift follows the clock rather than a repeating animation, so
+        // every wallpaper moves, and picks up again after any pause.
+        TimelineView(.animation(minimumInterval: 1 / 30, paused: reduceMotion || isPaused || !isOnScreen)) { context in
+            let time = reduceMotion ? 0 : context.date.timeIntervalSinceReferenceDate
+            switch WallpaperLook.current {
+            case .ribbons:
+                RibbonCanvas(style: ribbons, sway: Wallpaper.sway(time, duration: ribbons.duration))
+            case .mesh:
+                MeshGradient(
+                    width: 4,
+                    height: 4,
+                    points: mesh.points(sway: Wallpaper.sway(time, duration: mesh.duration)),
+                    colors: mesh.colors,
+                    smoothsColors: true
+                )
+            }
+        }
         .overlay {
             Image(uiImage: WallpaperGrain.image)
                 .resizable(resizingMode: .tile)
                 .blendMode(.overlay)
-                .opacity(colorScheme == .dark ? 0.35 : 0.5)
+                .opacity(dark ? 0.3 : 0.4)
         }
-        .onAppear {
-            guard !reduceMotion else { return }
-            withAnimation(.easeInOut(duration: style.duration).repeatForever(autoreverses: true)) {
-                drifted = true
-            }
-        }
+        .onAppear { isOnScreen = true }
+        .onDisappear { isOnScreen = false }
         .allowsHitTesting(false)
         .accessibilityHidden(true)
+    }
+
+    /// Eases from 0 to 1 over `duration` seconds and back, forever.
+    static func sway(_ time: TimeInterval, duration: Double) -> CGFloat {
+        CGFloat((1 - cos(time / duration * .pi)) / 2)
     }
 }
 
@@ -53,11 +68,40 @@ struct PageWallpaper: View {
     let page: ComponentPage
     /// 0 at the top of the page, 1 once it's scrolled away.
     var fade: CGFloat = 0
+    /// Where the large title ends, from the top of the wallpaper.
+    var titleBottom: CGFloat = 0
 
     var body: some View {
-        Wallpaper(seed: page.id, tab: page.category.tab)
+        Wallpaper(seed: page.id, tab: page.category.tab, isPaused: fade >= 1)
+            .overlay(TextScrim(titleBottom: titleBottom, color: Color(.systemBackground)))
             .mask(WallpaperFade())
             .opacity(1 - fade)
+    }
+}
+
+/// A soft band of the background color behind a large title and the text
+/// under it, so they stay readable over a busy wallpaper (the HIG's advice
+/// for text over imagery). It's clear above the title, so the wallpaper
+/// stays bright under the bar, and feathered so there's no visible edge.
+struct TextScrim: View {
+    /// Where the large title ends, from the top of this view.
+    let titleBottom: CGFloat
+    let color: Color
+
+    var body: some View {
+        GeometryReader { proxy in
+            LinearGradient(stops: stops(height: max(proxy.size.height, 1)), startPoint: .top, endPoint: .bottom)
+        }
+    }
+
+    private func stops(height: CGFloat) -> [Gradient.Stop] {
+        func at(_ y: CGFloat) -> CGFloat { min(max(y / height, 0), 1) }
+        return [
+            .init(color: color.opacity(0), location: at(titleBottom - 110)),
+            .init(color: color.opacity(0.5), location: at(titleBottom - 45)),
+            .init(color: color.opacity(0.6), location: at(titleBottom + 90)),
+            .init(color: color.opacity(0.6), location: 1),
+        ]
     }
 }
 
@@ -66,8 +110,8 @@ struct WallpaperFade: View {
     var body: some View {
         LinearGradient(stops: [
             .init(color: .black, location: 0),
-            .init(color: .black, location: 0.4),
-            .init(color: .black.opacity(0), location: 1),
+            .init(color: .black, location: 0.3),
+            .init(color: .black.opacity(0), location: 0.85),
         ], startPoint: .top, endPoint: .bottom)
     }
 }
@@ -117,13 +161,147 @@ struct WallpaperStyle {
         duration = 9 + random.next() * 6
     }
 
+    /// The mesh partway between its resting and drifted shapes.
+    func points(sway: CGFloat) -> [SIMD2<Float>] {
+        zip(points, driftedPoints).map { a, b in a + (b - a) * Float(sway) }
+    }
+
     /// Hues each tab draws from, from 0 to 1 around the color wheel.
-    private static func hues(for tab: AppTab) -> [Double] {
+    static func hues(for tab: AppTab) -> [Double] {
         switch tab {
         case .design: [0.02, 0.06, 0.1, 0.95, 0.9]       // coral, peach, gold, pink, rose
         case .ship: [0.5, 0.54, 0.58, 0.44, 0.62]        // teal, sky, blue, mint, cornflower
         default: [0.6, 0.66, 0.72, 0.8, 0.88]            // blue, periwinkle, lavender, violet, pink
         }
+    }
+}
+
+/// Which wallpaper the app draws. Launch with `-wallpaper mesh` or
+/// `-wallpaper ribbons` to compare them.
+enum WallpaperLook {
+    case mesh, ribbons
+
+    static let current: WallpaperLook = LaunchOptions.value(for: "-wallpaper") == "mesh" ? .mesh : .ribbons
+}
+
+/// A calm color wash crossed by a few sweeping ribbons of light, in the
+/// spirit of Apple's colorful desktop wallpapers but drawn from scratch.
+/// Each ribbon is a curve stroked three times, wide and faint, then
+/// narrower, then a thin bright core, which reads as a glow without the
+/// cost of a blur.
+struct RibbonStyle {
+    struct Line {
+        let curve: Ribbon.Curve
+        let glow: Color
+        let core: Color
+    }
+
+    let background: [Color]
+    let lines: [Line]
+    let dark: Bool
+    /// Seconds for one sway, there or back.
+    let duration: Double
+
+    init(seed: String, tab: AppTab, dark: Bool) {
+        var random = SeededRandom(seed + "ribbons")
+        let hues = WallpaperStyle.hues(for: tab)
+        let hue = hues[Int(random.next() * Double(hues.count)) % hues.count]
+        let accent = hues[Int(random.next() * Double(hues.count)) % hues.count]
+        background = dark
+            ? [Color(hue: hue, saturation: 0.85, brightness: 0.32), Color(hue: accent, saturation: 0.9, brightness: 0.16)]
+            : [Color(hue: hue, saturation: 0.1, brightness: 1), Color(hue: accent, saturation: 0.32, brightness: 0.98)]
+        lines = (0..<6).map { index in
+            let curve = Ribbon.Curve(random: &random, index: index)
+            let ribbonHue = index.isMultiple(of: 2) ? hue : accent
+            return Line(
+                curve: curve,
+                glow: Color(hue: ribbonHue, saturation: dark ? 0.75 : 0.55, brightness: 1),
+                core: dark ? Color(hue: ribbonHue, saturation: 0.3, brightness: 1) : .white
+            )
+        }
+        self.dark = dark
+        duration = 10 + random.next() * 6
+    }
+}
+
+/// Draws a ribbon wallpaper at one moment of its sway.
+struct RibbonCanvas: View {
+    let style: RibbonStyle
+    let sway: CGFloat
+
+    var body: some View {
+        Canvas { context, size in
+            let rect = CGRect(origin: .zero, size: size)
+            context.fill(Path(rect), with: .linearGradient(
+                Gradient(colors: style.background),
+                startPoint: .zero,
+                endPoint: CGPoint(x: size.width, y: size.height)
+            ))
+            let dark = style.dark
+            for line in style.lines {
+                let path = Ribbon(curve: line.curve, sway: sway).path(in: rect)
+                let width = line.curve.width
+                context.stroke(path, with: .color(line.glow.opacity(dark ? 0.16 : 0.22)), style: StrokeStyle(lineWidth: width * 9, lineCap: .round))
+                context.stroke(path, with: .color(line.glow.opacity(dark ? 0.28 : 0.4)), style: StrokeStyle(lineWidth: width * 3, lineCap: .round))
+                context.stroke(path, with: .color(line.core.opacity(dark ? 0.7 : 0.95)), style: StrokeStyle(lineWidth: width, lineCap: .round))
+            }
+        }
+    }
+}
+
+/// One sweeping ribbon: a curve from off the left edge to off the right,
+/// bowed by two control points that sway between two positions.
+struct Ribbon: Shape {
+    struct Curve {
+        var start: CGPoint
+        var end: CGPoint
+        var control1: CGPoint
+        var control2: CGPoint
+        var swayed1: CGPoint
+        var swayed2: CGPoint
+        var width: CGFloat
+
+        init(random: inout SeededRandom, index: Int) {
+            // Twelve draws up front; a closure can't capture an inout value.
+            var draws = (0..<12).map { _ in CGFloat(random.next()) }
+            func r() -> CGFloat { draws.removeFirst() }
+            // Ribbons enter and leave at different heights, crossing the
+            // frame in long, shallow arcs. Points are in unit space.
+            // They stay in the upper part, behind the title, and clear of
+            // the text below it.
+            start = CGPoint(x: -0.2, y: 0.05 + r() * 0.6)
+            end = CGPoint(x: 1.2, y: -0.1 + r() * 0.6)
+            control1 = CGPoint(x: 0.2 + r() * 0.3, y: -0.4 + r() * 1.2)
+            control2 = CGPoint(x: 0.55 + r() * 0.3, y: -0.4 + r() * 1.2)
+            swayed1 = CGPoint(x: control1.x + (r() - 0.5) * 0.25, y: control1.y + (r() - 0.5) * 0.5)
+            swayed2 = CGPoint(x: control2.x + (r() - 0.5) * 0.25, y: control2.y + (r() - 0.5) * 0.5)
+            width = 1.2 + r() * 1.8
+        }
+    }
+
+    let curve: Curve
+    var sway: CGFloat
+
+    var animatableData: CGFloat {
+        get { sway }
+        set { sway = newValue }
+    }
+
+    func path(in rect: CGRect) -> Path {
+        func point(_ unit: CGPoint) -> CGPoint {
+            CGPoint(x: rect.minX + unit.x * rect.width, y: rect.minY + unit.y * rect.height)
+        }
+        func mix(_ a: CGPoint, _ b: CGPoint) -> CGPoint {
+            CGPoint(x: a.x + (b.x - a.x) * sway, y: a.y + (b.y - a.y) * sway)
+        }
+        var path = Path()
+        path.move(to: point(curve.start))
+        path.addCurve(
+            to: point(curve.end),
+            control1: point(mix(curve.control1, curve.swayed1)),
+            control2: point(mix(curve.control2, curve.swayed2))
+        )
+        return path
     }
 }
 

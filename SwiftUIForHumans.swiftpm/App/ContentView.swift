@@ -341,6 +341,7 @@ private struct HeroBackdrop: View {
     var body: some View {
         let reading = scroll.reading
         Wallpaper(seed: tab.rawValue, tab: tab)
+            .overlay(TextScrim(titleBottom: reading.underBar, color: Color(.systemGroupedBackground)))
             .mask(WallpaperFade())
             .frame(height: reading.underBar + 260)
             .offset(y: -reading.offset)
