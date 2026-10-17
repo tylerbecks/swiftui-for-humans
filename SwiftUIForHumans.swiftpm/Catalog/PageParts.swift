@@ -59,6 +59,13 @@ struct PageScaffold<Content: View>: View {
                 }
             }
             .scrollPosition($position)
+            .background(alignment: .top) {
+                // Behind the title and summary, under the navigation bar.
+                // It stays put and fades as the page scrolls over it.
+                PageWallpaper(page: page, fade: min(1, max(0, scroll.metrics.offset + scroll.metrics.topInset) / 220))
+                    .frame(height: scroll.metrics.topInset + 200)
+                    .ignoresSafeArea(edges: .top)
+            }
             .onAppear { Engagement.shared.recordPageView(page.id) }
             .onScrollGeometryChange(for: PageScrollMetrics.self) { geometry in
                 PageScrollMetrics(geometry)

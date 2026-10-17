@@ -1,8 +1,8 @@
 import Charts
 import SwiftUI
 
-// Small, real components shown as tiles: on the Components tab's hero board
-// (`HeroBoard`) and, through the debug-only `HeroReel`, on the website.
+// Small, real components shown as tiles on the website's hero board,
+// made from the app through the debug-only `HeroReel`.
 // Each tile is designed 240 points wide, and animated tiles take an `on`
 // value that flips between two resting states.
 
@@ -54,36 +54,6 @@ enum HeroTile: String, CaseIterable, Encodable {
         case .avatars: 100
         case .battery: 100
         case .files: 210
-        }
-    }
-
-    /// The page a tap opens.
-    var pageID: ComponentPage.ID {
-        switch self {
-        case .symbolSwap, .bell: "symbol-effects"
-        case .toggle, .formatBar: "toggle"
-        case .glassMorph, .glassButtons, .nowPlaying: "liquid-glass"
-        case .inbox, .settingsRow: "list"
-        case .slider: "slider"
-        case .chart, .lineChart: "charts"
-        case .buttons: "button"
-        case .wheel, .segmented: "picker"
-        case .progress, .spinner: "progress-view"
-        case .typography: "font"
-        case .sheet: "sheet"
-        case .stepper: "stepper"
-        case .gauge, .battery: "gauge"
-        case .disclosure: "form"
-        case .textField: "text-field"
-        case .colors: "color-picker"
-        case .emptyState: "empty-state"
-        case .tags: "shapes"
-        case .glassTabs, .tabs: "tab-view"
-        case .datePicker, .calendar: "date-picker"
-        case .library: "navigation-stack"
-        case .rating, .timer: "content-transition"
-        case .avatars: "stacks"
-        case .files: "label"
         }
     }
 

@@ -247,23 +247,26 @@ private struct Sidebar: View {
     var showsBoard = false
     @Environment(\.horizontalSizeClass) private var sizeClass
     @State private var showsAbout = false
+    @State private var scroll = ListScroll()
+
+    /// On iPhone this list is the tab's first screen, so the tab's wallpaper
+    /// goes here; on iPad it tops the overview instead.
+    private var showsHero: Bool { showsBoard && !Catalog.pages(in: tab).isEmpty }
+    /// Space between the title and the first row, where the wallpaper shows.
+    private static let heroHeight: CGFloat = 36
 
     var body: some View {
         List(selection: $selection) {
-            // On iPhone this list is the tab's first screen, so the hero
-            // board goes here; on iPad it tops the overview instead.
             Section {
                 Label("Overview", systemImage: "square.grid.2x2")
                     .tag(Catalog.overviewID)
                     .accessibilityElement(children: .combine)
                     .accessibilityIdentifier("row-overview")
             } header: {
-                if tab == .components && showsBoard {
-                    // A header, not a row, so it can run edge to edge.
-                    HeroBoard(tiles: HeroBoard.components)
-                        .padding(.horizontal, -20)
-                        .padding(.bottom, 8)
-                        .textCase(nil)
+                if showsHero {
+                    // Holds the board's place; the board itself is behind
+                    // the list, where it can run edge to edge and under the title.
+                    Color.clear.frame(height: Self.heroHeight)
                 }
             }
             ForEach(tab.categories) { category in
@@ -289,6 +292,20 @@ private struct Sidebar: View {
                 .accessibilityIdentifier("row-about")
             }
         }
+        .scrollContentBackground(showsHero ? .hidden : .automatic)
+        .onScrollGeometryChange(for: ListScroll.Reading.self) {
+            ListScroll.Reading(offset: $0.contentOffset.y + $0.contentInsets.top, underBar: $0.contentInsets.top)
+        } action: { _, new in
+            scroll.reading = new
+        }
+        .background(alignment: .top) {
+            if showsHero {
+                HeroBackdrop(tab: tab, scroll: scroll)
+            }
+        }
+        .background {
+            if showsHero { Color(.systemGroupedBackground).ignoresSafeArea() }
+        }
         .openInNewWindowMenu()
         .sheet(isPresented: $showsAbout) {
             AboutView()
@@ -299,6 +316,35 @@ private struct Sidebar: View {
                 ComingSoonView(tab: tab)
             }
         }
+    }
+}
+
+/// How far a list has scrolled from rest, and how tall the bars above it are.
+/// An observable object rather than state on the list's view, so a scroll
+/// redraws only what reads it (the hero backdrop), not the whole list.
+@Observable private final class ListScroll {
+    struct Reading: Equatable {
+        var offset: CGFloat = 0
+        var underBar: CGFloat = 0
+    }
+
+    var reading = Reading()
+}
+
+/// The tab's wallpaper behind the sidebar list, moving with it: full width,
+/// up under the large title, and fading out behind the first rows. Scrolling
+/// only moves it, so it never rebuilds while the list scrolls.
+private struct HeroBackdrop: View {
+    let tab: AppTab
+    let scroll: ListScroll
+
+    var body: some View {
+        let reading = scroll.reading
+        Wallpaper(seed: tab.rawValue, tab: tab)
+            .mask(WallpaperFade())
+            .frame(height: reading.underBar + 260)
+            .offset(y: -reading.offset)
+            .ignoresSafeArea(edges: [.top, .horizontal])
     }
 }
 

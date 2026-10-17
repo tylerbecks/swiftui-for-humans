@@ -30,13 +30,15 @@ Project-specific rules for AI coding agents. Read [README.md](README.md) and [do
 
 ## Website
 
-`website/` is plain HTML and one stylesheet, with no build step. Vercel serves it with clean URLs (`/privacy`, `/support`), and every push to `main` redeploys it. Preview it with `python3 -m http.server` from that folder. Use real app screenshots in `website/images/`, made on the test simulators.
+`website/` is plain HTML and one stylesheet, with no build step. Vercel serves it with clean URLs (`/privacy`, `/support`), and every push to `main` redeploys it. Preview it with `python3 -m http.server` from that folder. Use real app screenshots in `website/images/`, made on the test simulators, in both light and dark (`screen-<name>-light.jpg` and `-dark.jpg`); the page shows the set that matches the visitor's appearance.
 
 The home page's hero backdrop is a drifting masonry board (`board.js`, tiles in `website/images/hero/`) of real components from the app's debug-only `-heroReel` screen (`App/HeroReel.swift`). To add or change a tile, edit `HeroTile` there (each has a height; the width is 240 points), build, and run `scripts/hero-reel.sh <app> <iPad test sim udid>`. It needs an 11-inch iPad simulator, ffmpeg, ImageMagick, and jq. It replaces everything in `website/images/hero/`, including `tiles.js`, the list the page reads, so nothing else needs updating. The page shows stills and loads a tile's video only while it plays, so adding tiles costs little. `website/images/og.jpg` is the link preview image, a screenshot of the hero; retake it when the hero changes a lot.
 
-## Hero board
+## Wallpapers
 
-The Components tab opens with a drifting board of live component tiles (`App/HeroBoard.swift`), the same tiles the website uses (`App/HeroTiles.swift`). On iPhone it heads the tab's list; on iPad it tops the overview. Tapping a tile opens its page (`HeroTile.pageID`). The drift runs on a `TimelineView`, not a repeating animation, so taps land on the tile that's drawn. Tiles that contain a `NavigationStack` or `TabView` stay off the app's board (`HeroBoard.components`), since those take over the app's own bars. If you change a tile, rerun `scripts/hero-reel.sh` so the website matches.
+Each tab and each page has a soft, slowly shifting wallpaper behind its title (`Wallpaper` and `PageWallpaper` in `Catalog/PageWallpaper.swift`). A seed (the tab or page id) picks its colors and shape from the tab's palette, so it's the same on every launch. On iPhone the tab's wallpaper sits behind the tab's list; on iPad, behind the overview. Keep it cheap: the drift is one repeating animation of the mesh points, not a `TimelineView`, the grain is one image made once, and scrolling only moves or fades it. Anything that rebuilds it on every scroll frame makes the list stutter.
+
+The website's hero board tiles (`App/HeroTiles.swift`) are real components rendered by the debug-only reel. If you change a tile, rerun `scripts/hero-reel.sh`.
 
 ## Building and checking
 

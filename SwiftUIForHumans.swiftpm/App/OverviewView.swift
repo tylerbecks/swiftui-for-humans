@@ -31,16 +31,23 @@ struct OverviewView: View {
                     proxy.scrollTo(anchor, anchor: .top)
                 }
         }
+        .background(alignment: .top) {
+            // On iPad the overview is the tab's first screen, so it carries
+            // the tab's wallpaper; on iPhone that's the list, one step back.
+            if sizeClass != .compact {
+                Wallpaper(seed: tab.rawValue, tab: tab)
+                    .mask(WallpaperFade())
+                    .frame(height: 360)
+                    .ignoresSafeArea(edges: .top)
+            }
+        }
         .navigationTitle(tab.title)
         .toolbarTitleDisplayMode(.catalogPage(sizeClass))
     }
 
     private var scrollView: some View {
         ScrollView {
-            // On iPhone the board is on the tab's list, one step back.
-            if tab == .components && sizeClass != .compact {
-                HeroBoard(tiles: HeroBoard.components)
-            }
+
             VStack(alignment: .leading, spacing: 36) {
                 hero
                 if categories.isEmpty {
