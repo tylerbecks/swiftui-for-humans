@@ -25,10 +25,10 @@ enum AppInfo {
     static let feedbackURL = URL(string: "mailto:tylerdbecks@gmail.com?subject=SwiftUI%20for%20Humans%20feedback")!
 
     // App Store Connect requires a privacy policy URL and a support URL.
-    // Set both to the public pages before submitting; until then their rows
-    // stay hidden.
-    static let privacyPolicyURL: URL? = nil
-    static let supportURL: URL? = nil
+    // These are the pages in `website/`; enter the same URLs there.
+    // Set either to nil to hide its row.
+    static let privacyPolicyURL: URL? = URL(string: "https://swiftui-for-humans.vercel.app/privacy")
+    static let supportURL: URL? = URL(string: "https://swiftui-for-humans.vercel.app/support")
 }
 
 /// The About screen: what the app is, its version, the links App Review
