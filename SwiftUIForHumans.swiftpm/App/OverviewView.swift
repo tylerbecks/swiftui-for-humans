@@ -37,6 +37,10 @@ struct OverviewView: View {
 
     private var scrollView: some View {
         ScrollView {
+            // On iPhone the board is on the tab's list, one step back.
+            if tab == .components && sizeClass != .compact {
+                HeroBoard(tiles: HeroBoard.components)
+            }
             VStack(alignment: .leading, spacing: 36) {
                 hero
                 if categories.isEmpty {

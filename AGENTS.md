@@ -34,6 +34,10 @@ Project-specific rules for AI coding agents. Read [README.md](README.md) and [do
 
 The home page's hero backdrop is a drifting masonry board (`board.js`, tiles in `website/images/hero/`) of real components from the app's debug-only `-heroReel` screen (`App/HeroReel.swift`). To add or change a tile, edit `HeroTile` there (each has a height; the width is 240 points), build, and run `scripts/hero-reel.sh <app> <iPad test sim udid>`. It needs an 11-inch iPad simulator, ffmpeg, ImageMagick, and jq. It replaces everything in `website/images/hero/`, including `tiles.js`, the list the page reads, so nothing else needs updating. The page shows stills and loads a tile's video only while it plays, so adding tiles costs little. `website/images/og.jpg` is the link preview image, a screenshot of the hero; retake it when the hero changes a lot.
 
+## Hero board
+
+The Components tab opens with a drifting board of live component tiles (`App/HeroBoard.swift`), the same tiles the website uses (`App/HeroTiles.swift`). On iPhone it heads the tab's list; on iPad it tops the overview. Tapping a tile opens its page (`HeroTile.pageID`). The drift runs on a `TimelineView`, not a repeating animation, so taps land on the tile that's drawn. Tiles that contain a `NavigationStack` or `TabView` stay off the app's board (`HeroBoard.components`), since those take over the app's own bars. If you change a tile, rerun `scripts/hero-reel.sh` so the website matches.
+
 ## Building and checking
 
 - Build with `-jobs 4` and `ARCHS=arm64`, and don't run builds in parallel. The user's machine bogs down under load.

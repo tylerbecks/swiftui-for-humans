@@ -144,10 +144,13 @@ private struct CatalogTabView: View {
     let tab: AppTab
     @Binding var selection: ComponentPage.ID?
     @State private var columns = NavigationSplitViewVisibility.all
+    @Environment(\.horizontalSizeClass) private var sizeClass
 
     var body: some View {
         NavigationSplitView(columnVisibility: $columns) {
-            Sidebar(tab: tab, selection: $selection)
+            // When the split view collapses (iPhone), the sidebar is the
+            // first screen, so it carries the hero board.
+            Sidebar(tab: tab, selection: $selection, showsBoard: sizeClass == .compact)
                 .navigationTitle(tab.title)
         } detail: {
             NavigationStack {
@@ -241,15 +244,28 @@ enum LaunchOptions {
 private struct Sidebar: View {
     let tab: AppTab
     @Binding var selection: ComponentPage.ID?
+    var showsBoard = false
     @Environment(\.horizontalSizeClass) private var sizeClass
     @State private var showsAbout = false
 
     var body: some View {
         List(selection: $selection) {
-            Label("Overview", systemImage: "square.grid.2x2")
-                .tag(Catalog.overviewID)
-                .accessibilityElement(children: .combine)
-                .accessibilityIdentifier("row-overview")
+            // On iPhone this list is the tab's first screen, so the hero
+            // board goes here; on iPad it tops the overview instead.
+            Section {
+                Label("Overview", systemImage: "square.grid.2x2")
+                    .tag(Catalog.overviewID)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityIdentifier("row-overview")
+            } header: {
+                if tab == .components && showsBoard {
+                    // A header, not a row, so it can run edge to edge.
+                    HeroBoard(tiles: HeroBoard.components)
+                        .padding(.horizontal, -20)
+                        .padding(.bottom, 8)
+                        .textCase(nil)
+                }
+            }
             ForEach(tab.categories) { category in
                 let pages = Catalog.pages(in: category)
                 if !pages.isEmpty {
