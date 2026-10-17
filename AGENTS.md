@@ -32,6 +32,8 @@ Project-specific rules for AI coding agents. Read [README.md](README.md) and [do
 
 `website/` is plain HTML and one stylesheet, with no build step. Vercel serves it with clean URLs (`/privacy`, `/support`), and every push to `main` redeploys it. Preview it with `python3 -m http.server` from that folder. Use real app screenshots in `website/images/`, made on the test simulators.
 
+The home page's hero marquee (`marquee.js`, tiles in `website/images/hero/`) shows real components from the app's debug-only `-heroReel` screen (`App/HeroReel.swift`). To change a tile, edit it there, build, and run `scripts/hero-reel.sh <app> <iPad test sim udid>`. It needs an 11-inch iPad simulator, ffmpeg, and ImageMagick, and it saves stills and 4-second looping videos in light and dark. Keep the tile list in the script, `HeroTile`, and `index.html` in sync.
+
 ## Building and checking
 
 - Build with `-jobs 4` and `ARCHS=arm64`, and don't run builds in parallel. The user's machine bogs down under load.

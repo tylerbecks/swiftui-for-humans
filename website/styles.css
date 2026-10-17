@@ -73,6 +73,39 @@ a:hover { text-decoration: underline; }
 .button.secondary { background: var(--bg-soft); color: var(--text); border: 1px solid var(--line); }
 .badge { display: inline-block; font-size: 14px; color: var(--text-2); margin-top: 14px; }
 
+/* Hero marquee */
+.marquee {
+  display: grid; gap: 14px; padding: 8px 0 40px; overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+.marquee-row { overflow-x: auto; scrollbar-width: none; }
+.marquee-row::-webkit-scrollbar { display: none; }
+.marquee-track { display: flex; gap: 14px; width: max-content; padding: 0 20px; }
+.tile {
+  --w: 240px;
+  position: relative; flex: none; width: var(--w); aspect-ratio: 8 / 5;
+  border-radius: 18px; overflow: hidden;
+  border: 1px solid var(--line); background: var(--card);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+}
+.tile img, .tile video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.tile video { opacity: 0; }
+.tile video.ready { opacity: 1; }
+.marquee.is-moving .marquee-row { overflow: visible; }
+.marquee.is-moving .marquee-track { padding: 0; animation: marquee var(--duration, 70s) linear infinite; }
+.marquee.is-moving .marquee-row[data-reverse] .marquee-track { animation-direction: reverse; --duration: 80s; }
+.marquee.is-moving:hover .marquee-track { animation-play-state: paused; }
+.marquee.is-moving .marquee-track > * { margin-right: 14px; }
+.marquee.is-moving .marquee-track { gap: 0; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+@media (max-width: 560px) {
+  .tile { --w: 176px; border-radius: 14px; }
+  .marquee { gap: 10px; }
+  .marquee-track { gap: 10px; }
+  .marquee.is-moving .marquee-track > * { margin-right: 10px; }
+}
+
 /* Screenshots */
 .screens {
   display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px;
