@@ -8,7 +8,7 @@ struct SwiftUIForHumansApp: App {
         WindowGroup(for: ComponentPage.ID.self) { $pageID in
             #if DEBUG
             if LaunchOptions.isSet("-heroReel") {
-                HeroReel()
+                HeroReel(page: Int(LaunchOptions.value(for: "-heroReel") ?? "") ?? 0)
             } else {
                 ContentView(windowPage: pageID)
             }

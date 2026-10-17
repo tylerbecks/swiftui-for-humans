@@ -38,7 +38,7 @@ SwiftUIForHumans.swiftpm/
   Examples/   One file per page, grouped by category
 website/      Marketing site, privacy policy, and support page (static HTML, deployed on Vercel)
 StoreKit/     Tips.storekit, for trying the in-app tips in the simulator
-scripts/      hero-reel.sh, which makes the website's component tiles
+scripts/      hero-reel.sh, which makes the website's hero tiles
 docs/
   content-guide.md   How every page is written
   building-pages.md  How pages are built in code

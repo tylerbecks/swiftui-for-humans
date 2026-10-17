@@ -2,33 +2,38 @@
 import Charts
 import SwiftUI
 
-/// The website's hero marquee is made from this screen. Launch with
-/// `-heroReel` on the iPad test simulator: it lays out real components as
-/// fixed 240×150 tiles, and the animated ones change every 3 seconds, so each
-/// change has time to settle. `scripts/hero-reel.sh` crops the
-/// screenshot and recording into tiles. Debug builds only.
+/// The website's hero board is made from this screen. Launch with
+/// `-heroReel <page>` on an 11-inch iPad simulator: it packs real components
+/// into 240-point-wide tiles of different heights, like a masonry board, over
+/// as many pages as it takes. The animated tiles change every 3 seconds, so
+/// each change has time to settle. On launch it saves where every tile is to
+/// `Documents/heroReel.json`, which `scripts/hero-reel.sh` uses to cut the
+/// screenshots and recordings into tiles. Debug builds only.
 struct HeroReel: View {
-    static let tileSize = CGSize(width: 240, height: 150)
-    static let origin = CGPoint(x: 12, y: 12)
+    static let width: CGFloat = 240
+    static let margin: CGFloat = 12
     static let spacing: CGFloat = 12
     static let columns = 3
+    static let screenHeight: CGFloat = 1180
 
+    let page: Int
     @State private var on = false
 
     var body: some View {
         ZStack(alignment: .topLeading) {
             Color(.systemBackground)
-            ForEach(Array(HeroTile.allCases.enumerated()), id: \.element) { index, tile in
-                tile.view(on: on)
-                    .frame(width: Self.tileSize.width, height: Self.tileSize.height)
+            ForEach(Self.layout.filter { $0.page == page }, id: \.tile) { slot in
+                slot.tile.view(on: on)
+                    .frame(width: slot.frame.width, height: slot.frame.height)
                     .background(Color(.secondarySystemGroupedBackground))
                     .clipped()
-                    .offset(Self.offset(index))
+                    .offset(x: slot.frame.minX, y: slot.frame.minY)
             }
         }
         .ignoresSafeArea()
         .statusBarHidden()
         .task {
+            Self.saveLayout()
             while !Task.isCancelled {
                 try? await Task.sleep(for: .seconds(3))
                 on.toggle()
@@ -36,27 +41,151 @@ struct HeroReel: View {
         }
     }
 
-    static func offset(_ index: Int) -> CGSize {
-        CGSize(
-            width: origin.x + CGFloat(index % columns) * (tileSize.width + spacing),
-            height: origin.y + CGFloat(index / columns) * (tileSize.height + spacing)
-        )
+    struct Slot: Encodable {
+        let tile: HeroTile
+        let page: Int
+        let frame: CGRect
+
+        enum CodingKeys: String, CodingKey { case name, title, page, x, y, height, animated }
+        func encode(to encoder: Encoder) throws {
+            var c = encoder.container(keyedBy: CodingKeys.self)
+            try c.encode(tile.rawValue, forKey: .name)
+            try c.encode(tile.title, forKey: .title)
+            try c.encode(page, forKey: .page)
+            try c.encode(frame.minX, forKey: .x)
+            try c.encode(frame.minY, forKey: .y)
+            try c.encode(frame.height, forKey: .height)
+            try c.encode(tile.isAnimated, forKey: .animated)
+        }
+    }
+
+    /// Each tile goes in the shortest column; a tile that doesn't fit starts
+    /// a new page.
+    static let layout: [Slot] = {
+        var slots: [Slot] = []
+        var page = 0
+        var bottoms = Array(repeating: margin, count: columns)
+        for tile in HeroTile.allCases {
+            var column = bottoms.indices.min { bottoms[$0] < bottoms[$1] }!
+            if bottoms[column] + tile.height > screenHeight - margin {
+                page += 1
+                bottoms = Array(repeating: margin, count: columns)
+                column = 0
+            }
+            let x = margin + CGFloat(column) * (width + spacing)
+            slots.append(Slot(tile: tile, page: page, frame: CGRect(x: x, y: bottoms[column], width: width, height: tile.height)))
+            bottoms[column] += tile.height + spacing
+        }
+        return slots
+    }()
+
+    private static func saveLayout() {
+        let url = URL.documentsDirectory.appending(path: "heroReel.json")
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        try? encoder.encode(layout).write(to: url)
     }
 }
 
 /// One tile per component. The raw value names the file on the website.
-enum HeroTile: String, CaseIterable {
-    case toggle, glassMorph, slider, segmented
-    case buttons, progress, symbolSwap, stepper
-    case chart, glassTabs, gauge, typography
-    case textField, spinner, settingsRow, glassButtons
-    case datePicker, tags, colors, sheet
+enum HeroTile: String, CaseIterable, Encodable {
+    case symbolSwap, toggle, glassMorph, inbox, slider, chart
+    case buttons, wheel, segmented, glassButtons, progress, typography
+    case bell, sheet, stepper, gauge, disclosure, textField
+    case nowPlaying, colors, emptyState, spinner, settingsRow, tags
+    case glassTabs, datePicker, lineChart, library, rating, calendar
+    case timer, formatBar, tabs, avatars, battery, files
+
+    /// Height in points; every tile is 240 points wide.
+    var height: CGFloat {
+        switch self {
+        case .toggle: 130
+        case .glassMorph: 200
+        case .slider: 90
+        case .segmented: 84
+        case .buttons: 150
+        case .progress: 120
+        case .symbolSwap: 240
+        case .stepper: 80
+        case .chart: 190
+        case .glassTabs: 170
+        case .gauge: 140
+        case .typography: 150
+        case .textField: 130
+        case .spinner: 120
+        case .settingsRow: 120
+        case .glassButtons: 220
+        case .datePicker: 80
+        case .tags: 110
+        case .colors: 140
+        case .sheet: 220
+        case .wheel: 200
+        case .disclosure: 190
+        case .bell: 110
+        case .emptyState: 210
+        case .inbox: 250
+        case .nowPlaying: 160
+        case .lineChart: 180
+        case .library: 300
+        case .rating: 90
+        case .calendar: 290
+        case .timer: 120
+        case .formatBar: 90
+        case .tabs: 320
+        case .avatars: 100
+        case .battery: 100
+        case .files: 210
+        }
+    }
+
+    /// What the website's hover label calls it.
+    var title: String {
+        switch self {
+        case .toggle: "Toggle"
+        case .glassMorph: "Glass Effect Container"
+        case .slider: "Slider"
+        case .segmented: "Segmented Picker"
+        case .buttons: "Button"
+        case .progress: "ProgressView"
+        case .symbolSwap: "Symbol Effects"
+        case .stepper: "Stepper"
+        case .chart: "Bar Chart"
+        case .glassTabs: "Liquid Glass"
+        case .gauge: "Gauge"
+        case .typography: "Text Styles"
+        case .textField: "TextField"
+        case .spinner: "ProgressView"
+        case .settingsRow: "List"
+        case .glassButtons: "Glass Buttons"
+        case .datePicker: "DatePicker"
+        case .tags: "Capsule"
+        case .colors: "Color"
+        case .sheet: "Sheet"
+        case .wheel: "Wheel Picker"
+        case .disclosure: "DisclosureGroup"
+        case .bell: "Symbol Effects"
+        case .emptyState: "ContentUnavailableView"
+        case .inbox: "List"
+        case .nowPlaying: "Liquid Glass"
+        case .lineChart: "Line Chart"
+        case .library: "NavigationStack"
+        case .rating: "Animation"
+        case .calendar: "DatePicker"
+        case .timer: "Content Transition"
+        case .formatBar: "Toggle Button"
+        case .tabs: "TabView"
+        case .avatars: "Overlapping Views"
+        case .battery: "Gauge"
+        case .files: "Label"
+        }
+    }
 
     /// Tiles that change over time and are saved as video.
     var isAnimated: Bool {
         switch self {
         case .toggle, .glassMorph, .slider, .segmented, .progress, .symbolSwap,
-             .chart, .glassTabs, .spinner, .sheet: true
+             .chart, .glassTabs, .spinner, .sheet, .wheel, .disclosure, .bell,
+             .lineChart, .rating, .timer, .formatBar, .tabs: true
         default: false
         }
     }
@@ -83,6 +212,22 @@ enum HeroTile: String, CaseIterable {
         case .tags: TagsTile()
         case .colors: ColorsTile()
         case .sheet: SheetTile(on: on)
+        case .wheel: WheelTile(on: on)
+        case .disclosure: DisclosureTile(on: on)
+        case .bell: BellTile(on: on)
+        case .emptyState: EmptyStateTile()
+        case .inbox: InboxTile()
+        case .nowPlaying: NowPlayingTile()
+        case .lineChart: LineChartTile(on: on)
+        case .library: LibraryTile()
+        case .rating: RatingTile(on: on)
+        case .calendar: CalendarTile()
+        case .timer: TimerTile(on: on)
+        case .formatBar: FormatBarTile(on: on)
+        case .tabs: TabsTile(on: on)
+        case .avatars: AvatarsTile()
+        case .battery: BatteryTile()
+        case .files: FilesTile()
         }
     }
 }
@@ -277,6 +422,158 @@ private struct SheetTile: View {
     }
 }
 
+private struct WheelTile: View {
+    let on: Bool
+    var body: some View {
+        Picker("Minutes", selection: .constant(on ? 25 : 10)) {
+            ForEach(Array(stride(from: 0, through: 60, by: 5)), id: \.self) { minutes in
+                Text("\(minutes) min").tag(minutes)
+            }
+        }
+        .pickerStyle(.wheel)
+        .labelsHidden()
+        .padding(.horizontal, 16)
+        .animation(.smooth(duration: 0.8), value: on)
+    }
+}
+
+private struct DisclosureTile: View {
+    let on: Bool
+    var body: some View {
+        VStack {
+            DisclosureGroup("Advanced", isExpanded: .constant(on)) {
+                VStack(spacing: 10) {
+                    Toggle("Auto-Save", isOn: .constant(true))
+                    Toggle("Show Hints", isOn: .constant(false))
+                }
+                .padding(.top, 10)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 22)
+        .animation(.smooth(duration: 0.5), value: on)
+    }
+}
+
+private struct BellTile: View {
+    let on: Bool
+    var body: some View {
+        HStack(spacing: 14) {
+            Image(systemName: "bell.badge.fill")
+                .symbolRenderingMode(.multicolor)
+                .font(.system(size: 34))
+                .symbolEffect(.wiggle, value: on)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("New Message").font(.headline)
+                Text("Just now").font(.caption).foregroundStyle(.secondary)
+            }
+        }
+    }
+}
+
+private struct LineChartTile: View {
+    let on: Bool
+    private let a: [Double] = [4, 6, 5, 7, 6, 8, 7, 9]
+    private let b: [Double] = [3, 4, 6, 5, 8, 7, 9, 8]
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("Weekly Visitors").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+            Chart(Array((on ? b : a).enumerated()), id: \.offset) { day, value in
+                AreaMark(x: .value("Day", day), y: .value("Visitors", value))
+                    .foregroundStyle(.linearGradient(colors: [.purple.opacity(0.35), .purple.opacity(0)], startPoint: .top, endPoint: .bottom))
+                    .interpolationMethod(.catmullRom)
+                LineMark(x: .value("Day", day), y: .value("Visitors", value))
+                    .foregroundStyle(.purple)
+                    .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round))
+                    .interpolationMethod(.catmullRom)
+            }
+            .chartXAxis(.hidden)
+            .chartYAxis(.hidden)
+            .chartYScale(domain: 0...10)
+        }
+        .padding(18)
+        .animation(.smooth(duration: 0.9), value: on)
+    }
+}
+
+private struct RatingTile: View {
+    let on: Bool
+    var body: some View {
+        HStack(spacing: 8) {
+            ForEach(1...5, id: \.self) { star in
+                Image(systemName: star <= (on ? 5 : 3) ? "star.fill" : "star")
+                    .foregroundStyle(.yellow)
+                    .contentTransition(.symbolEffect(.replace))
+            }
+        }
+        .font(.title)
+    }
+}
+
+private struct TimerTile: View {
+    let on: Bool
+    var body: some View {
+        VStack(spacing: 2) {
+            Text(on ? "00:25" : "00:24")
+                .font(.system(size: 44, weight: .semibold, design: .rounded))
+                .monospacedDigit()
+                .contentTransition(.numericText(countsDown: !on))
+            Text("Focus").font(.subheadline).foregroundStyle(.orange)
+        }
+        .animation(.snappy, value: on)
+    }
+}
+
+private struct FormatBarTile: View {
+    let on: Bool
+    var body: some View {
+        HStack(spacing: 6) {
+            Toggle(isOn: .constant(on)) { Image(systemName: "bold") }
+            Toggle(isOn: .constant(true)) { Image(systemName: "italic") }
+            Toggle(isOn: .constant(!on)) { Image(systemName: "underline") }
+            Toggle(isOn: .constant(false)) { Image(systemName: "strikethrough") }
+        }
+        .toggleStyle(.button)
+        .controlSize(.large)
+        .font(.title3)
+        .animation(.snappy, value: on)
+    }
+}
+
+private struct TabsTile: View {
+    let on: Bool
+    var body: some View {
+        TabView(selection: .constant(on ? 1 : 0)) {
+            Tab("Listen", systemImage: "play.circle.fill", value: 0) {
+                tabPage("Listen Now", .pink)
+            }
+            Tab("Browse", systemImage: "square.grid.2x2.fill", value: 1) {
+                tabPage("Browse", .indigo)
+            }
+            Tab("Library", systemImage: "books.vertical.fill", value: 2) {
+                tabPage("Library", .teal)
+            }
+        }
+        .environment(\.horizontalSizeClass, .compact)
+        .animation(.smooth, value: on)
+    }
+
+    private func tabPage(_ title: String, _ color: Color) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(title).font(.title2.bold())
+            HStack(spacing: 10) {
+                RoundedRectangle(cornerRadius: 10).fill(color.gradient)
+                RoundedRectangle(cornerRadius: 10).fill(color.opacity(0.5).gradient)
+            }
+            .frame(height: 90)
+            RoundedRectangle(cornerRadius: 10).fill(color.opacity(0.25).gradient).frame(height: 60)
+            Spacer()
+        }
+        .padding(16)
+    }
+}
+
 // MARK: Still
 
 private struct ButtonsTile: View {
@@ -423,6 +720,136 @@ private struct ColorsTile: View {
                 Circle().fill(colors[index]).frame(width: 30, height: 30)
             }
         }
+    }
+}
+private struct EmptyStateTile: View {
+    var body: some View {
+        ContentUnavailableView.search(text: "dropdown")
+            .scaleEffect(0.85)
+    }
+}
+
+private struct InboxTile: View {
+    private let rows: [(String, String, Color)] = [
+        ("Maya", "Lunch tomorrow?", .orange),
+        ("Sam", "Sent the photos", .teal),
+        ("Priya", "Ship it!", .pink),
+        ("Leo", "Good morning", .indigo),
+    ]
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Messages").font(.title2.bold()).padding(.bottom, 6)
+            ForEach(rows, id: \.0) { name, preview, color in
+                HStack(spacing: 10) {
+                    Text(String(name.prefix(1)))
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                        .frame(width: 34, height: 34)
+                        .background(color.gradient, in: .circle)
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(name).font(.subheadline.weight(.semibold))
+                        Text(preview).font(.caption).foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                }
+                .frame(height: 46)
+            }
+        }
+        .padding(.horizontal, 16)
+    }
+}
+
+private struct NowPlayingTile: View {
+    var body: some View {
+        ZStack {
+            SceneryView(.city)
+            HStack(spacing: 22) {
+                Image(systemName: "backward.fill")
+                Image(systemName: "pause.fill").font(.title)
+                Image(systemName: "forward.fill")
+            }
+            .font(.title3)
+            .foregroundStyle(.white)
+            .padding(.horizontal, 26)
+            .padding(.vertical, 14)
+            .glassEffect(.regular, in: .capsule)
+        }
+    }
+}
+private struct LibraryTile: View {
+    var body: some View {
+        NavigationStack {
+            List {
+                Label("Recently Added", systemImage: "clock")
+                Label("Favorites", systemImage: "heart")
+                Label("Downloaded", systemImage: "arrow.down.circle")
+            }
+            .navigationTitle("Library")
+            .searchable(text: .constant(""))
+        }
+        .environment(\.horizontalSizeClass, .compact)
+    }
+}
+
+private struct CalendarTile: View {
+    var body: some View {
+        DatePicker("Date", selection: .constant(Date(timeIntervalSince1970: 1_792_195_200)), displayedComponents: .date)
+            .datePickerStyle(.graphical)
+            .labelsHidden()
+            .frame(width: 320)
+            .scaleEffect(0.74)
+            .frame(width: 240, height: 290)
+    }
+}
+
+private struct AvatarsTile: View {
+    private let colors: [Color] = [.orange, .pink, .teal, .indigo]
+    var body: some View {
+        HStack(spacing: 14) {
+            HStack(spacing: -12) {
+                ForEach(colors.indices, id: \.self) { index in
+                    Circle()
+                        .fill(colors[index].gradient)
+                        .frame(width: 40, height: 40)
+                        .overlay(Circle().stroke(Color(.secondarySystemGroupedBackground), lineWidth: 3))
+                }
+            }
+            Text("+12").font(.headline).foregroundStyle(.secondary)
+        }
+    }
+}
+
+private struct BatteryTile: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label("Battery", systemImage: "battery.75percent").font(.subheadline.weight(.medium))
+            Gauge(value: 0.76) { EmptyView() } currentValueLabel: { Text("76%") }
+                .gaugeStyle(.accessoryLinearCapacity)
+                .tint(.green)
+        }
+        .padding(.horizontal, 20)
+    }
+}
+
+private struct FilesTile: View {
+    private let items: [(String, String, Color)] = [
+        ("Designs", "folder.fill", .blue),
+        ("Invoice.pdf", "doc.richtext.fill", .red),
+        ("Notes.txt", "doc.text.fill", .gray),
+        ("Photos", "photo.on.rectangle", .orange),
+    ]
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            ForEach(items, id: \.0) { name, symbol, color in
+                Label {
+                    Text(name)
+                } icon: {
+                    Image(systemName: symbol).foregroundStyle(color)
+                }
+            }
+        }
+        .padding(.horizontal, 20)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 #endif
