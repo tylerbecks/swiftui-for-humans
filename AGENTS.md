@@ -14,6 +14,8 @@ Project-specific rules for AI coding agents. Read [README.md](README.md) and [do
 
 ## App Store requirements
 
+- **Export compliance.** `AdditionalInfo.plist` (merged into the app's Info.plist through `additionalInfoPlistContentFilePath` in Package.swift) sets `ITSAppUsesNonExemptEncryption` to false: the app uses only Apple's exempt encryption (HTTPS), so App Store Connect doesn't ask about it for each build. If the app ever adds its own encryption, revisit this.
+- **Build numbers.** Raise `bundleVersion` in Package.swift before every upload; App Store Connect rejects a reused one. Upload with Distribute App → App Store Connect, not TestFlight Internal Only, or the build can't go to external testers or the App Store.
 - **Privacy manifest.** `PrivacyInfo.xcprivacy` at the package root declares `UserDefaults` (reason CA92.1), used by `@AppStorage` and `@SceneStorage`. If you add another required-reason API (file timestamps, disk space, system boot time, active keyboards), declare it there too.
 - **The in-app browser only shows Apple's sites** (`AppleSites` in `App/DocsBrowser.swift`); other links open in Safari. Unrestricted web access would raise the App Store age rating.
 - **Privacy policy and support URLs** live in `AppInfo` (`App/AboutView.swift`). The pages themselves are `website/privacy.html` and `website/support.html`.
@@ -25,7 +27,7 @@ Project-specific rules for AI coding agents. Read [README.md](README.md) and [do
 - **`App/Engagement.swift`** counts page views, active days, and small successes (copying code, ticking a checklist item) on the device, and decides when to ask. Change the thresholds there.
 - **Ratings use only Apple's prompt** (`requestReview`), at most once per version, at a natural break. App Review 5.6.1 disallows custom review prompts, so never put a rating ask in the buddy or behind a button.
 - **The buddy** (`App/Buddy.swift`) peeks in from the corner to ask "Enjoying the app?". "Love it" offers tips; "Not really" offers to email feedback. It's off until the tip products exist: flip `Engagement.isBuddyEnabled`.
-- **Tips are consumable in-app purchases** (`App/TipJar.swift`, IDs `com.gobimaps.SwiftUIForHumans.tip.small/medium/large`). Outside the US, App Review 3.1.1 doesn't allow linking to an outside payment page like Buy Me a Coffee from the app, so the app never shows that link. To try purchases from Xcode, set the scheme's StoreKit Configuration to `StoreKit/Tips.storekit`.
+- **Tips are consumable in-app purchases** (`App/TipJar.swift`, IDs `com.swiftuiforhumans.app.tip.small/medium/large`). Outside the US, App Review 3.1.1 doesn't allow linking to an outside payment page like Buy Me a Coffee from the app, so the app never shows that link. To try purchases from Xcode, set the scheme's StoreKit Configuration to `StoreKit/Tips.storekit`.
 - **Testing:** launch with `-buddy` to show the buddy right away, `-buddy tips` to open the tip card, and `-sampleTips` for stand-in tips without StoreKit.
 
 ## Website

@@ -13,7 +13,7 @@
 # Needs ffmpeg, ImageMagick, and jq (brew install ffmpeg imagemagick jq).
 set -e
 APP=$1; DEV=$2
-BUNDLE=com.gobimaps.SwiftUIForHumans
+BUNDLE=com.swiftuiforhumans.app
 OUT=${0:A:h}/../website/images/hero
 TMP=$(mktemp -d)
 SCALE=2 W=240

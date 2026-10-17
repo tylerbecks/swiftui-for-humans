@@ -27,8 +27,8 @@ enum AppInfo {
     // App Store Connect requires a privacy policy URL and a support URL.
     // These are the pages in `website/`; enter the same URLs there.
     // Set either to nil to hide its row.
-    static let privacyPolicyURL: URL? = URL(string: "https://swiftui-for-humans.vercel.app/privacy")
-    static let supportURL: URL? = URL(string: "https://swiftui-for-humans.vercel.app/support")
+    static let privacyPolicyURL: URL? = URL(string: "https://www.swiftuiforhumans.com/privacy")
+    static let supportURL: URL? = URL(string: "https://www.swiftuiforhumans.com/support")
 }
 
 /// The About screen: what the app is, its version, the links App Review

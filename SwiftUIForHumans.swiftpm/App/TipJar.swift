@@ -14,9 +14,9 @@ final class TipJar {
     static let shared = TipJar()
 
     static let productIDs = [
-        "com.gobimaps.SwiftUIForHumans.tip.small",
-        "com.gobimaps.SwiftUIForHumans.tip.medium",
-        "com.gobimaps.SwiftUIForHumans.tip.large",
+        "com.swiftuiforhumans.app.tip.small",
+        "com.swiftuiforhumans.app.tip.medium",
+        "com.swiftuiforhumans.app.tip.large",
     ]
 
     /// Cheapest first. Empty until loaded, and stays empty when the store

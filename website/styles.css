@@ -167,7 +167,9 @@ a:hover { text-decoration: underline; }
   justify-self: center;
 }
 .phone video { width: 100%; height: 100%; display: block; object-fit: cover; }
-.gallery-title { font-size: 22px; margin: 80px 0 18px; }
+.gallery-head { margin: 88px 0 22px; max-width: 680px; }
+.gallery-title { font-size: clamp(24px, 3vw, 32px); letter-spacing: -0.01em; margin: 0 0 10px; }
+.gallery-head p { font-size: 19px; color: var(--text-2); margin: 0; }
 .gallery {
   display: flex; gap: 18px; overflow-x: auto; scroll-snap-type: x mandatory;
   padding: 4px max(20px, calc((100vw - 1000px) / 2)) 20px;

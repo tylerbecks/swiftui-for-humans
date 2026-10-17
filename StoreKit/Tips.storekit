@@ -13,7 +13,7 @@
           "locale": "en_US"
         }
       ],
-      "productID": "com.gobimaps.SwiftUIForHumans.tip.small",
+      "productID": "com.swiftuiforhumans.app.tip.small",
       "referenceName": "Tip: Coffee",
       "type": "Consumable"
     },
@@ -28,7 +28,7 @@
           "locale": "en_US"
         }
       ],
-      "productID": "com.gobimaps.SwiftUIForHumans.tip.medium",
+      "productID": "com.swiftuiforhumans.app.tip.medium",
       "referenceName": "Tip: Coffee and a croissant",
       "type": "Consumable"
     },
@@ -43,7 +43,7 @@
           "locale": "en_US"
         }
       ],
-      "productID": "com.gobimaps.SwiftUIForHumans.tip.large",
+      "productID": "com.swiftuiforhumans.app.tip.large",
       "referenceName": "Tip: Coffee and cake",
       "type": "Consumable"
     }

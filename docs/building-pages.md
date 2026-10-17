@@ -155,7 +155,7 @@ Build from the command line:
 
 ```sh
 cd SwiftUIForHumans.swiftpm
-xcodebuild -scheme SwiftUIForHumans -destination 'generic/platform=iOS Simulator' -derivedDataPath /tmp/dd build
+xcodebuild -scheme "SwiftUI for Humans" -destination 'generic/platform=iOS Simulator' -derivedDataPath /tmp/dd build
 xcrun simctl install <udid> "/tmp/dd/Build/Products/Debug-iphonesimulator/SwiftUI for Humans.app"
 ```
 
@@ -171,8 +171,8 @@ Launch arguments open the app in a known state:
 | `-scrollTo <anchor>` | Scrolls to a section: `preview`, `code`, `examples`, `guidelines`, `api`, `notes`, `sources`, or `outline-<heading>`. On a tab's overview, a category name or `card-<page id>` |
 
 ```sh
-xcrun simctl launch <udid> com.gobimaps.SwiftUIForHumans -open button -showControls
-xcrun simctl launch <udid> com.gobimaps.SwiftUIForHumans -tab design -open overview
+xcrun simctl launch <udid> com.swiftuiforhumans.app -open button -showControls
+xcrun simctl launch <udid> com.swiftuiforhumans.app -tab design -open overview
 ```
 
 Before you finish a page, check it on iPhone and iPad in light and dark mode.
