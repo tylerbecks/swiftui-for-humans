@@ -1,0 +1,9 @@
+{
+  "name": "SwiftUI for Humans",
+  "kind": "swiftpm",
+  "path": "SwiftUIForHumans.swiftpm",
+  "scheme": "SwiftUI for Humans",
+  "bundleId": "com.swiftuiforhumans.app",
+  "teamId": "CJVZR779TW",
+  "ascAppId": "6824033787"
+}

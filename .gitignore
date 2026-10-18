@@ -3,3 +3,5 @@
 DerivedData/
 xcuserdata/
 *.swiftpm/.swiftpm/
+# ship: build products and logs
+.ship/

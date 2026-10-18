@@ -19,7 +19,7 @@ let package = Package(
             bundleIdentifier: "com.swiftuiforhumans.app",
             teamIdentifier: "CJVZR779TW",
             displayVersion: "1.0",
-            bundleVersion: "2",
+            bundleVersion: "3",
             appIcon: .asset("AppIcon"),
             accentColor: .presetColor(.blue),
             supportedDeviceFamilies: [
