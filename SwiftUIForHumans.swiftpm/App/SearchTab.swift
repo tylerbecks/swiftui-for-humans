@@ -26,7 +26,7 @@ struct SearchTab: View {
                     page.makeContent()
                         .id(page.id)
                 } else {
-                    ContentUnavailableView("Search Every Tab", systemImage: "magnifyingglass", description: Text("Components, design guidelines, and shipping rules. Try a web term like “dropdown”."))
+                    placeholder
                 }
             }
         }
@@ -51,6 +51,18 @@ struct SearchTab: View {
         .environment(\.openPage, OpenPageAction { id in
             selection = id
         })
+    }
+
+    /// Beside the results on iPad, before a page is open: a hint to search,
+    /// then a count of what matched.
+    @ViewBuilder private var placeholder: some View {
+        let query = text.trimmingCharacters(in: .whitespaces)
+        let count = query.isEmpty ? 0 : Catalog.pages.filter { $0.matches(query) }.count
+        if count > 0 {
+            ContentUnavailableView("Pick a Result", systemImage: "sidebar.left", description: Text("^[\(count) page](inflect: true) found for “\(query)”."))
+        } else {
+            ContentUnavailableView("Search Every Tab", systemImage: "magnifyingglass", description: Text("Components, design guidelines, and shipping rules. Try a web term like “dropdown”."))
+        }
     }
 }
 
