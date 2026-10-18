@@ -80,9 +80,11 @@ private struct AppearanceThumbnail: View {
             AppearanceOrderCard(isFixed: true)
                 .environment(\.colorScheme, .dark)
         }
-        .frame(width: 150)
-        .scaleEffect(0.62)
-        .frame(height: 120)
+        // Lay the cards out at full size so their text fits, then shrink
+        // the whole picture. Laying out at thumbnail size truncated it.
+        .frame(width: 340)
+        .scaleEffect(0.42)
+        .frame(width: 143, height: 120)
     }
 }
 
