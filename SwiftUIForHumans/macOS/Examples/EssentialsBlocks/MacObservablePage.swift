@@ -17,7 +17,7 @@ extension ComponentPage {
         related: ["state-binding", "environment", "window-group", "settings-scene", "inspector"],
         notes: [
             "**Views update only for what their `body` reads.** A view that shows a title redraws when the title changes, not when some other property of the same model does.",
-            "**A missing model is a crash.** Reading `@Environment(Model.self)` when no view above put one there throws. Declare the property as `Model?` where it may be missing.",
+            "**A missing model is a crash.** Reading `@Environment(Model.self)` when no view above put one there stops the app. Declare the property as `Model?` where it may be missing.",
             "**Replaces `ObservableObject` for new code.** No `@Published`, `@StateObject`, or `@EnvironmentObject`: use `@State`, `@Bindable`, and `@Environment(Model.self)`.",
         ],
         api: [
@@ -249,7 +249,7 @@ private struct MacObservableExamples: View {
 
             ExampleCard(
                 title: "Edit it with @Bindable",
-                caption: "Mark a model property `@Bindable` to get `$article.title` and friends for controls, like the fields in an inspector.",
+                caption: "Declare the view's model `@Bindable` to get bindings like `$article.title` for controls, such as the fields in an inspector.",
                 code: """
                 @Observable
                 class EditableArticle {

@@ -229,7 +229,7 @@ private struct MacEmptyStatesExamples: View {
 
             ExampleCard(
                 title: "No search results",
-                caption: "When a search finds nothing, show `ContentUnavailableView.search(text:)`. Type a name from the list in the field to bring rows back.",
+                caption: "When a search finds nothing, show `ContentUnavailableView.search(text:)`. Clear the field, or type Ana, to bring rows back.",
                 code: """
                 struct Contact: Identifiable {
                     let id = UUID()

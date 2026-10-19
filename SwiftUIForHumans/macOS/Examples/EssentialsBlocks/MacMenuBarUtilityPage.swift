@@ -8,7 +8,7 @@ extension ComponentPage {
         category: .blocks,
         kind: .block,
         symbol: "menubar.arrow.up.rectangle",
-        availability: ["macOS 13.0+"],
+        availability: ["macOS 14.0+"],
         docsURL: "https://developer.apple.com/documentation/swiftui/menubarextra",
         higURL: "https://developer.apple.com/design/human-interface-guidelines/the-menu-bar",
         aliases: [
@@ -97,7 +97,7 @@ private struct MacMenuBarUtilityArticle: View {
                 caption: "`MenuBarExtra` with `.menuBarExtraStyle(.window)` shows your view in a panel under the icon. Start the timer to try it.",
                 code: Self.code,
                 minHeight: 360,
-                aside: Aside(.note, "SwiftUI has no action that quits the app, so the Quit button calls AppKit's `NSApplication.shared.terminate(nil)`. Without a Dock icon, it's how people quit.")
+                aside: Aside(.note, "The Quit button calls AppKit's `NSApplication.shared.terminate(nil)`. Without a Dock icon, it's how people quit.")
             ) {
                 MacMenuBarDrawing()
             }
@@ -208,7 +208,7 @@ private struct MacMenuBarUtilityArticle: View {
                     }
                     Spacer()
                     Button("Quit Focus") {
-                        // SwiftUI has no quit action, so this uses AppKit.
+                        // Quits through AppKit.
                         NSApplication.shared.terminate(nil)
                     }
                 }

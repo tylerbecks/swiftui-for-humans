@@ -8,7 +8,7 @@ extension ComponentPage {
         category: .animation,
         kind: .concept,
         symbol: "wand.and.sparkles",
-        availability: ["macOS 10.15+"],
+        availability: ["macOS 14.0+"],
         docsURL: "https://developer.apple.com/documentation/swiftui/animations",
         higURL: "https://developer.apple.com/design/human-interface-guidelines/motion",
         aliases: [
@@ -37,8 +37,8 @@ extension ComponentPage {
                 "Use it to show where something came from or that something changed. Motion just for show distracts people and can make some of them feel unwell."
             ),
             Guideline(
-                "Keep things people do all the time quiet.",
-                "A pointer passes over rows and buttons constantly, so hover feedback should be small and quick. Standard controls already animate on their own."
+                "Skip motion on things people do all the time.",
+                "Standard controls already animate on their own. A pointer passes over custom rows constantly, so keep their hover feedback brief or leave the motion out."
             ),
             Guideline(
                 "Never make people wait for an animation.",

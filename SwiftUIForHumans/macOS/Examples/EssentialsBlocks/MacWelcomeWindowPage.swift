@@ -41,7 +41,7 @@ extension ComponentPage {
         guidelines: [
             Guideline(
                 "Put people back where they were.",
-                "If documents were open when people quit, reopen them instead of greeting them again. The launch behavior does this for you."
+                "If documents were open when people quit, reopen them instead of greeting them again. With `.presented`, the welcome window shows only when nothing comes back."
             ),
             Guideline(
                 "Offer recent files next to Open.",
@@ -67,7 +67,7 @@ private struct MacWelcomeWindowArticle: View {
     var body: some View {
         ArticlePage(page: page) {
             Prose("Many document apps open with a welcome window: the app's icon and name, buttons to create or open a document, and the files people worked on last. It's a `Window` scene next to your `DocumentGroup`, shown at launch only when no documents come back.")
-            Prose("Scenes can't be added from a page, so the window below is drawn. Its buttons and list are the same views as in the block.")
+            Prose("Scenes can't be added from a page, so the window below is drawn. It has the same layout as the block, with sample recent files.")
 
             SectionTitle("The block")
                 .id("code")

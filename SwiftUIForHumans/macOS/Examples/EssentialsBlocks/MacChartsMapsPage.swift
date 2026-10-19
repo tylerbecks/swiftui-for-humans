@@ -20,7 +20,7 @@ extension ComponentPage {
         ],
         related: ["hover", "inspector", "window-group", "library-window"],
         notes: [
-            "**Charts are accessible by default.** Swift Charts gives VoiceOver an element for each mark and an Audio Graph. Add a title and a short summary so people know what the chart is for.",
+            "**Charts are accessible by default.** Swift Charts gives VoiceOver the marks and an Audio Graph; add a title and a short summary that say what the chart is for.",
             "**Maps load over the network.** A sandboxed app needs the Outgoing Connections (Client) entitlement. See [App Sandbox](catalog://app-sandbox).",
         ],
         api: [

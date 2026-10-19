@@ -17,7 +17,7 @@ extension ComponentPage {
         ],
         related: ["navigation-split-view", "table", "inspector", "search", "toolbar", "empty-states"],
         notes: [
-            "**The table doesn't sort for you.** It shows the sort in its headers and updates `sortOrder`. Sort your array when it changes.",
+            "**The table doesn't sort for you.** It shows the sort in its headers and updates `sortOrder`, and you sort your array when that changes.",
             "**The inspector remembers itself.** A trailing-column inspector has its shown or hidden state restored for you.",
             "**Add the standard commands.** `SidebarCommands()` adds the built-in sidebar commands, and `InspectorCommands()` adds one that shows and hides the inspector with ⌃⌘I.",
         ],
@@ -58,12 +58,8 @@ extension ComponentPage {
                 "Use short section headers for the groups. If your data goes deeper, add a content column between the sidebar and the details."
             ),
             Guideline(
-                "Keep the selection highlighted.",
-                "People rely on the highlighted sidebar item and row to know what the rest of the window shows."
-            ),
-            Guideline(
-                "Let people hide the side panes.",
-                "Some people want room for the content. Offer a toolbar button and a menu command with a shortcut to bring each pane back."
+                "Let people hide the side panes, but show them at first.",
+                "Some people want room for the content, so offer a toolbar button and a View menu command. Start with the sidebar visible so people find it."
             ),
             Guideline(
                 "Don't put key actions at the bottom of the sidebar.",
@@ -425,7 +421,12 @@ private struct MacSidebarSample: View {
                 .foregroundStyle(.secondary)
             ForEach([("Songs", "music.note"), ("Albums", "square.stack"), ("Artists", "music.mic"), ("Favorites", "star")], id: \.0) { title, symbol in
                 if showsSymbols {
-                    Label(title, systemImage: symbol)
+                    Label {
+                        Text(title)
+                    } icon: {
+                        Image(systemName: symbol)
+                            .foregroundStyle(.tint)
+                    }
                 } else {
                     Text(title)
                 }

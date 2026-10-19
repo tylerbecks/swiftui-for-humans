@@ -42,9 +42,9 @@ extension ComponentPage {
         guidelines: [
             Guideline(
                 "Don't copy system settings.",
-                "Appearance, scrolling, and accessibility belong to System Settings. A copy in your app suggests the system choice doesn't apply.",
+                "Scrolling, accessibility, and sign-in methods belong to System Settings. A copy in your app suggests the system choice doesn't apply.",
                 good: "Settings only this app has.",
-                bad: "An appearance option the system owns."
+                bad: "A scrolling option the system owns."
             ) {
                 MacSettingsRowSample(isSystemSetting: false)
             } bad: {
@@ -91,7 +91,7 @@ private struct MacSettingsWindowArticle: View {
 
     var body: some View {
         ArticlePage(page: page) {
-            Prose("Three panes most apps need: **General** for everyday options, **Accounts** for sign-ins, and **Advanced** for the rest. Each pane is a grouped `Form`, every value is saved with `@AppStorage`, and the window reopens on the last pane people used.")
+            Prose("Three panes most apps need: **General** for everyday options, **Accounts** for sign-ins, and **Advanced** for the rest. Each pane is a grouped `Form`, the options are saved with `@AppStorage`, and the window reopens on the last pane people used.")
             Prose("Pages can't add a scene to this app, so the window below is drawn, with real panes inside. Click the toolbar to switch panes. To compare with the real thing, open this app's own Settings.")
             SettingsLink {
                 Label("Open This App's Settings", systemImage: "gearshape")
@@ -384,9 +384,9 @@ private struct MacSettingsRowSample: View {
         Form {
             Toggle("Open links in the background", isOn: .constant(true))
             if isSystemSetting {
-                Picker("Appearance", selection: .constant(0)) {
-                    Text("Light").tag(0)
-                    Text("Dark").tag(1)
+                Picker("Show scroll bars", selection: .constant(0)) {
+                    Text("Automatically").tag(0)
+                    Text("Always").tag(1)
                 }
             } else {
                 Picker("Check for articles", selection: .constant(0)) {

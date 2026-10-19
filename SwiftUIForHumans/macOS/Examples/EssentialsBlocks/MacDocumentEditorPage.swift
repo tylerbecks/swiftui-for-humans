@@ -8,7 +8,7 @@ extension ComponentPage {
         category: .blocks,
         kind: .block,
         symbol: "doc.text",
-        availability: ["macOS 11.0+"],
+        availability: ["macOS 12.0+"],
         docsURL: "https://developer.apple.com/documentation/swiftui/documentgroup",
         higURL: "https://developer.apple.com/design/human-interface-guidelines/file-management",
         aliases: [
