@@ -206,6 +206,8 @@ struct DemoPage<Config, Preview: View, Controls: View, Examples: View>: View {
         .scrollDisabled(true)
         .scrollContentBackground(.hidden)
         .fixedSize(horizontal: false, vertical: true)
+        // Fill the card's height when the preview is the taller side.
+        .frame(maxHeight: .infinity, alignment: .top)
         .background(.background.secondary)
     }
     #endif
