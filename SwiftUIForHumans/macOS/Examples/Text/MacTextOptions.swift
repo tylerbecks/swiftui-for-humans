@@ -28,13 +28,12 @@ enum MacTextControlSize: DemoOption {
 
 /// `.textFieldStyle(_:)` choices on the Mac.
 enum MacTextFieldStyleOption: DemoOption {
-    case automatic, roundedBorder, squareBorder, plain
+    case automatic, roundedBorder, plain
 
     var label: String {
         switch self {
         case .automatic: ".automatic"
         case .roundedBorder: ".roundedBorder"
-        case .squareBorder: ".squareBorder"
         case .plain: ".plain"
         }
     }
@@ -47,7 +46,6 @@ extension View {
         switch style {
         case .automatic: textFieldStyle(.automatic)
         case .roundedBorder: textFieldStyle(.roundedBorder)
-        case .squareBorder: textFieldStyle(.squareBorder)
         case .plain: textFieldStyle(.plain)
         }
     }

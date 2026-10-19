@@ -29,7 +29,7 @@ extension ComponentPage {
         guidelines: [
             Guideline(
                 "Use the system's focus ring.",
-                "People know what it means at a glance. Draw your own focus look only when the ring doesn't fit, such as a highlight for items in a collection."
+                "People know what it means at a glance, and it's tuned for the Mac. Draw your own focus look only when you really need one."
             ),
             Guideline(
                 "Don't move focus on your own.",
@@ -76,7 +76,7 @@ private struct MacFocusKeyboardArticle: View {
             SectionTitle("Keys people use")
             ConnectFacts(rows: [
                 ("Tab and ⇧Tab", "Move to the next or previous control."),
-                ("⌃Tab and ⌃⇧Tab", "Move to the next or previous group of controls, or out of a table where Tab moves between cells."),
+                ("⌃Tab and ⌃⇧Tab", "Move to the next or previous group of controls, or to the next table when Tab moves between cells."),
                 ("Esc", "Cancel the current action."),
                 ("Full Keyboard Access", "With it on, people can reach every control with the keyboard. It's in the Accessibility section of System Settings."),
             ])
@@ -139,11 +139,14 @@ private struct MacFocusExamples: View {
             @FocusState private var focus: ReplyField?
 
             VStack {
-                TextField("To", text: $to)
-                    .focused($focus, equals: .to)
-                TextField("Subject", text: $subject)
-                    .focused($focus, equals: .subject)
+                Form {
+                    TextField("To", text: $to)
+                        .focused($focus, equals: .to)
+                    TextField("Subject", text: $subject)
+                        .focused($focus, equals: .subject)
+                }
                 TextEditor(text: $message)
+                    .font(.body)
                     .focused($focus, equals: .message)
             }
             .defaultFocus($focus, .message)
@@ -312,11 +315,14 @@ private struct MacReplySample: View {
 
     var body: some View {
         VStack {
-            TextField("To", text: $to)
-                .focused($focus, equals: .to)
-            TextField("Subject", text: $subject)
-                .focused($focus, equals: .subject)
+            Form {
+                TextField("To", text: $to)
+                    .focused($focus, equals: .to)
+                TextField("Subject", text: $subject)
+                    .focused($focus, equals: .subject)
+            }
             TextEditor(text: $message)
+                .font(.body)
                 .focused($focus, equals: .message)
                 .clipShape(.rect(cornerRadius: 6))
                 .overlay(RoundedRectangle(cornerRadius: 6).strokeBorder(.separator))

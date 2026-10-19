@@ -4,7 +4,7 @@ extension ComponentPage {
     static let textLabel = ComponentPage(
         id: "text-label",
         title: "Text & Label",
-        summary: "Read-only text, and text paired with an icon.",
+        summary: "Shows read-only text, and pairs a short title with an icon in a label.",
         category: .textAndImages,
         symbol: "textformat",
         availability: ["macOS 10.15+"],

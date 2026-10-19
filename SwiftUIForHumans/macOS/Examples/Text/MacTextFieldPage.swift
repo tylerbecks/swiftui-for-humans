@@ -14,12 +14,12 @@ extension ComponentPage {
         related: ["secure-field", "text-editor", "focus-keyboard", "form", "labeled-content", "search"],
         notes: [
             "**A `String` updates as people type; other values wait.** A field bound with `value:format:` changes its value only when people commit the edit, such as by pressing Return.",
-            "**On macOS 27, use `.bordered` for a border.** Pair it with `.textInputBorderShape(_:)`, such as `.capsule`, to choose the shape.",
+            "**On macOS 27 and later, use `.bordered` for a border.** It replaces `.roundedBorder`; pair it with `.textInputBorderShape(_:)`, such as `.capsule`, to choose the shape.",
         ],
         api: [
             APIItem("`TextField(_:text:prompt:)`", "A field bound to a `String`."),
             APIItem("`TextField(_:value:format:)`", "Edits a number, date, or other value."),
-            APIItem("`.textFieldStyle(_:)`", "`.roundedBorder`, `.squareBorder`, or `.plain`."),
+            APIItem("`.textFieldStyle(_:)`", "`.roundedBorder` or `.plain`."),
             APIItem("`.onSubmit { }`", "Runs when people press Return."),
             APIItem("`TextField(_:text:axis:)`", "With `.vertical`, grows onto more lines."),
             APIItem("`.textInputSuggestions { }`", "Completions listed under the field."),

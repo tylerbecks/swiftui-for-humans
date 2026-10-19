@@ -38,7 +38,7 @@ extension ComponentPage {
             },
             Guideline(
                 "Keep the text easy to read.",
-                "You can mix fonts, colors, and alignment, but readability comes first. Check your text with accessibility settings such as Bold Text turned on."
+                "You can mix fonts, colors, and alignment, but readability comes first. Check your text with accessibility settings such as Increase Contrast turned on."
             ),
         ]
     ) {
@@ -166,6 +166,7 @@ private struct MacTextEditorExamples: View {
                     isFinding.toggle()
                 }
                 TextEditor(text: $text)
+                    .font(.body)
                     .findNavigator(isPresented: $isFinding)
                     .frame(width: 320, height: 120)
             }
@@ -231,6 +232,7 @@ private struct MacTextEditorExamples: View {
 
             VStack(alignment: .trailing) {
                 TextEditor(text: $bio)
+                    .font(.body)
                     .frame(width: 320, height: 80)
                     .onChange(of: bio) {
                         if bio.count > limit {
@@ -269,6 +271,7 @@ private struct MacFindSample: View {
                 isFinding.toggle()
             }
             TextEditor(text: $text)
+                .font(.body)
                 .findNavigator(isPresented: $isFinding)
                 .frame(width: 320, height: 120)
                 .modifier(MacEditorBorder())
@@ -316,6 +319,7 @@ private struct MacLimitedEditorSample: View {
     var body: some View {
         VStack(alignment: .trailing) {
             TextEditor(text: $bio)
+                .font(.body)
                 .frame(width: 320, height: 80)
                 .modifier(MacEditorBorder())
                 .onChange(of: bio) {
@@ -340,6 +344,7 @@ private struct MacNoteSample: View {
         Group {
             if isEditor {
                 TextEditor(text: .constant(note))
+                    .font(.body)
                     .scrollDisabled(true)
                     .modifier(MacEditorBorder())
             } else {
