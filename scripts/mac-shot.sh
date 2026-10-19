@@ -17,8 +17,13 @@ set -euo pipefail
 root=${0:A:h:h}
 app=${APP:-"$root/.build/DerivedData/Build/Products/Debug/SwiftUI for Humans.app"}
 output=${1:?usage: mac-shot.sh <output.png> [light|dark] [flags…]}
-appearance=${2:-light}
-shift $(( $# >= 2 ? 2 : 1 ))
+shift
+# The appearance is optional: take the next argument only when it is one.
+appearance=light
+if [[ ${1:-} == light || ${1:-} == dark ]]; then
+    appearance=$1
+    shift
+fi
 
 log=$(mktemp)
 trap 'rm -f "$log"' EXIT
