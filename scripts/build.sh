@@ -4,6 +4,8 @@
 #
 #   scripts/build.sh ios         build the iOS app for the simulator
 #   scripts/build.sh test-ios    run the tests on the iOS test simulator
+#   scripts/build.sh mac         build the Mac app
+#   scripts/build.sh test-mac    run the tests on this Mac (no simulator)
 #
 # Set SIMULATOR to a simulator name or udid for test-ios (default:
 # Catalog-laneb-iPhone, a dedicated test simulator). Products land in
@@ -46,8 +48,17 @@ case $action in
         xcodebuild "${common[@]}" -scheme "SwiftUI for Humans" \
             -destination "platform=iOS Simulator,$key=$simulator" test -quiet
         ;;
+    mac)
+        xcodebuild "${common[@]}" -scheme "SwiftUI for Humans (Mac)" \
+            -destination 'platform=macOS,arch=arm64' build -quiet
+        echo "$derived/Build/Products/Debug/SwiftUI for Humans.app"
+        ;;
+    test-mac)
+        xcodebuild "${common[@]}" -scheme "SwiftUI for Humans (Mac)" \
+            -destination 'platform=macOS,arch=arm64' test -quiet
+        ;;
     *)
-        echo "usage: scripts/build.sh ios|test-ios" >&2
+        echo "usage: scripts/build.sh ios|test-ios|mac|test-mac" >&2
         exit 64
         ;;
 esac

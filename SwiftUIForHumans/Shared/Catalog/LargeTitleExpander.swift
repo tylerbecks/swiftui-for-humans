@@ -1,3 +1,4 @@
+#if os(iOS)
 import SwiftUI
 import UIKit
 
@@ -36,3 +37,4 @@ struct LargeTitleExpander: UIViewRepresentable {
         }
     }
 }
+#endif

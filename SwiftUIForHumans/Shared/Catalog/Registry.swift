@@ -1,26 +1,10 @@
 import SwiftUI
 
-/// Every page in the app. Each group of examples owns one list, declared in
-/// that group's `_Pages.swift` file under `Examples/`.
+/// Lookups over every page in the app. The list itself, `Catalog.pages`,
+/// comes from the edition's `Edition.swift`, which joins one list per group
+/// of examples, each declared in that group's `<Group>Pages.swift`.
 enum Catalog {
     static let overviewID = "overview"
-
-    static let pages: [ComponentPage] =
-        controlsPages
-        + textPages
-        + layoutPages
-        + navigationPages
-        + modifierPages
-        + dataFlowPages
-        + animationPages
-        + designPages
-        + blockPages
-        + foundationsPages
-        + accessibilityPages
-        + patternsPages
-        + shipNativePages
-        + shipRequiredPages
-        + shipConnectPages
 
     static func page(id: ComponentPage.ID?) -> ComponentPage? {
         pages.first { $0.id == id }

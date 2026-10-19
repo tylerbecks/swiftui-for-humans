@@ -26,7 +26,7 @@ struct DemoPage<Config, Preview: View, Controls: View, Examples: View>: View {
     @State private var showControls = false
     @State private var didSetInitialControls = false
     @State private var width: CGFloat = 0
-    @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(\.isCompactLayout) private var isCompact
     @Environment(\.makeRoomForInspector) private var makeRoomForInspector
 
     /// Below this width the page and an inspector don't fit side by side.
@@ -73,7 +73,7 @@ struct DemoPage<Config, Preview: View, Controls: View, Examples: View>: View {
                     CodeBlock(code: code(config), isCollapsible: true, isAttached: true)
                 }
                 .cardStyle()
-                if sizeClass == .compact {
+                if isCompact {
                     Button {
                         showControls = true
                     } label: {
@@ -121,18 +121,18 @@ struct DemoPage<Config, Preview: View, Controls: View, Examples: View>: View {
         // Set again outside the inspector: on iPad, a title set only inside
         // `.inspector`'s content doesn't reach the navigation bar.
         .navigationTitle(page.title)
-        .toolbarTitleDisplayMode(.catalogPage(sizeClass))
+        .catalogPageTitle()
         .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width in
             self.width = width
             // Open the controls on first layout only when the page stays
             // readable beside them; otherwise they wait for the toolbar button.
             guard !didSetInitialControls else { return }
             didSetInitialControls = true
-            showControls = LaunchOptions.take("-showControls", page: page.id) || (sizeClass == .regular && width >= Self.inspectorMinWidth)
+            showControls = LaunchOptions.take("-showControls", page: page.id) || (!isCompact && width >= Self.inspectorMinWidth)
         }
         .onChange(of: showControls) { _, isShown in
             guard isShown else { return }
-            if sizeClass == .compact {
+            if isCompact {
                 // The sheet covers the bottom of the screen: bring the
                 // preview to the top so edits stay visible.
                 withAnimation { proxy.scrollTo("preview", anchor: .top) }
@@ -148,14 +148,15 @@ struct DemoPage<Config, Preview: View, Controls: View, Examples: View>: View {
 private struct ControlsPresentation<Panel: View>: ViewModifier {
     @Binding var isPresented: Bool
     @ViewBuilder let panel: Panel
-    @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(\.isCompactLayout) private var isCompact
 
     /// Tall enough for about four rows, short enough to leave most of the
     /// preview visible above it.
     private static var compactDetent: PresentationDetent { .height(300) }
 
     func body(content: Content) -> some View {
-        if sizeClass == .compact {
+        #if os(iOS)
+        if isCompact {
             content
                 .sheet(isPresented: $isPresented) {
                     NavigationStack {
@@ -172,22 +173,31 @@ private struct ControlsPresentation<Panel: View>: ViewModifier {
                     .presentationBackgroundInteraction(.enabled(upThrough: Self.compactDetent))
                 }
         } else {
-            content
-                .inspector(isPresented: $isPresented) {
-                    panel
-                        .inspectorColumnWidth(min: 280, ideal: 320, max: 400)
-                }
-                // The page scaffold's appearance button doesn't reach the
-                // bar once `.inspector` wraps the page, so it's added here.
-                .toolbar {
-                    ToolbarItemGroup(placement: .primaryAction) {
-                        PreviewSchemeMenu()
-                        Button("Controls", systemImage: "slider.horizontal.3") {
-                            isPresented.toggle()
-                        }
+            inspector(content)
+        }
+        #else
+        inspector(content)
+        #endif
+    }
+
+    private func inspector(_ content: Content) -> some View {
+        content
+            .inspector(isPresented: $isPresented) {
+                panel
+                    .inspectorColumnWidth(min: 280, ideal: 320, max: 400)
+            }
+            // The page scaffold's appearance button doesn't reach the
+            // bar once `.inspector` wraps the page, so it's added here.
+            .toolbar {
+                ToolbarItemGroup(placement: .primaryAction) {
+                    #if os(iOS)
+                    PreviewSchemeMenu()
+                    #endif
+                    Button("Controls", systemImage: "slider.horizontal.3") {
+                        isPresented.toggle()
                     }
                 }
-        }
+            }
     }
 }
 

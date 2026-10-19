@@ -45,7 +45,8 @@ struct Wallpaper: View {
             }
         }
         .overlay {
-            Image(uiImage: WallpaperGrain.image)
+            Image(decorative: WallpaperGrain.image, scale: 1)
+                .interpolation(.none)
                 .resizable(resizingMode: .tile)
                 .blendMode(.overlay)
                 .opacity(dark ? 0.3 : 0.4)
@@ -288,21 +289,29 @@ struct Ribbon: Shape {
     }
 }
 
-/// A tile of fine noise, made once and repeated across every wallpaper.
+/// A tile of fine noise, made once and repeated across every wallpaper:
+/// one gray value per point, drawn with Core Graphics so it's the same on
+/// every platform.
 enum WallpaperGrain {
-    @MainActor static let image: UIImage = {
+    @MainActor static let image: CGImage = {
         let size = 96
         var random = SeededRandom("grain")
-        let renderer = UIGraphicsImageRenderer(size: CGSize(width: size, height: size))
-        return renderer.image { context in
-            for y in 0..<size {
-                for x in 0..<size {
-                    let value = random.next()
-                    UIColor(white: value, alpha: 0.5).setFill()
-                    context.fill(CGRect(x: x, y: y, width: 1, height: 1))
-                }
+        let context = CGContext(
+            data: nil,
+            width: size,
+            height: size,
+            bitsPerComponent: 8,
+            bytesPerRow: 0,
+            space: CGColorSpaceCreateDeviceGray(),
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+        )!
+        for y in 0..<size {
+            for x in 0..<size {
+                context.setFillColor(CGColor(gray: random.next(), alpha: 0.5))
+                context.fill(CGRect(x: x, y: y, width: 1, height: 1))
             }
         }
+        return context.makeImage()!
     }()
 }
 

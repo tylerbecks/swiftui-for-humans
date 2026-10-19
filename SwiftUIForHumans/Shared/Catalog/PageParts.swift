@@ -14,7 +14,7 @@ import SwiftUI
 struct PageScaffold<Content: View>: View {
     let page: ComponentPage
     @ViewBuilder let content: Content
-    @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(\.isCompactLayout) private var isCompact
     @State private var position = ScrollPosition(edge: .top)
     @State private var scroll = PageScrollModel()
 
@@ -52,11 +52,13 @@ struct PageScaffold<Content: View>: View {
                 .padding(.bottom, 48)
                 .frame(maxWidth: .infinity)
                 .coordinateSpace(.named(PageScrubber.contentSpace))
+                #if os(iOS)
                 .background {
-                    if sizeClass == .compact {
+                    if isCompact {
                         LargeTitleExpander()
                     }
                 }
+                #endif
             }
             .scrollPosition($position)
             .onAppear { Engagement.shared.recordPageView(page.id) }
@@ -102,9 +104,9 @@ struct PageScaffold<Content: View>: View {
             }
         }
         .navigationTitle(page.title)
-        .toolbarTitleDisplayMode(.catalogPage(sizeClass))
+        .catalogPageTitle()
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: .catalogTrailing) {
                 PreviewSchemeMenu()
             }
         }
@@ -163,7 +165,7 @@ private struct FooterLink: View {
             }
         }
         .buttonStyle(.plain)
-        .hoverEffect(.highlight)
+        .catalogHover(.highlight)
         .accessibilityLabel("\(isNext ? "Next" : "Previous"): \(page.title)")
     }
 }
@@ -224,6 +226,11 @@ struct PageHeader: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
+            if CatalogPlatform.showsTitleInContent {
+                Text(page.title)
+                    .font(.largeTitle.bold())
+                    .padding(.top, 12)
+            }
             Text(page.summary)
                 .font(.title3)
                 .foregroundStyle(.secondary)
@@ -498,16 +505,6 @@ struct FlowLayout: Layout {
     }
 }
 
-extension ToolbarTitleDisplayMode {
-    /// Page titles: a large title on iPhone that collapses as the page
-    /// scrolls. On iPad the title stays large in the bar (`.inlineLarge`):
-    /// a collapsing large title opens collapsed, and so invisible, whenever
-    /// the sidebar swaps the detail page.
-    static func catalogPage(_ sizeClass: UserInterfaceSizeClass?) -> Self {
-        sizeClass == .regular ? .inlineLarge : .large
-    }
-}
-
 enum PreviewScheme: String, CaseIterable, Identifiable {
     static let storageKey = "previewScheme"
 
@@ -549,7 +546,13 @@ struct Surface: View {
     var body: some View {
         let isDark = colorScheme == .dark
         switch kind {
-        case .preview: isDark ? Color.black : Color.white
+        case .preview:
+            #if os(macOS)
+            // The real window background, so previews look as they would in a window.
+            Color(nsColor: .windowBackgroundColor)
+            #else
+            isDark ? Color.black : Color.white
+            #endif
         case .code: isDark ? Color(white: 0.09) : Color(white: 0.965)
         }
     }

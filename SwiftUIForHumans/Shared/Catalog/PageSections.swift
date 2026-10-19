@@ -101,12 +101,12 @@ struct APIItem: Sendable {
 
 struct APISection: View {
     let items: [APIItem]
-    @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(\.isCompactLayout) private var isCompact
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             SectionTitle("Key APIs")
-            if sizeClass == .regular {
+            if !isCompact {
                 // Wide: a two-column table.
                 Grid(alignment: .leading, horizontalSpacing: 20, verticalSpacing: 12) {
                     ForEach(Array(items.enumerated()), id: \.offset) { index, item in
@@ -212,10 +212,10 @@ struct GuidelinesSection: View {
 /// would widen the page and push it under the sidebar.
 private struct DoDontView: View {
     let pair: DoDontPair
-    @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(\.isCompactLayout) private var isCompact
 
     var body: some View {
-        if sizeClass == .regular {
+        if !isCompact {
             ViewThatFits(in: .horizontal) {
                 HStack(alignment: .top, spacing: 12) { cards }
                 VStack(spacing: 12) { cards }

@@ -87,7 +87,7 @@ struct AboutView: View {
             }
             .task { await TipJar.shared.load() }
             .navigationTitle("About")
-            .navigationBarTitleDisplayMode(.inline)
+            .catalogInlineTitle()
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button(role: .close) { dismiss() }

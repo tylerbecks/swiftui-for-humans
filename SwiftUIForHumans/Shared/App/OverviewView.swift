@@ -6,7 +6,7 @@ struct OverviewView: View {
     let tab: AppTab
     @Environment(\.openPage) private var openPage
     @State private var filter: ComponentCategory?
-    @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(\.isCompactLayout) private var isCompact
 
     private var categories: [ComponentCategory] {
         tab.categories.filter { !Catalog.pages(in: $0).isEmpty }
@@ -34,7 +34,7 @@ struct OverviewView: View {
         .background(alignment: .top) {
             // On iPad the overview is the tab's first screen, so it carries
             // the tab's wallpaper; on iPhone that's the list, one step back.
-            if sizeClass != .compact {
+            if !isCompact {
                 Wallpaper(seed: tab.rawValue, tab: tab)
                     .mask(WallpaperFade())
                     .frame(height: 360)
@@ -42,7 +42,7 @@ struct OverviewView: View {
             }
         }
         .navigationTitle(tab.title)
-        .toolbarTitleDisplayMode(.catalogPage(sizeClass))
+        .catalogPageTitle()
     }
 
     private var scrollView: some View {
@@ -71,6 +71,11 @@ struct OverviewView: View {
 
     private var hero: some View {
         VStack(alignment: .leading, spacing: 12) {
+            if CatalogPlatform.showsTitleInContent {
+                Text(tab.title)
+                    .font(.largeTitle.bold())
+                    .padding(.top, 12)
+            }
             Text(tab.intro)
                 .font(.title3)
                 .foregroundStyle(.secondary)
@@ -154,7 +159,7 @@ private struct CategorySection: View {
                         GalleryCard(page: page)
                     }
                     .buttonStyle(CardButtonStyle())
-                    .hoverEffect(.lift)
+                    .catalogHover(.lift)
                     .contextMenu {
                         OpenInNewWindowButton(id: page.id)
                     }

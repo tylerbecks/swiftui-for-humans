@@ -14,10 +14,19 @@
 			remoteGlobalIDString = 46E6C67C9F02D0FEC372C57D;
 			remoteInfo = "SwiftUIForHumans-iOS";
 		};
+		AA09AFEA74062CAB71250C61 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 94FFE6C00A6620E5EEC70814 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4A183C1CC7E55D92C1F68F01;
+			remoteInfo = "SwiftUIForHumans-macOS";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		29A305CFBE680319F14465D1 /* SwiftUIForHumans-iOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "SwiftUIForHumans-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4DB2F6D5380438F7BEA7AC88 /* CatalogTests-macOS.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "CatalogTests-macOS.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6510AA6FCA90C1FB0D5B3F67 /* SwiftUIForHumans-macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SwiftUIForHumans-macOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7C77F29597A66C5A474D0934 /* CatalogTests-iOS.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = "CatalogTests-iOS.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -40,6 +49,26 @@
 			);
 			name = iOS;
 			path = iOS;
+			sourceTree = "<group>";
+		};
+		47ACF51BB13CCFEA3ED24F32 /* macOS */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			name = macOS;
+			path = macOS;
+			sourceTree = "<group>";
+		};
+		529FA39AE5DDD9DA13EBACCE /* macOS */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			name = macOS;
+			path = macOS;
 			sourceTree = "<group>";
 		};
 		718C6D7D552DDBE612744C63 /* iOS */ = {
@@ -79,6 +108,7 @@
 			isa = PBXGroup;
 			children = (
 				718C6D7D552DDBE612744C63 /* iOS */,
+				47ACF51BB13CCFEA3ED24F32 /* macOS */,
 				C054BB75B295DB863C4C6F78 /* Shared */,
 			);
 			path = Tests;
@@ -88,7 +118,9 @@
 			isa = PBXGroup;
 			children = (
 				7C77F29597A66C5A474D0934 /* CatalogTests-iOS.xctest */,
+				4DB2F6D5380438F7BEA7AC88 /* CatalogTests-macOS.xctest */,
 				29A305CFBE680319F14465D1 /* SwiftUIForHumans-iOS.app */,
+				6510AA6FCA90C1FB0D5B3F67 /* SwiftUIForHumans-macOS.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -106,6 +138,7 @@
 			isa = PBXGroup;
 			children = (
 				3A61469761F40DB5C4BC5E11 /* iOS */,
+				529FA39AE5DDD9DA13EBACCE /* macOS */,
 				C66B77A644550EF86BE26F7D /* Resources */,
 				09E8B2EFBC692F9413570B14 /* Shared */,
 			);
@@ -137,6 +170,52 @@
 			productName = "SwiftUIForHumans-iOS";
 			productReference = 29A305CFBE680319F14465D1 /* SwiftUIForHumans-iOS.app */;
 			productType = "com.apple.product-type.application";
+		};
+		4A183C1CC7E55D92C1F68F01 /* SwiftUIForHumans-macOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 299505B869CDBAF7526B1F87 /* Build configuration list for PBXNativeTarget "SwiftUIForHumans-macOS" */;
+			buildPhases = (
+				21ADFFD9250226498639A44F /* Sources */,
+				0BA1EB2860B71BE6DA0ED6A9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				C66B77A644550EF86BE26F7D /* Resources */,
+				09E8B2EFBC692F9413570B14 /* Shared */,
+				529FA39AE5DDD9DA13EBACCE /* macOS */,
+			);
+			name = "SwiftUIForHumans-macOS";
+			packageProductDependencies = (
+			);
+			productName = "SwiftUIForHumans-macOS";
+			productReference = 6510AA6FCA90C1FB0D5B3F67 /* SwiftUIForHumans-macOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+		58CA4EACE0120C78D35E6DE5 /* CatalogTests-macOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 865AA94EF512E135571B7C06 /* Build configuration list for PBXNativeTarget "CatalogTests-macOS" */;
+			buildPhases = (
+				3AD0CDA066873315DD9236FD /* Sources */,
+				D2368A17AFB4BB1A54D52EAC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				760F77843B661A615DBFDF2E /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				C054BB75B295DB863C4C6F78 /* Shared */,
+				47ACF51BB13CCFEA3ED24F32 /* macOS */,
+			);
+			name = "CatalogTests-macOS";
+			packageProductDependencies = (
+			);
+			productName = "CatalogTests-macOS";
+			productReference = 4DB2F6D5380438F7BEA7AC88 /* CatalogTests-macOS.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		98C552FE90683C28B3B79C4A /* CatalogTests-iOS */ = {
 			isa = PBXNativeTarget;
@@ -174,6 +253,14 @@
 						DevelopmentTeam = CJVZR779TW;
 						ProvisioningStyle = Automatic;
 					};
+					4A183C1CC7E55D92C1F68F01 = {
+						DevelopmentTeam = CJVZR779TW;
+						ProvisioningStyle = Automatic;
+					};
+					58CA4EACE0120C78D35E6DE5 = {
+						DevelopmentTeam = CJVZR779TW;
+						ProvisioningStyle = Automatic;
+					};
 					98C552FE90683C28B3B79C4A = {
 						DevelopmentTeam = CJVZR779TW;
 						ProvisioningStyle = Automatic;
@@ -196,12 +283,28 @@
 			targets = (
 				46E6C67C9F02D0FEC372C57D /* SwiftUIForHumans-iOS */,
 				98C552FE90683C28B3B79C4A /* CatalogTests-iOS */,
+				4A183C1CC7E55D92C1F68F01 /* SwiftUIForHumans-macOS */,
+				58CA4EACE0120C78D35E6DE5 /* CatalogTests-macOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		0BA1EB2860B71BE6DA0ED6A9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1D861FF004092EFABCAA7A21 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2368A17AFB4BB1A54D52EAC /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -218,6 +321,20 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		21ADFFD9250226498639A44F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3AD0CDA066873315DD9236FD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		821389F0436994B19515AEAA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -239,6 +356,11 @@
 			isa = PBXTargetDependency;
 			target = 46E6C67C9F02D0FEC372C57D /* SwiftUIForHumans-iOS */;
 			targetProxy = 7708934EC9301167B9DD7195 /* PBXContainerItemProxy */;
+		};
+		760F77843B661A615DBFDF2E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4A183C1CC7E55D92C1F68F01 /* SwiftUIForHumans-macOS */;
+			targetProxy = AA09AFEA74062CAB71250C61 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -312,6 +434,69 @@
 			};
 			name = Debug;
 		};
+		6A4FD61008F8C171EC1BA5B2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = SwiftUIForHumans/Config/macOS/SwiftUIForHumans.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SwiftUIForHumans/Config/macOS/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "SwiftUI for Humans";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "An independent project, not affiliated with Apple.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.swiftuiforhumans.app;
+				PRODUCT_MODULE_NAME = SwiftUIForHumans;
+				PRODUCT_NAME = "SwiftUI for Humans";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		8AC408430206D7BFEFBB0FF4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.swiftuiforhumans.app.tests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwiftUI for Humans.app/Contents/MacOS/SwiftUI for Humans";
+			};
+			name = Release;
+		};
+		8BA537D04DABF0A5F0029939 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = SwiftUIForHumans/Config/macOS/SwiftUIForHumans.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SwiftUIForHumans/Config/macOS/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "SwiftUI for Humans";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "An independent project, not affiliated with Apple.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.swiftuiforhumans.app;
+				PRODUCT_MODULE_NAME = SwiftUIForHumans;
+				PRODUCT_NAME = "SwiftUI for Humans";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
 		B4DF924E8BA4AC59CC4FBD93 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -367,12 +552,12 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 6.0;
@@ -428,11 +613,11 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 6.0;
@@ -456,6 +641,23 @@
 			};
 			name = Debug;
 		};
+		E8D70C9508914A967916D479 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.swiftuiforhumans.app.tests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwiftUI for Humans.app/Contents/MacOS/SwiftUI for Humans";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -468,11 +670,29 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
+		299505B869CDBAF7526B1F87 /* Build configuration list for PBXNativeTarget "SwiftUIForHumans-macOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6A4FD61008F8C171EC1BA5B2 /* Debug */,
+				8BA537D04DABF0A5F0029939 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		735D247241418F985B304A75 /* Build configuration list for PBXNativeTarget "CatalogTests-iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DD56238722EC9921D398DD58 /* Debug */,
 				424949D69AD31812F218E616 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		865AA94EF512E135571B7C06 /* Build configuration list for PBXNativeTarget "CatalogTests-macOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E8D70C9508914A967916D479 /* Debug */,
+				8AC408430206D7BFEFBB0FF4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

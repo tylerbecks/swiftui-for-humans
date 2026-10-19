@@ -26,10 +26,10 @@ Across the app:
 You need Xcode 26 or later. The app targets iOS 26.
 
 1. Open `SwiftUIForHumans.xcodeproj`.
-2. Pick the **SwiftUI for Humans** scheme and an iPhone or iPad simulator.
+2. Pick the **SwiftUI for Humans** scheme and an iPhone or iPad simulator, or **SwiftUI for Humans (Mac)** for the Mac app.
 3. Run.
 
-From the command line, `scripts/build.sh ios` builds the app and `scripts/build.sh test-ios` runs the tests.
+From the command line, `scripts/build.sh ios` or `mac` builds an app, and `test-ios` or `test-mac` runs the tests.
 
 The project is generated from `project.yml` with [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`). After changing `project.yml`, run `xcodegen generate`. Adding or removing source files needs no regenerate: the sources are synchronized folders.
 
@@ -42,19 +42,26 @@ SwiftUIForHumans/
     App/                    Engagement, tips, About
     Catalog/                Page model, registry, page layout, code blocks, guidelines
   iOS/                      The iPhone and iPad app
-    App/                    App shell: tabs (Components, Design, Ship, Search), sidebars, overview grid, in-app browser
+    App/                    App shell: tabs (Components, Design, Ship, Search), sidebars, in-app browser
     Catalog/                iOS-only page parts, like the phone frame
     Examples/               One file per page, grouped by category
+    Edition.swift           The iOS categories, tab intros, and page list
+  macOS/                    The Mac app, a separate edition with Mac content
+    App/                    App shell: split view, Settings, menus, demo windows
+    Catalog/                Mac-only page parts, like the drawn window frame
+    Examples/               One folder per group of Mac pages
+    Edition.swift           The Mac categories, tab intros, and page list
   Resources/                Asset catalog and privacy manifest
   Config/                   Info.plist additions per platform
-Tests/                      Swift Testing: Shared/ for the engine, iOS/ for the iOS pages
+Tests/                      Swift Testing: Shared/ for the engine and registry, plus iOS/ and macOS/
 website/                    Marketing site, privacy policy, and support page (static HTML, deployed on Vercel)
 StoreKit/                   Tips.storekit, for trying the in-app tips in the simulator
-scripts/                    build.sh (builds and tests, one at a time), hero-reel.sh (the website's hero tiles)
+scripts/                    build.sh (builds and tests, one at a time), mac-shot.sh (Mac screenshots), hero-reel.sh (the website's hero tiles)
 docs/
   content-guide.md          How every page is written
   building-pages.md         How pages are built in code
   mac-prd.md                The plan for the Mac edition
+  mac-content-guide.md      How Mac pages differ
 ```
 
 ## Contributing

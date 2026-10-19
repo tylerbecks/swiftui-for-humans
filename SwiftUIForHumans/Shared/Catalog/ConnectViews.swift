@@ -1,6 +1,6 @@
 import SwiftUI
 
-// Small views shared by the App Store Connect pages.
+// Small views for Ship pages on every edition: numbered steps and fact cards.
 
 /// Numbered steps, for instructions in App Store Connect or Xcode.
 struct ConnectSteps: View {

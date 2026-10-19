@@ -1,11 +1,11 @@
 # Agent notes
 
-Project-specific rules for AI coding agents. Read [README.md](README.md) and [docs/building-pages.md](docs/building-pages.md) first. Source paths below are relative to `SwiftUIForHumans/`. For any page content, follow [docs/content-guide.md](docs/content-guide.md).
+Project-specific rules for AI coding agents. Read [README.md](README.md) and [docs/building-pages.md](docs/building-pages.md) first. Source paths below are relative to `SwiftUIForHumans/`. For any page content, follow [docs/content-guide.md](docs/content-guide.md), and for Mac pages also [docs/mac-content-guide.md](docs/mac-content-guide.md).
 
 ## Rules
 
 - **SwiftUI first.** Use UIKit only when SwiftUI has no obvious replacement (see the list in building-pages.md).
-- **Keep shared code separate from pages.** `Shared/` is the engine that every edition (iOS now, macOS next) compiles, so it affects every page on every platform. It must never name a page or an edition-only type. `iOS/` holds the iOS app shell and its pages. When working on pages, edit only `iOS/Examples/`, and propose any shared change separately.
+- **Keep shared code separate from pages.** `Shared/` is the engine that every edition (iOS now, macOS next) compiles, so it affects every page on every platform. It must never name a page or an edition-only type; the other platform's build catches it if it does. Platform differences in the engine go through `Shared/Catalog/Platform.swift`, and pages never use `#if os`. `iOS/` and `macOS/` each hold an app shell, an `Edition.swift` (categories, tab intros, and the page list), and their pages. When working on pages, edit only your edition's `Examples/`, and propose any shared change separately.
 - **The Xcode project is generated.** `project.yml` is the source of truth; after changing it, run `xcodegen generate` and commit the regenerated `SwiftUIForHumans.xcodeproj`. Sources are synchronized folders, so adding or removing a file needs no regenerate.
 - **Every code snippet must compile.** That covers Usage, ExampleCard code, generated `code`, and Do / Don't samples. Verify snippets by pasting them into a temporary `_SnippetCheck.swift` and building. Delete that file before finishing; leftover files break the unique-file-name rule.
 - **Check new URLs** with `curl -sI` before adding `docsURL` or `higURL`. Both must return 200.
@@ -45,8 +45,9 @@ The website's hero board tiles (`iOS/App/HeroTiles.swift`) are real components r
 
 ## Building and checking
 
-- Build and test with `scripts/build.sh` (`ios`, `test-ios`). It passes `-jobs 4` and `ARCHS=arm64` and holds a machine-wide lock, so builds from parallel worktrees wait their turn instead of bogging down the user's machine. Don't call `xcodebuild` directly for routine builds.
-- **Tests** use Swift Testing, in `Tests/Shared` (engine) and `Tests/iOS` (iOS edition). The registry tests check unique ids and that every `related` id exists, so run `scripts/build.sh test-ios` after adding pages.
+- Build and test with `scripts/build.sh` (`ios`, `test-ios`, `mac`, `test-mac`). It passes `-jobs 4` and `ARCHS=arm64` and holds a machine-wide lock, so builds from parallel worktrees wait their turn instead of bogging down the user's machine. Don't call `xcodebuild` directly for routine builds.
+- **Mac screenshots:** `scripts/mac-shot.sh <file.png> [light|dark] [launch flags]`. The debug app draws its own window off screen and quits, so it needs no Screen Recording permission and doesn't take focus. Use a tall `SIZE` (like `1100x4200`) for a whole page; the snapshot can't show a scrolled page, the sidebar, or Liquid Glass.
+- **Tests** use Swift Testing, in `Tests/Shared` (engine and registry, run by both editions), `Tests/iOS`, and `Tests/macOS`. `test-mac` runs on this Mac, no simulator. The registry tests check unique ids and that every `related` id exists, so run `scripts/build.sh test-ios` after adding pages.
 - **Use dedicated test simulators** for screenshots and automation. Don't loop screenshots on the user's own simulator. Install the final build there once, at the end.
 - [axe](https://github.com/cameroncooke/AXe) drives the app. Taps need `--tap-style physical`; the default taps don't register. Sidebar and search result rows have the identifier `row-<page id>`, and overview cards `card-<page id>`. Tab bar items are found by their label (`--label Design`).
 - `print` output is buffered when the console goes to a file. For debugging, use `NSLog` with `xcrun simctl launch --console`.

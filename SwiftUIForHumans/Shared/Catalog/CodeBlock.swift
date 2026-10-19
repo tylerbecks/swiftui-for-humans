@@ -73,8 +73,8 @@ struct CodeBlock: View {
     private var firstLineNeedsRoom: Bool {
         guard !isCollapsed, panelWidth > 0 else { return false }
         let firstLine = code.prefix { $0 != "\n" }
-        let size = UIFont.preferredFont(forTextStyle: .callout).pointSize
-        let font = UIFont.monospacedSystemFont(ofSize: size, weight: .regular)
+        let size = PlatformFont.preferredFont(forTextStyle: .callout).pointSize
+        let font = PlatformFont.monospacedSystemFont(ofSize: size, weight: .regular)
         let charWidth = ("M" as NSString).size(withAttributes: [.font: font]).width
         // 16pt of leading padding; the button takes 48pt at the trailing edge.
         return 16 + CGFloat(firstLine.count) * charWidth > panelWidth - 48
@@ -101,7 +101,7 @@ struct CodeBlock: View {
 
     private var copyButton: some View {
         Button {
-            UIPasteboard.general.string = code
+            Pasteboard.copy(code)
             copied = true
             Engagement.shared.recordSuccess()
             Task {

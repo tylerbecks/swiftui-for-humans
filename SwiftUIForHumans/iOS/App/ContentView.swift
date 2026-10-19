@@ -123,22 +123,6 @@ struct ContentView: View {
     }
 }
 
-/// Shows Apple's rating prompt when `Engagement` says it's a good moment,
-/// after a beat so it doesn't land on top of the tap that caused it.
-private struct ReviewPrompt: ViewModifier {
-    @Environment(\.requestReview) private var requestReview
-
-    func body(content: Content) -> some View {
-        content
-            .onChange(of: Engagement.shared.reviewRequest) {
-                Task {
-                    try? await Task.sleep(for: .seconds(1.5))
-                    requestReview()
-                }
-            }
-    }
-}
-
 /// One content tab: the tab's categories and pages beside the open page.
 private struct CatalogTabView: View {
     let tab: AppTab
@@ -192,51 +176,6 @@ struct CatalogLinks: ViewModifier {
             .sheet(item: $browsing) { page in
                 DocsBrowser(url: page.url)
             }
-    }
-}
-
-/// Launch arguments used to open the app in a known state for screenshots:
-/// `-tab <components|design|ship|search>`, `-open <page id>`,
-/// `-search <text>`, `-showControls`, `-scrollTo <anchor>`, `-showScrubber`.
-enum LaunchOptions {
-    static func value(for flag: String, in arguments: [String] = ProcessInfo.processInfo.arguments) -> String? {
-        guard let index = arguments.firstIndex(of: flag), index + 1 < arguments.count else { return nil }
-        return arguments[index + 1]
-    }
-
-    static func isSet(_ flag: String) -> Bool {
-        ProcessInfo.processInfo.arguments.contains(flag)
-    }
-
-    /// Flags that act on a page (`-showControls`, `-scrollTo`) apply to the
-    /// first page that asks, not to every page opened after it.
-    @MainActor private static var used: Set<String> = []
-
-    /// Set once the first window has applied `-tab`, `-open`, and `-search`.
-    @MainActor static var didApplyToWindow = false
-
-    @MainActor static func take(_ flag: String) -> Bool {
-        guard isSet(flag), !used.contains(flag) else { return false }
-        used.insert(flag)
-        return true
-    }
-
-    @MainActor static func takeValue(for flag: String) -> String? {
-        guard let value = value(for: flag), take(flag) else { return nil }
-        return value
-    }
-
-    /// Like `take`, but only for the page that `-open` names (any page when
-    /// there's no `-open`). Pages restored in other tabs are built too, and
-    /// shouldn't use up the flag first.
-    @MainActor static func take(_ flag: String, page id: String) -> Bool {
-        if let target = value(for: "-open"), target != id { return false }
-        return take(flag)
-    }
-
-    @MainActor static func takeValue(for flag: String, page id: String) -> String? {
-        if let target = value(for: "-open"), target != id { return nil }
-        return takeValue(for: flag)
     }
 }
 
@@ -345,44 +284,6 @@ private struct HeroBackdrop: View {
             .frame(height: reading.underBar + 260)
             .offset(y: -reading.offset)
             .ignoresSafeArea(edges: [.top, .horizontal])
-    }
-}
-
-/// Shown in a tab, or a category, that has no pages yet.
-struct ComingSoonView: View {
-    let tab: AppTab
-
-    var body: some View {
-        ContentUnavailableView {
-            Label("Coming Soon", systemImage: tab.symbol)
-        } description: {
-            Text("Pages for \(tab.title) are on the way.")
-        }
-    }
-}
-
-struct SidebarRow: View {
-    let page: ComponentPage
-    var detail: String? = nil
-
-    var body: some View {
-        Label {
-            VStack(alignment: .leading, spacing: 2) {
-                HStack(spacing: 6) {
-                    Text(page.title)
-                    if page.isNew {
-                        NewBadge()
-                    }
-                }
-                if let detail {
-                    Text(detail)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
-        } icon: {
-            Image(systemName: page.symbol)
-        }
     }
 }
 

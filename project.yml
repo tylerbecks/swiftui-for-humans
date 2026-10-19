@@ -8,6 +8,7 @@ options:
   bundleIdPrefix: com.swiftuiforhumans
   deploymentTarget:
     iOS: "26.0"
+    macOS: "26.0"
   createIntermediateGroups: true
 
 settings:
@@ -65,6 +66,48 @@ targets:
         TEST_HOST: $(BUILT_PRODUCTS_DIR)/SwiftUI for Humans.app/SwiftUI for Humans
         BUNDLE_LOADER: $(TEST_HOST)
 
+  SwiftUIForHumans-macOS:
+    type: application
+    platform: macOS
+    sources:
+      - path: SwiftUIForHumans/Shared
+        type: syncedFolder
+      - path: SwiftUIForHumans/macOS
+        type: syncedFolder
+      - path: SwiftUIForHumans/Resources
+        type: syncedFolder
+    settings:
+      base:
+        # Same bundle ID as iOS: one App Store listing (Universal Purchase).
+        PRODUCT_NAME: SwiftUI for Humans
+        PRODUCT_MODULE_NAME: SwiftUIForHumans
+        PRODUCT_BUNDLE_IDENTIFIER: com.swiftuiforhumans.app
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        CODE_SIGN_ENTITLEMENTS: SwiftUIForHumans/Config/macOS/SwiftUIForHumans.entitlements
+        ENABLE_HARDENED_RUNTIME: YES
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_FILE: SwiftUIForHumans/Config/macOS/Info.plist
+        INFOPLIST_KEY_CFBundleDisplayName: SwiftUI for Humans
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.developer-tools
+        INFOPLIST_KEY_NSHumanReadableCopyright: An independent project, not affiliated with Apple.
+
+  CatalogTests-macOS:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: Tests/Shared
+        type: syncedFolder
+      - path: Tests/macOS
+        type: syncedFolder
+    dependencies:
+      - target: SwiftUIForHumans-macOS
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.swiftuiforhumans.app.tests
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/SwiftUI for Humans.app/Contents/MacOS/SwiftUI for Humans
+        BUNDLE_LOADER: $(TEST_HOST)
+
 schemes:
   SwiftUI for Humans:
     build:
@@ -77,5 +120,19 @@ schemes:
       config: Debug
       targets:
         - CatalogTests-iOS
+    archive:
+      config: Release
+
+  SwiftUI for Humans (Mac):
+    build:
+      targets:
+        SwiftUIForHumans-macOS: all
+    run:
+      config: Debug
+      storeKitConfiguration: StoreKit/Tips.storekit
+    test:
+      config: Debug
+      targets:
+        - CatalogTests-macOS
     archive:
       config: Release
