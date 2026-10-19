@@ -231,7 +231,8 @@ private final class DPGroceryList {
     var items = ["Milk", "Eggs", "Bread", "Apples", "Coffee"]
 
     func add(_ item: String, at index: Int, undoManager: UndoManager?) {
-        items.insert(item, at: min(index, items.count))
+        let index = min(index, items.count)
+        items.insert(item, at: index)
         undoManager?.registerUndo(withTarget: self) { list in
             list.remove(at: index, undoManager: undoManager)
         }

@@ -3,8 +3,8 @@ import SwiftUI
 extension ComponentPage {
     static let settingsPattern = ComponentPage(
         id: "settings-pattern",
-        title: "Settings",
-        summary: "What belongs in the Settings window, what stays in the window, and what to leave alone.",
+        title: "What goes in Settings",
+        summary: "Keep rare, app-wide options in Settings, and task options in the window they affect.",
         category: .patterns,
         kind: .concept,
         symbol: "gearshape.2",
@@ -157,7 +157,7 @@ private struct MacSettingsPatternArticle: View {
 
                     ExampleCard(
                         title: "Document options in the File menu",
-                        caption: "Options that belong to one document go in the File menu, not in Settings. Use `CommandGroup(after: .saveItem)`.",
+                        caption: "Put options that belong to one document in the File menu with `CommandGroup(after: .saveItem)`, not in Settings.",
                         code: """
                         DocumentGroup(newDocument: NoteDocument()) { file in
                             NoteEditor(document: file.$document)

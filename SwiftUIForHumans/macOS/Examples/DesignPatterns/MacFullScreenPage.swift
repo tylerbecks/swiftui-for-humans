@@ -142,7 +142,7 @@ private struct MacFullScreenArticle: View {
 
                     ExampleCard(
                         title: "Pause when the window isn't active",
-                        caption: "Read `appearsActive`, and run the timer only while it's true. It turns false when people switch to another window or app.",
+                        caption: "Run the timer only while `appearsActive` is true; it turns false when people switch to another window or app.",
                         code: """
                         @Environment(\\.appearsActive) private var appearsActive
                         @State private var slide = 0
@@ -163,7 +163,7 @@ private struct MacFullScreenArticle: View {
 
                     ExampleCard(
                         title: "Keep a utility window out of full screen",
-                        caption: "A small panel, like a color mixer, has no use for the whole screen. Add `.windowFullScreenBehavior(.disabled)` to its content.",
+                        caption: "Add `.windowFullScreenBehavior(.disabled)` to a small panel's content, like a color mixer, that has no use for the whole screen.",
                         code: """
                         Window("Color Mixer", id: "mixer") {
                             ColorMixer()

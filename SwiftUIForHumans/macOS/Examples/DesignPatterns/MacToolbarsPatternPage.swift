@@ -24,7 +24,7 @@ extension ComponentPage {
         api: [
             APIItem("`.toolbar(id:content:)`", "A toolbar people can customize."),
             APIItem("`ToolbarItem(id:placement:)`", "One item, with an ID for customization."),
-            APIItem("`ToolbarSpacer(.fixed)`", "A gap between groups of items."),
+            APIItem("`ToolbarSpacer(.fixed)`", "A gap between groups of items, from macOS 26."),
             APIItem("`.navigation`", "Leading edge, before the title."),
             APIItem("`.principal`", "The center of the toolbar."),
             APIItem("`ToolbarCommands()`", "Adds the toolbar's menu items, like Customize."),
@@ -136,7 +136,7 @@ private struct MacToolbarsPatternArticle: View {
                 VStack(alignment: .leading, spacing: 44) {
                     ExampleCard(
                         title: "A toolbar people can customize",
-                        caption: "Use `.toolbar(id:)` and give each `ToolbarItem` an ID. `ToolbarSpacer(.fixed)` separates the groups.",
+                        caption: "Use `.toolbar(id:)`, give each `ToolbarItem` an ID, and separate the groups with `ToolbarSpacer(.fixed)`.",
                         code: """
                         @State private var text = ""
                         @State private var isBold = false
@@ -368,7 +368,7 @@ private struct DPPlacementStrip: View {
     }
 }
 
-/// Three toolbar symbols in a small drawn window.
+/// Toolbar symbols in a small drawn window.
 private struct DPToolbarSymbols: View {
     let symbols: [String]
 

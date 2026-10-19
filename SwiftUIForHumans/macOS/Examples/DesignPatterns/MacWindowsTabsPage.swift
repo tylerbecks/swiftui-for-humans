@@ -143,7 +143,7 @@ private struct MacWindowsTabsArticle: View {
                 VStack(alignment: .leading, spacing: 44) {
                     ExampleCard(
                         title: "Open an item in its own window",
-                        caption: "Give `WindowGroup` a value type, then call `openWindow(value:)` from a context menu. Its title names the window in menus.",
+                        caption: "Give `WindowGroup` a value type, then call `openWindow(value:)` from a context menu to open that item's window.",
                         code: """
                         struct Note: Identifiable, Hashable, Codable {
                             var id: String

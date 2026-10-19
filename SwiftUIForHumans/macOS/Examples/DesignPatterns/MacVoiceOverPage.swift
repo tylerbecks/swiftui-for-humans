@@ -231,7 +231,7 @@ private struct MacVoiceOverArticle: View {
 
                     ExampleCard(
                         title: "Add a rotor for what people look for",
-                        caption: "`.accessibilityRotor` gives VoiceOver a list to jump through, like only the flagged messages. Attach it to a `ScrollView`.",
+                        caption: "`.accessibilityRotor` on a list's container gives VoiceOver a shortcut list to jump through, like only the flagged messages.",
                         code: """
                         struct Message: Identifiable {
                             let id = UUID()

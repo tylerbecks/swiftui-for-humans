@@ -95,7 +95,7 @@ private struct MacReduceMotionArticle: View {
 
     var body: some View {
         ArticlePage(page: page) {
-            Prose("**Reduce Motion**, in System Settings > Accessibility, is for people who get dizzy, sick, or distracted by movement on screen. When it's on, turn off motion that's only decoration, and replace motion that carries meaning with something calmer, like a fade. Don't remove every animation: a window where things change with no transition at all is harder to follow.")
+            Prose("**Reduce Motion**, in System Settings > Accessibility > Display, is for people who get dizzy, sick, or distracted by movement on screen. When it's on, turn off motion that's only decoration, and replace motion that carries meaning with something calmer, like a fade. Don't remove every animation: a window where things change with no transition at all is harder to follow.")
 
             VStack(alignment: .leading, spacing: 16) {
                 SectionTitle("Try it")
@@ -157,7 +157,7 @@ private struct MacReduceMotionArticle: View {
 
                     ExampleCard(
                         title: "Stop autoplay",
-                        caption: "Run the timer only while playing and Reduce Motion is off. `.task(id:)` restarts it when either one changes.",
+                        caption: "Key `.task(id:)` to playing and Reduce Motion, so the timer runs only while playing with the setting off.",
                         code: """
                         @Environment(\\.accessibilityReduceMotion) private var reduceMotion
                         @State private var index = 0

@@ -128,7 +128,7 @@ private struct MacOnboardingArticle: View {
                 VStack(alignment: .leading, spacing: 44) {
                     ExampleCard(
                         title: "A welcome window when nothing is restored",
-                        caption: "Add a `Window` with `.defaultLaunchBehavior(.presented)`. It opens at launch when there are no document windows to bring back.",
+                        caption: "A `Window` with `.defaultLaunchBehavior(.presented)` opens at launch when there are no document windows to bring back.",
                         code: """
                         @main
                         struct ScribbleApp: App {
@@ -191,14 +191,22 @@ private struct MacOnboardingArticle: View {
                             var image: Image? { Image(systemName: "pin") }
                         }
 
+                        @main
+                        struct NotesApp: App {
+                            init() {
+                                try? Tips.configure()
+                            }
+
+                            var body: some Scene {
+                                WindowGroup { NotesView() }
+                            }
+                        }
+
                         struct NotesView: View {
                             var body: some View {
                                 VStack {
                                     TipView(PinTip(), arrowEdge: .bottom)
                                     Button("Pin", systemImage: "pin") { }
-                                }
-                                .task {
-                                    try? Tips.configure()
                                 }
                             }
                         }

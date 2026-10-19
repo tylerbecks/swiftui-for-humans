@@ -135,7 +135,7 @@ private struct MacMenuBarConventionsArticle: View {
                 VStack(alignment: .leading, spacing: 44) {
                     ExampleCard(
                         title: "Add a menu of your own",
-                        caption: "`CommandMenu` adds a menu after View. Fill it with buttons, and give only the frequent ones a shortcut.",
+                        caption: "`CommandMenu` adds a menu after View: fill it with buttons, and give only the frequent ones a shortcut.",
                         code: """
                         WindowGroup {
                             ContentView()
@@ -193,13 +193,14 @@ private struct MacMenuBarConventionsArticle: View {
                             ToolbarCommands()
                         }
                         """,
-                        minHeight: 140
+                        minHeight: 170
                     ) {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Label("Sidebar: shows and hides the sidebar", systemImage: "sidebar.left")
-                            Label("Toolbar: customizing the toolbar", systemImage: "menubar.rectangle")
-                        }
-                        .foregroundStyle(.secondary)
+                        DPMenuDrawing(title: "View", items: [
+                            .item("Hide Toolbar", "⌥⌘T"),
+                            .item("Customize Toolbar…"),
+                            .divider,
+                            .item("Show Sidebar", "⌃⌘S"),
+                        ])
                     }
 
                     ExampleCard(

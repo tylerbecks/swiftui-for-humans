@@ -114,12 +114,12 @@ private struct MacKeyboardAccessArticle: View {
 
     var body: some View {
         ArticlePage(page: page) {
-            Prose("Many Mac users keep their hands on the keyboard, and some can't use a pointer at all. **Full Keyboard Access**, in the Accessibility section of System Settings, lets people move through windows, menus, and controls and use them with the keyboard alone. Apple asks apps to support it where they can, and SwiftUI does most of the work: standard controls already take part.")
+            Prose("Many Mac users keep their hands on the keyboard, and some can't use a pointer at all. **Full Keyboard Access**, in the Accessibility section of System Settings, lets people move through windows, menus, and controls and use them with the keyboard alone. A lighter setting, **Keyboard navigation** in System Settings > Keyboard, lets Tab reach every control. Apple asks apps to support Full Keyboard Access, and SwiftUI does most of the work: standard controls already take part.")
             Prose("Your part is custom views, the order focus moves in, and making sure no action needs the pointer.")
 
             VStack(alignment: .leading, spacing: 16) {
                 SectionTitle("Try it")
-                Prose("Click the Name field, then press Tab and ⇧Tab. The readout shows what has focus. Turn on Full Keyboard Access and try again: now the swatches and the Save button join in.")
+                Prose("Click the Name field, then press Tab and ⇧Tab. The readout shows what has focus. Turn on Keyboard navigation in System Settings > Keyboard and try again: now the swatches and the Save button join in.")
                 KeyboardPlayground()
             }
             .id("demo")
@@ -164,14 +164,14 @@ private struct MacKeyboardAccessArticle: View {
                         }
                         """,
                         minHeight: 150,
-                        aside: Aside(.note, "Click the stars, then press ← and →. A custom view built with macOS 14 or later is focusable even without Full Keyboard Access.")
+                        aside: Aside(.note, "Click the stars, then press ← and →. Built with the macOS 14 SDK or later, `.focusable()` takes focus even with keyboard navigation off.")
                     ) {
                         RatingExample()
                     }
 
                     ExampleCard(
                         title: "Move to the next field on Return",
-                        caption: "Use `@FocusState` with `.focused(_:equals:)`, and set it in `.onSubmit`. `.defaultFocus` picks the first field.",
+                        caption: "Tie each field to `@FocusState` with `.focused(_:equals:)`, set it in `.onSubmit`, and pick the first field with `.defaultFocus`.",
                         code: """
                         enum Field: Hashable {
                             case name, email
@@ -197,7 +197,7 @@ private struct MacKeyboardAccessArticle: View {
 
                     ExampleCard(
                         title: "Keep a column together",
-                        caption: "Tab moves leading to trailing, then top to bottom. `.focusSection()` makes it finish one column before it starts the next.",
+                        caption: "Tab moves across a row first, so add `.focusSection()` to each column to finish one before the next.",
                         code: """
                         @State private var shipping = ["", ""]
                         @State private var billing = ["", ""]
@@ -298,7 +298,7 @@ private struct KeyboardPlayground: View {
                     Text(focus?.label ?? "Nothing")
                         .font(.title3.weight(.semibold))
                         .contentTransition(.opacity)
-                    Text("The swatches are focusable only for activation, like a button, so they wait for Full Keyboard Access.")
+                    Text("The swatches are focusable only for activation, like a button, so they wait for keyboard navigation.")
                         .font(.callout)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
