@@ -1,0 +1,81 @@
+# The source of truth for the Xcode project. After changing it, run
+# `xcodegen generate` and commit the regenerated SwiftUIForHumans.xcodeproj.
+# Sources are synchronized folders, so adding or removing a file never needs
+# a regenerate.
+name: SwiftUIForHumans
+
+options:
+  bundleIdPrefix: com.swiftuiforhumans
+  deploymentTarget:
+    iOS: "26.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    DEVELOPMENT_TEAM: CJVZR779TW
+    CODE_SIGN_STYLE: Automatic
+    SWIFT_VERSION: "6.0"
+    # Raise CURRENT_PROJECT_VERSION before every upload; App Store Connect
+    # rejects a reused build number.
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "3"
+
+targets:
+  SwiftUIForHumans-iOS:
+    type: application
+    platform: iOS
+    sources:
+      - path: SwiftUIForHumans/Shared
+        type: syncedFolder
+      - path: SwiftUIForHumans/iOS
+        type: syncedFolder
+      - path: SwiftUIForHumans/Resources
+        type: syncedFolder
+    settings:
+      base:
+        PRODUCT_NAME: SwiftUI for Humans
+        PRODUCT_MODULE_NAME: SwiftUIForHumans
+        PRODUCT_BUNDLE_IDENTIFIER: com.swiftuiforhumans.app
+        TARGETED_DEVICE_FAMILY: "1,2"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_FILE: SwiftUIForHumans/Config/iOS/Info.plist
+        INFOPLIST_KEY_CFBundleDisplayName: SwiftUI for Humans
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.developer-tools
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight
+
+  CatalogTests-iOS:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Tests/Shared
+        type: syncedFolder
+      - path: Tests/iOS
+        type: syncedFolder
+    dependencies:
+      - target: SwiftUIForHumans-iOS
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.swiftuiforhumans.app.tests
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/SwiftUI for Humans.app/SwiftUI for Humans
+        BUNDLE_LOADER: $(TEST_HOST)
+
+schemes:
+  SwiftUI for Humans:
+    build:
+      targets:
+        SwiftUIForHumans-iOS: all
+    run:
+      config: Debug
+      storeKitConfiguration: StoreKit/Tips.storekit
+    test:
+      config: Debug
+      targets:
+        - CatalogTests-iOS
+    archive:
+      config: Release

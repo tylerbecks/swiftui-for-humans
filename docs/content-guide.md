@@ -2,7 +2,7 @@
 
 How to write a page: what goes on it and how to word it. For the code side, see [building-pages.md](building-pages.md). The goal is shadcn/ui's feel: clean, practical, and short, with links out for depth. Each page surfaces the 20% of a component that people use 80% of the time, plus Apple's design guidance for it, and leaves the rest to Apple's docs.
 
-Reference pages: **Button** (`Examples/Controls/ButtonExample.swift`) for a simple control and **NavigationStack** (`Examples/Navigation/NavigationStackPage.swift`) for a container. When in doubt, copy their shape.
+Reference pages: **Button** (`iOS/Examples/Controls/ButtonExample.swift`) for a simple control and **NavigationStack** (`iOS/Examples/Navigation/NavigationStackPage.swift`) for a container. When in doubt, copy their shape.
 
 ## Page anatomy
 

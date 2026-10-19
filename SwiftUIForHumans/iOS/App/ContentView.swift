@@ -199,8 +199,7 @@ struct CatalogLinks: ViewModifier {
 /// `-tab <components|design|ship|search>`, `-open <page id>`,
 /// `-search <text>`, `-showControls`, `-scrollTo <anchor>`, `-showScrubber`.
 enum LaunchOptions {
-    static func value(for flag: String) -> String? {
-        let arguments = ProcessInfo.processInfo.arguments
+    static func value(for flag: String, in arguments: [String] = ProcessInfo.processInfo.arguments) -> String? {
         guard let index = arguments.firstIndex(of: flag), index + 1 < arguments.count else { return nil }
         return arguments[index + 1]
     }
