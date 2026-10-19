@@ -90,6 +90,9 @@ struct MacContentView: View {
                 if newTab == .search {
                     isSearchFocused = true
                 } else {
+                    // A search replaces the sidebar's page list, so end it
+                    // to show the section ⌘1–⌘3 asked for.
+                    searchText = ""
                     tab = newTab
                 }
             },

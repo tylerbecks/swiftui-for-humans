@@ -7,9 +7,10 @@
 #   scripts/build.sh mac         build the Mac app
 #   scripts/build.sh test-mac    run the tests on this Mac (no simulator)
 #
-# Set SIMULATOR to a simulator name or udid for test-ios (default:
-# Catalog-laneb-iPhone, a dedicated test simulator). Products land in
-# .build/DerivedData inside this checkout.
+# Set SIMULATOR to a simulator name or udid for test-ios. Without it, the
+# tests run on Catalog-laneb-iPhone (a dedicated test simulator) if this
+# Mac has one, and otherwise on the first available iPhone simulator.
+# Products land in .build/DerivedData inside this checkout.
 set -euo pipefail
 
 root=${0:A:h:h}
@@ -43,7 +44,18 @@ case $action in
         echo "$derived/Build/Products/Debug-iphonesimulator/SwiftUI for Humans.app"
         ;;
     test-ios)
-        simulator=${SIMULATOR:-Catalog-laneb-iPhone}
+        available=$(xcrun simctl list devices available)
+        if [[ -n ${SIMULATOR:-} ]]; then
+            simulator=$SIMULATOR
+        elif grep -q "Catalog-laneb-iPhone (" <<< "$available"; then
+            simulator=Catalog-laneb-iPhone
+        else
+            simulator=$(grep -m1 -E '^ +iPhone' <<< "$available" | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')
+        fi
+        if [[ -z $simulator ]]; then
+            echo "No iPhone simulator found. Create one in Xcode, or set SIMULATOR." >&2
+            exit 1
+        fi
         [[ $simulator == *-*-*-*-* ]] && key=id || key=name
         xcodebuild "${common[@]}" -scheme "SwiftUI for Humans" \
             -destination "platform=iOS Simulator,$key=$simulator" test -quiet
