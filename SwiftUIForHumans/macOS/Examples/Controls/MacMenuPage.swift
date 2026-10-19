@@ -14,7 +14,7 @@ extension ComponentPage {
         related: ["picker", "button", "context-menu", "commands", "toolbar", "control-group"],
         notes: [
             "**Menus hold buttons, toggles, and pickers.** Put them in the content closure; `Divider()` and `Section` split them into groups.",
-            "**A pop-up picker inside a menu becomes a submenu.** Add `.pickerStyle(.inline)` to list its options right in the menu instead.",
+            "**Choose how a picker shows inside a menu.** `.pickerStyle(.inline)` lists its options right in the menu; `.pickerStyle(.menu)` puts them in a submenu.",
         ],
         api: [
             APIItem("`Menu(_:content:)`", "A pull-down button with a title."),
@@ -23,7 +23,7 @@ extension ComponentPage {
             APIItem("`.menuStyle(.button)`", "Draws the menu as a button."),
             APIItem("`.menuIndicator(.hidden)`", "Hides the menu's arrow."),
             APIItem("`Section`, `Divider()`", "Group related items."),
-            APIItem("`Button(_:role: .destructive)`", "Marks a dangerous item."),
+            APIItem("`Button(_:role:action:)`", "With `.destructive`, marks a dangerous item."),
         ],
         guidelines: [
             Guideline(
@@ -45,6 +45,7 @@ extension ComponentPage {
                     Menu("More", systemImage: "ellipsis.circle") {
                         Button("Duplicate") {}
                         Button("Export…") {}
+                        Button("Print…") {}
                     }
                     .labelStyle(.iconOnly)
                     .menuStyle(.button)
@@ -60,6 +61,7 @@ extension ComponentPage {
                         Button("New Note") {}
                         Button("Duplicate") {}
                         Button("Export…") {}
+                        Button("Print…") {}
                     }
                     .labelStyle(.iconOnly)
                     .menuStyle(.button)
@@ -74,7 +76,7 @@ extension ComponentPage {
             ),
             Guideline(
                 "Write items in title case, and add an ellipsis when more input follows.",
-                "Start with a verb, leave out articles like “the”, and end with “…” when the item opens a window or asks a question, as in Export…."
+                "Start with a verb, leave out articles like “the”, and end with “…” when people must give more input before it can finish, as in Export…."
             ),
             Guideline(
                 "Mark destructive items.",
@@ -235,7 +237,7 @@ private struct MacMenuExamples: View {
     var body: some View {
         ExampleCard(
             title: "A split button with a primary action",
-            caption: "Add `primaryAction:` and a click on the button runs it right away. The menu opens from the arrow, for the variations.",
+            caption: "Add `primaryAction:` so a click on the button runs it right away, while the arrow opens a menu of variations.",
             code: """
             Menu("New Document") {
                 Button("From Template…") { newFromTemplate() }
@@ -262,7 +264,7 @@ private struct MacMenuExamples: View {
 
         ExampleCard(
             title: "Sections, toggles, and a picker",
-            caption: "Group items with `Section`. A `Toggle` shows whether an option is on, and an `.inline` picker lists its choices in place.",
+            caption: "Group items with `Section`, use a `Toggle` for an option that's on or off, and an `.inline` picker to list choices in place.",
             code: """
             @State private var sortKey = "Date"
             @State private var showsPreview = true
@@ -347,7 +349,7 @@ private struct MacMenuExamples: View {
             .buttonStyle(.borderless)
             """,
             minHeight: 120,
-            aside: Aside(.note, "`.menuStyle(.borderlessButton)` is deprecated. This pair of modifiers replaces it.")
+            aside: Aside(.note, "`.menuStyle(.borderlessButton)` is deprecated in macOS 27.2. This pair of modifiers replaces it.")
         ) {
             Menu("Sort", systemImage: "arrow.up.arrow.down") {
                 Button("Date") {}

@@ -197,7 +197,7 @@ private struct MacButtonExamples: View {
     var body: some View {
         ExampleCard(
             title: "Default and cancel buttons",
-            caption: "Add `.keyboardShortcut(.defaultAction)` to the button people want most: Return clicks it, and it's tinted. `.cancelAction` maps Escape.",
+            caption: "Add `.keyboardShortcut(.defaultAction)` to the likeliest button so Return clicks it and tints it, and `.cancelAction` so Escape cancels.",
             code: """
             HStack {
                 Button("Cancel", role: .cancel) {
@@ -238,7 +238,7 @@ private struct MacButtonExamples: View {
 
         ExampleCard(
             title: "Destructive actions",
-            caption: "Give a delete button `role: .destructive` so the system can style it as dangerous wherever it appears, including menus.",
+            caption: "Give a delete button `role: .destructive` so menus and alerts can mark it in red as a dangerous action.",
             code: """
             HStack {
                 Button("Delete Project", role: .destructive) {

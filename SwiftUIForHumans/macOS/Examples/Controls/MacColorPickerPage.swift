@@ -13,7 +13,6 @@ extension ComponentPage {
         aliases: ["color well", "NSColorWell", "NSColorPanel", "colors window", "input type=color", "swatch", "eyedropper", "opacity", "alpha"],
         related: ["color", "labeled-content", "form", "inspector"],
         notes: [
-            "**The system panel remembers people's colors.** Colors they save there show up in every app that uses it, which is a good reason not to build your own.",
             "**Color wells take drag and drop.** People can drag a color from one well to another, or from the color panel onto a well.",
         ],
         api: [
@@ -130,7 +129,7 @@ private struct MacColorPickerExamples: View {
     var body: some View {
         ExampleCard(
             title: "Colors in an inspector",
-            caption: "Put a few labeled wells in a `Form`. Each one is its own `ColorPicker` with its own binding.",
+            caption: "Put a few labeled wells in a `Form`, each its own `ColorPicker` with its own binding.",
             code: """
             @State private var fill = Color.teal
             @State private var stroke = Color.indigo
@@ -157,7 +156,7 @@ private struct MacColorPickerExamples: View {
 
         ExampleCard(
             title: "Solid colors only",
-            caption: "Pass `supportsOpacity: false` when a see-through color makes no sense, like the color of a label. The panel then leaves out its opacity controls.",
+            caption: "Pass `supportsOpacity: false` when a see-through color makes no sense, like a label color, and the panel leaves out its opacity controls.",
             code: """
             @State private var labelColor = Color.orange
 
@@ -176,7 +175,7 @@ private struct MacColorPickerExamples: View {
 
         ExampleCard(
             title: "Saving the color",
-            caption: "`Color` isn't stored directly. `resolve(in:)` gives a `Color.Resolved`, which is `Codable`, so you can save it as JSON.",
+            caption: "`Color` isn't `Codable`, so call `resolve(in:)` for a `Color.Resolved`, which you can save as JSON.",
             code: """
             @State private var tagColor = Color.mint
             @Environment(\\.self) private var environment

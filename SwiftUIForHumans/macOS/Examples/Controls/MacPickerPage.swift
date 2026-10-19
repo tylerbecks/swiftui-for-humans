@@ -211,7 +211,7 @@ private struct MacPickerExamples: View {
     var body: some View {
         ExampleCard(
             title: "Radio buttons in a form",
-            caption: "Use `.radioGroup` when there are only a few options and seeing them all helps. In a `Form`, the label lines up with the other rows.",
+            caption: "Use `.radioGroup` when seeing every option helps, and inside a `Form` its label lines up with the other rows.",
             code: """
             @State private var format = "Rich Text"
             @State private var encoding = "UTF-8"
@@ -272,7 +272,7 @@ private struct MacPickerExamples: View {
 
         ExampleCard(
             title: "A segmented control in an inspector",
-            caption: "Use `.segmented` for a few related options that change the selection. Give symbol segments a text label for VoiceOver.",
+            caption: "Use `.segmented` for a few closely related choices, like alignment in an inspector, with a text label on each symbol for VoiceOver.",
             code: """
             @State private var alignment = "Left"
 
@@ -299,7 +299,7 @@ private struct MacPickerExamples: View {
 
         ExampleCard(
             title: "A Custom… option",
-            caption: "Separate rare choices with a `Divider()`. A Custom… item can open a sheet for the unusual value, so the pop-up stays short.",
+            caption: "Add a Custom… item after a `Divider()` for the rare value, so the pop-up stays short instead of listing everything.",
             code: """
             @State private var spacing = 1.0
 

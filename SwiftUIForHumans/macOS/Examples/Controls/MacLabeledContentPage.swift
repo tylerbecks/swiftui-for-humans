@@ -26,17 +26,17 @@ extension ComponentPage {
         ],
         guidelines: [
             Guideline(
-                "Use it for text people read, not edit.",
-                "A label shows a small amount of text. When people should change the value, put a text field or another control in the value instead."
+                "Show read-only details as text.",
+                "A text value is for reading and copying, not editing. When people should change the value, put a text field or another control in the value instead."
             ),
             Guideline(
                 "Let people copy useful details.",
-                "Values like an error code, an address, or a version number are worth pasting elsewhere. Keep them as `Text` so they stay selectable."
+                "Values like an error code, an address, or a version number are worth pasting elsewhere. Pass them as a string or with `format:`, and SwiftUI makes them selectable where it can."
             ),
             Guideline(
                 "Show importance with the system's label colors.",
-                "Primary for the main value and secondary for supporting text keep the hierarchy clear in light and dark.",
-                good: "The value stands out; the label recedes.",
+                "Primary for the main text and secondary for supporting text keep the hierarchy clear in light and dark, as a grouped form does.",
+                good: "The label leads; the value is secondary.",
                 bad: "Both in one color, so nothing leads."
             ) {
                 MacInfoRow(isLayered: true)
@@ -199,7 +199,7 @@ private struct MacLabeledContentExamples: View {
 
         ExampleCard(
             title: "Checkboxes under one label",
-            caption: "In a grouped form, toggles are switches. Inside `LabeledContent` they become checkboxes, stacked under one label.",
+            caption: "In a grouped form, toggles inside `LabeledContent` become checkboxes stacked under one label, instead of switches.",
             code: """
             @State private var refreshesStatus = true
             @State private var fetchesServer = false
@@ -266,10 +266,10 @@ private struct MacInfoRow: View {
     var body: some View {
         HStack {
             Text("Serial Number")
-                .foregroundStyle(isLayered ? .secondary : .primary)
+                .foregroundStyle(.primary)
             Spacer()
             Text("C02XK1JHJG5H")
-                .foregroundStyle(.primary)
+                .foregroundStyle(isLayered ? .secondary : .primary)
         }
         .frame(width: 240)
     }

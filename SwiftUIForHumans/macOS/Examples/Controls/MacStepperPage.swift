@@ -190,7 +190,7 @@ private struct MacStepperExamples: View {
 
         ExampleCard(
             title: "Two values side by side",
-            caption: "Each field gets its own stepper. `LabeledContent` lines the rows up with other form controls.",
+            caption: "Give each field its own stepper, and wrap each pair in `LabeledContent` so the rows line up with other form controls.",
             code: """
             @State private var width = 800
             @State private var height = 600

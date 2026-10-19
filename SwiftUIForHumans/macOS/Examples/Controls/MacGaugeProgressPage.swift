@@ -243,7 +243,7 @@ private struct MacGaugeProgressExamples: View {
 
         ExampleCard(
             title: "An indeterminate bar",
-            caption: "Without a value, `.linear` draws a bar that animates without an end. On the Mac it's an option alongside the spinner.",
+            caption: "Without a value, `.linear` draws a bar that animates without an end, which the Mac offers alongside the spinner.",
             code: """
             ProgressView {
                 Text("Preparing export")
@@ -297,7 +297,7 @@ private struct MacGaugeProgressExamples: View {
 
         ExampleCard(
             title: "A capacity gauge",
-            caption: "`.linearCapacity` fills a bar up to the value. Add `minimumValueLabel` and `maximumValueLabel` to show the ends of the range.",
+            caption: "`.linearCapacity` fills a bar up to the value, and `minimumValueLabel` and `maximumValueLabel` show the ends of the range.",
             code: """
             Gauge(value: 0.72) {
                 Text("Storage")
@@ -330,7 +330,7 @@ private struct MacGaugeProgressExamples: View {
 
         ExampleCard(
             title: "A small circular gauge",
-            caption: "`.accessoryCircular` draws a ring with a marker at the value. A gradient tint helps show what high and low mean.",
+            caption: "`.accessoryCircular` draws a ring with a marker at the value, and a gradient tint shows what high and low mean.",
             code: """
             Gauge(value: 0.35) {
                 Text("CPU")

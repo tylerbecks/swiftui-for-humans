@@ -169,36 +169,47 @@ private struct MacControlGroupExamples: View {
             code: """
             @State private var page = 3
 
-            .toolbar {
-                ToolbarItem(placement: .navigation) {
-                    ControlGroup("Navigation", systemImage: "arrow.left.arrow.right") {
-                        Button("Back", systemImage: "chevron.left") { page -= 1 }
-                            .disabled(page == 1)
-                        Button("Forward", systemImage: "chevron.right") { page += 1 }
-                            .disabled(page == 5)
+            Text("Page \\(page)")
+                .navigationTitle("Page \\(page) of 5")
+                .toolbar {
+                    ToolbarItem(placement: .navigation) {
+                        ControlGroup("Navigation", systemImage: "arrow.left.arrow.right") {
+                            Button("Back", systemImage: "chevron.left") { page -= 1 }
+                                .disabled(page == 1)
+                            Button("Forward", systemImage: "chevron.right") { page += 1 }
+                                .disabled(page == 5)
+                        }
+                        .controlGroupStyle(.navigation)
                     }
-                    .controlGroupStyle(.navigation)
                 }
-            }
             """,
             minHeight: 190,
             aside: Aside(.note, "A real `.toolbar` here would land in this window's toolbar, so the preview draws one. Open the sample to see the real thing.")
         ) {
             VStack(spacing: 16) {
-                MacWindowFrame(title: "Page \(page) of 5", width: 380, height: 120) {
+                MacWindowFrame(width: 380, height: 120) {
                     Text("Page \(page)")
                         .font(.title.weight(.semibold))
                         .foregroundStyle(.secondary)
                 } toolbar: {
-                    ControlGroup("Navigation", systemImage: "arrow.left.arrow.right") {
-                        Button("Back", systemImage: "chevron.left") { page -= 1 }
-                            .disabled(page == 1)
-                        Button("Forward", systemImage: "chevron.right") { page += 1 }
-                            .disabled(page == 5)
+                    // The navigation placement sits at the leading edge,
+                    // right after the window buttons.
+                    HStack(spacing: 12) {
+                        ControlGroup("Navigation", systemImage: "arrow.left.arrow.right") {
+                            Button("Back", systemImage: "chevron.left") { page -= 1 }
+                                .disabled(page == 1)
+                            Button("Forward", systemImage: "chevron.right") { page += 1 }
+                                .disabled(page == 5)
+                        }
+                        .controlGroupStyle(.navigation)
+                        .labelStyle(.iconOnly)
+                        .fixedSize()
+                        Text("Page \(page) of 5")
+                            .font(.headline)
+                            .foregroundStyle(.primary)
                     }
-                    .controlGroupStyle(.navigation)
-                    .labelStyle(.iconOnly)
-                    .fixedSize()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .layoutPriority(1)
                 }
                 OpenDemoWindowButton(id: "control-group-toolbar", label: "Open the Toolbar Sample")
             }
@@ -298,21 +309,27 @@ private struct MacGroupedToolbar: View {
         MacWindowFrame(width: 270, height: 90) {
             Color.clear
         } toolbar: {
-            if isSplit {
-                ControlGroup { Button("Back", systemImage: "chevron.left") {} }
-                ControlGroup { Button("Forward", systemImage: "chevron.right") {} }
-                ControlGroup { Button("Zoom Out", systemImage: "minus.magnifyingglass") {} }
-                ControlGroup { Button("Zoom In", systemImage: "plus.magnifyingglass") {} }
-            } else {
-                ControlGroup {
-                    Button("Back", systemImage: "chevron.left") {}
-                    Button("Forward", systemImage: "chevron.right") {}
-                }
-                ControlGroup {
-                    Button("Zoom Out", systemImage: "minus.magnifyingglass") {}
-                    Button("Zoom In", systemImage: "plus.magnifyingglass") {}
+            HStack(spacing: 10) {
+                if isSplit {
+                    ControlGroup { Button("Back", systemImage: "chevron.left") {} }
+                    ControlGroup { Button("Forward", systemImage: "chevron.right") {} }
+                    Spacer(minLength: 0)
+                    ControlGroup { Button("Zoom Out", systemImage: "minus.magnifyingglass") {} }
+                    ControlGroup { Button("Zoom In", systemImage: "plus.magnifyingglass") {} }
+                } else {
+                    ControlGroup {
+                        Button("Back", systemImage: "chevron.left") {}
+                        Button("Forward", systemImage: "chevron.right") {}
+                    }
+                    Spacer(minLength: 0)
+                    ControlGroup {
+                        Button("Zoom Out", systemImage: "minus.magnifyingglass") {}
+                        Button("Zoom In", systemImage: "plus.magnifyingglass") {}
+                    }
                 }
             }
+            .frame(maxWidth: .infinity)
+            .layoutPriority(1)
         }
         .labelStyle(.iconOnly)
     }

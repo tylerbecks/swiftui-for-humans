@@ -15,13 +15,14 @@ extension ComponentPage {
         notes: [
             "**Without `displayedComponents`, you get both date and time.** Pass `.date` or `.hourAndMinute` to show only what people should edit.",
             "**The order follows the person's region.** The same picker shows day, month, and year in the order their locale expects.",
+            "**The Mac default is a field with arrows.** Click a part, like the month or the minute, then type or click the arrows to change it.",
         ],
         api: [
             APIItem("`DatePicker(_:selection:)`", "A date and time bound to a `Date`."),
             APIItem("`displayedComponents:`", "`.date`, `.hourAndMinute`, or both."),
             APIItem("`in: Date.now...`", "Limits the range people can pick."),
-            APIItem("`.datePickerStyle(.field)`", "An editable text field."),
-            APIItem("`.datePickerStyle(.stepperField)`", "The field with a stepper beside it."),
+            APIItem("`.datePickerStyle(.stepperField)`", "The Mac default: a field with arrows."),
+            APIItem("`.datePickerStyle(.field)`", "The field alone, without arrows."),
             APIItem("`.datePickerStyle(.graphical)`", "A month calendar people browse."),
         ],
         guidelines: [
@@ -147,7 +148,7 @@ private struct MacDatePickerExamples: View {
 
         ExampleCard(
             title: "A calendar to browse",
-            caption: "`.graphical` shows a month at a time. It fits a sidebar, an inspector, or a popover where people look around before choosing.",
+            caption: "`.graphical` shows a month at a time, which suits a sidebar, inspector, or popover where people browse before choosing.",
             code: """
             @State private var day = Date.now
 
@@ -164,18 +165,16 @@ private struct MacDatePickerExamples: View {
         }
 
         ExampleCard(
-            title: "A time with a stepper",
-            caption: "`.stepperField` adds arrows beside the field. Click the hour or the minute, and the arrows change that part.",
+            title: "Just a time",
+            caption: "Pass `.hourAndMinute` to show only a time, for something like a daily reminder where the date doesn't matter.",
             code: """
             @State private var reminder = Date.now
 
             DatePicker("Remind me at:", selection: $reminder, displayedComponents: .hourAndMinute)
-                .datePickerStyle(.stepperField)
             """,
             minHeight: 120
         ) {
             DatePicker("Remind me at:", selection: $reminder, displayedComponents: .hourAndMinute)
-                .datePickerStyle(.stepperField)
                 .fixedSize()
         }
 

@@ -23,7 +23,7 @@ extension ComponentPage {
             APIItem("`minimumValueLabel:`", "A view at the leading end."),
             APIItem("`maximumValueLabel:`", "A view at the trailing end."),
             APIItem("`onEditingChanged:`", "Called when a drag starts and ends."),
-            APIItem("`ticks: { SliderTick(…) }`", "Tick marks at the values you choose."),
+            APIItem("`ticks: { SliderTick(…) }`", "Ticks at values you choose (macOS 26)."),
             APIItem("`.controlSize(_:)`", "Smaller sliders for inspectors."),
         ],
         guidelines: [
@@ -234,7 +234,7 @@ private struct MacSliderExamples: View {
 
         ExampleCard(
             title: "Tick marks with labels",
-            caption: "Pass `ticks:` to place a `SliderTick` at each value that matters, with an optional label. Here only the ends are labeled.",
+            caption: "In macOS 26, pass `ticks:` to place a `SliderTick` at each value that matters, labeling only the ones that help, like the ends.",
             code: """
             @State private var quality = 0.75
 
@@ -303,7 +303,7 @@ private struct MacSliderExamples: View {
 
         ExampleCard(
             title: "With a field and a stepper",
-            caption: "For a precise value, put a `TextField` and a `Stepper` beside the slider. All three share one binding.",
+            caption: "For a precise value, put a `TextField` and a `Stepper` beside the slider, all three sharing one binding.",
             code: """
             @State private var opacity = 80.0
 
