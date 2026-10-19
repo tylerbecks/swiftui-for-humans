@@ -124,6 +124,7 @@ extension Catalog {
         + menusInputPages
         + essentialsBlocksPages
         + designPages
+        + designPatternsPages
         + shipPages
 
     /// Every window a page can open with `OpenDemoWindowButton`.
@@ -135,5 +136,6 @@ extension Catalog {
         + menusInputDemoWindows
         + essentialsBlocksDemoWindows
         + designDemoWindows
+        + designPatternsDemoWindows
         + shipDemoWindows
 }

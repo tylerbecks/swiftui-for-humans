@@ -31,7 +31,8 @@ A page's sidebar section comes from its `category`, not its folder:
 | WindowsNavigation | `.windows`, `.navigation` |
 | MenusInput | `.menus`, `.presentation`, `.input`, `.files` |
 | EssentialsBlocks | `.dataFlow`, `.animation`, `.frameworks`, `.blocks` |
-| Design | `.foundations`, `.accessibility`, `.patterns` |
+| Design | `.foundations` |
+| DesignPatterns | `.accessibility`, `.patterns` |
 | Ship | `.startHere`, `.feelsNative`, `.requiredByApple`, `.appStoreConnect`, `.testAndRelease` |
 
 ## Page IDs
@@ -46,7 +47,8 @@ Use these IDs, so pages can link to each other in `related` and `catalog://` lin
 | WindowsNavigation | `window-group`, `window`, `settings-scene`, `menu-bar-extra`, `document-group`, `window-style`, `opening-windows`, `navigation-split-view`, `navigation-stack`, `toolbar`, `search` |
 | MenusInput | `commands`, `keyboard-shortcuts`, `context-menu`, `sheet`, `alert`, `popover`, `tooltips`, `hover`, `drag-drop`, `copy-paste`, `trackpad-gestures`, `file-import-export`, `share-link` |
 | EssentialsBlocks | `state-binding`, `observable`, `environment`, `animation`, `charts-maps`, `library-window`, `settings-window`, `menu-bar-utility`, `document-editor`, `welcome-window`, `empty-states` |
-| Design | `windows-layout`, `typography`, `color`, `materials`, `sf-symbols`, `dark-mode`, `app-icons`, `writing`, `motion`, `keyboard-access`, `voiceover`, `contrast-transparency`, `reduce-motion`, `menu-bar-conventions`, `settings-pattern`, `undo-redo`, `windows-tabs`, `toolbars-pattern`, `onboarding`, `full-screen` |
+| Design | `windows-layout`, `typography`, `color`, `materials`, `sf-symbols`, `dark-mode`, `app-icons`, `writing`, `motion` |
+| DesignPatterns | `keyboard-access`, `voiceover`, `contrast-transparency`, `reduce-motion`, `menu-bar-conventions`, `settings-pattern`, `undo-redo`, `windows-tabs`, `toolbars-pattern`, `onboarding`, `full-screen` |
 | Ship | `native-vs-catalyst`, `great-mac-app`, `mac-native-checklist`, `ipad-app-in-window`, `app-sandbox`, `privacy-permissions`, `mac-app-review`, `hardened-runtime`, `universal-purchase`, `mac-screenshots`, `pricing-category`, `testflight-mac`, `developer-id-notarization`, `updates-outside-store` |
 
 Link only to IDs in this table. Until every group is merged, the registry test reports links to other groups' pages as missing; that's expected. Links to IDs in your own group must work.
