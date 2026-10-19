@@ -82,7 +82,7 @@ private struct MacUpdatesOutsideStoreArticle: View {
             Prose("If you ship both ways, compile the updater only into the direct build. Add a flag like `DIRECT` to **Active Compilation Conditions** (`SWIFT_ACTIVE_COMPILATION_CONDITIONS`) in a build configuration you use only for Developer ID builds.")
             ExampleCard(
                 title: "A Check for Updates command, direct builds only",
-                caption: "`CommandGroup(after: .appInfo)` puts the item under About in the app menu. Wrapping the whole `.commands` in `#if DIRECT` keeps it out of the store build.",
+                caption: "`CommandGroup(after: .appInfo)` puts the item under About in the app menu, and `#if DIRECT` keeps it out of the store build.",
                 code: """
                 @main
                 struct TripsApp: App {
@@ -111,7 +111,7 @@ private struct MacUpdatesOutsideStoreArticle: View {
             }
 
             SectionTitle("A simple update check")
-            Prose("The smallest updater asks your server for the latest version and, if it's newer, sends people to your download page. Whatever downloads the new version, it must be signed with your Developer ID and notarized, like every Developer ID release.")
+            Prose("The smallest updater asks your server for the latest version and, if it's newer, sends people to your download page. Whatever people download must be signed with your Developer ID and notarized, like every Developer ID release.")
             ExampleCard(
                 title: "Compare versions, then open the download page",
                 caption: "Read your version from `CFBundleShortVersionString`, compare it with the server's using `.numeric`, and open the page with `openURL`.",

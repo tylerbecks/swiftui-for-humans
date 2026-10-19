@@ -100,7 +100,7 @@ private struct MacMaterialsArticle: View {
                 SectionTitle("Try the variants")
                     .id("demo")
                 MacGlassDemo()
-                Aside(.important, "Screenshots of this page can't draw Liquid Glass. Look at it in the running app, over each backdrop.")
+                Aside(.note, "Glass looks different when people turn on Reduce Transparency or Increase Contrast, so check your controls with those settings too.")
             }
 
             VStack(alignment: .leading, spacing: 16) {

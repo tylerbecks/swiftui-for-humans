@@ -42,13 +42,13 @@ extension ComponentPage {
                         Text("Name:").gridColumnAlignment(.trailing)
                         TextField("Name", text: .constant("Ada"))
                             .labelsHidden()
-                            .frame(width: 120)
+                            .frame(width: 140)
                     }
                     GridRow {
                         Text("Email address:")
                         TextField("Email", text: .constant("ada@example.com"))
                             .labelsHidden()
-                            .frame(width: 120)
+                            .frame(width: 140)
                     }
                 }
             } bad: {
@@ -57,13 +57,13 @@ extension ComponentPage {
                         Text("Name:")
                         TextField("Name", text: .constant("Ada"))
                             .labelsHidden()
-                            .frame(width: 120)
+                            .frame(width: 140)
                     }
                     HStack(spacing: 8) {
                         Text("Email address:")
                         TextField("Email", text: .constant("ada@example.com"))
                             .labelsHidden()
-                            .frame(width: 120)
+                            .frame(width: 140)
                     }
                 }
             },
@@ -72,8 +72,8 @@ extension ComponentPage {
                 "People usually read a window from top to bottom and from the leading side, so that's where they look first."
             ),
             Guideline(
-                "Group related items with space before you reach for lines and boxes.",
-                "Extra space between groups already says what belongs together. Separators and containers are for when space isn't enough."
+                "Group related items so people can see what belongs together.",
+                "Extra space between groups often says it on its own. A container shape or a separator line can make the grouping clearer."
             ),
             Guideline(
                 "Keep important controls away from the bottom of the window.",
@@ -213,7 +213,7 @@ private struct MacStacksGridExamples: View {
     var body: some View {
         ExampleCard(
             title: "Push items apart with Spacer",
-            caption: "A `Spacer` grows to fill the row, so the count stays left and the button stays right at any window width. Drag the slider to resize.",
+            caption: "A `Spacer` grows to fill the row, so the count stays left and the button stays right at any width; drag the slider to resize.",
             code: """
             HStack {
                 Text("12 items")

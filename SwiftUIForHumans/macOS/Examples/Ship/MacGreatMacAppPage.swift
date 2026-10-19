@@ -70,7 +70,7 @@ extension ComponentPage {
             "https://developer.apple.com/design/human-interface-guidelines/drag-and-drop",
             "https://developer.apple.com/documentation/swiftui/commands",
             "https://developer.apple.com/documentation/swiftui/view/draggable(_:)",
-            "https://developer.apple.com/documentation/swiftui/view/dropdestination(for:action:istargeted:)",
+            "https://developer.apple.com/documentation/swiftui/view/dropdestination(for:isenabled:action:)",
         ],
         reviewed: "October 2026"
     ) {
@@ -97,7 +97,7 @@ private struct MacGreatMacAppArticle: View {
                 .padding(.vertical, 8)
             ExampleCard(
                 title: "Add an app-specific menu",
-                caption: "`CommandMenu` adds a menu between View and Window. Give the commands people use most a keyboard shortcut.",
+                caption: "`CommandMenu` adds a menu between View and Window, with shortcuts for the commands people use most.",
                 code: """
                 WindowGroup {
                     ContentView()
@@ -123,7 +123,7 @@ private struct MacGreatMacAppArticle: View {
             Prose("Standard shortcuts like ⌘C, ⌘Z, and ⌘W should work as they do everywhere else. Add your own only for frequent commands, list modifiers as ⌃⌥⇧⌘, and support Full Keyboard Access so people can reach every control without a pointer. See [Keyboard Shortcuts](catalog://keyboard-shortcuts).")
             ExampleCard(
                 title: "A shortcut on a button",
-                caption: "`.keyboardShortcut(_:modifiers:)` works while the button's window is active. Press ⌥⌘K to try it.",
+                caption: "`.keyboardShortcut(_:modifiers:)` clicks the button for you while its window is active, so press ⌥⌘K to try it.",
                 code: """
                 @State private var stops = 0
 
@@ -142,7 +142,7 @@ private struct MacGreatMacAppArticle: View {
             }
 
             SectionTitle("3. Windows people control")
-            Prose("Windows should adapt smoothly to any size. Where it helps people multitask, let them open content in a window of its own, the way Mail gives each new message its own window. Avoid custom window frames: the system's frame tells people which window is active. See [WindowGroup](catalog://window-group).")
+            Prose("Windows should adapt smoothly to any size. Where it helps people multitask, let them open content in a window of its own, the way Mail gives each new message its own window. Keep the system's window frame and controls: a custom imitation that doesn't match them exactly makes an app feel broken. See [WindowGroup](catalog://window-group).")
             CodeBlock(code: """
             WindowGroup(for: Trip.ID.self) { $tripID in
                 TripView(tripID: tripID)
@@ -157,7 +157,7 @@ private struct MacGreatMacAppArticle: View {
             Prose("People try drag and drop on everything: between your windows, to and from other apps, and into the Finder. Offer another way to do the same thing, like a menu command, for people who can't drag. See [Drag and Drop](catalog://drag-drop).")
             ExampleCard(
                 title: "Drag a stop onto the trip",
-                caption: "`.draggable(_:)` makes a view a drag source, and `.dropDestination(for:action:isTargeted:)` accepts the drop.",
+                caption: "`.draggable(_:)` makes a view a drag source, and `.dropDestination(for:)` accepts what people drop on a view.",
                 code: """
                 @State private var trip: [String] = []
 
@@ -174,7 +174,6 @@ private struct MacGreatMacAppArticle: View {
                     .background(.fill.quaternary, in: .rect(cornerRadius: 10))
                     .dropDestination(for: String.self) { cities, _ in
                         trip.append(contentsOf: cities)
-                        return true
                     }
                 """,
                 minHeight: 200
@@ -243,8 +242,10 @@ private struct DragDropSample: View {
                 .background(isTargeted ? AnyShapeStyle(Color.accentColor.opacity(0.2)) : AnyShapeStyle(.fill.quaternary), in: .rect(cornerRadius: 10))
                 .dropDestination(for: String.self) { cities, _ in
                     trip.append(contentsOf: cities)
-                    return true
-                } isTargeted: { isTargeted = $0 }
+                }
+                .onDropSessionUpdated { session in
+                    isTargeted = session.phase == .entering || session.phase == .active
+                }
             if !trip.isEmpty {
                 Button("Clear") { trip = [] }
                     .controlSize(.small)

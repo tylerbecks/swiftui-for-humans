@@ -7,7 +7,7 @@ extension ComponentPage {
         summary: "Scrolls content that's bigger than its frame, in one direction or both.",
         category: .layout,
         symbol: "scroll",
-        availability: ["macOS 10.15+"],
+        availability: ["macOS 10.15+", "ScrollPosition macOS 15.0+"],
         docsURL: "https://developer.apple.com/documentation/swiftui/scrollview",
         higURL: "https://developer.apple.com/design/human-interface-guidelines/scroll-views",
         aliases: [
@@ -311,7 +311,7 @@ private struct MacScrollViewExamples: View {
 
         ExampleCard(
             title: "A horizontal row with room at the edges",
-            caption: "`.contentMargins(.horizontal, 20, for: .scrollContent)` insets the first and last cards without clipping them while they scroll.",
+            caption: "Use `.contentMargins` with `for: .scrollContent` to inset the first and last cards without clipping them while they scroll.",
             code: """
             ScrollView(.horizontal) {
                 HStack {
@@ -345,7 +345,7 @@ private struct MacScrollViewExamples: View {
 
         ExampleCard(
             title: "Keep scroll bars inside rounded corners",
-            caption: "After `.clipShape`, add `.contentMargins(_:for: .scrollIndicators)` so the corners don't cut off the scroll bar.",
+            caption: "After `.clipShape`, add `.contentMargins` with `for: .scrollIndicators` so the rounded corners don't cut off the scroll bar.",
             code: """
             ScrollView {
                 VStack(alignment: .leading) {

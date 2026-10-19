@@ -18,7 +18,7 @@ extension ComponentPage {
         related: ["list-styles", "table", "group-box"],
         notes: [
             "**`children` decides which rows get a triangle.** A row whose children are `nil` is a leaf. An empty array still shows a triangle, like an empty folder.",
-            "**`List(_:children:)` is an `OutlineGroup` inside a `List`.** Write `OutlineGroup` yourself only when the tree is one part of a bigger list.",
+            "**Branches start closed.** Every branch `OutlineGroup` builds begins collapsed. To reopen what people had open last time, track expansion yourself, as in the last example.",
         ],
         about: "Give a `List` tree-shaped data and a key path to each item's children, and it draws a disclosure triangle on every row that has some. People open and close branches, like folders in Finder's list view.\n\nUse `List(_:children:)` for a whole outline, `OutlineGroup` to put a tree inside one section of a list, and `Table(_:children:)` when each row also needs columns.",
         composition: """
@@ -164,7 +164,7 @@ private struct OutlineExamples: View {
     var body: some View {
         ExampleCard(
             title: "A file tree with List(children:)",
-            caption: "Pass the tree and the key path to each item's children. Add `selection:` and people can click any row, at any depth.",
+            caption: "Pass the tree and the key path to each item's children, and add `selection:` so people can click a row at any depth.",
             code: """
             @State private var selection: FileNode.ID?
 
@@ -173,7 +173,8 @@ private struct OutlineExamples: View {
             }
             .frame(width: 280, height: 220)
             """,
-            minHeight: 260
+            minHeight: 260,
+            aside: Aside(.note, "The examples on this page use the `FileNode` from Usage, plus a `symbol` name, a `totalSize`, and some `samples`.")
         ) {
             TreeListSample()
         }
@@ -228,7 +229,7 @@ private struct OutlineExamples: View {
 
         ExampleCard(
             title: "Expansion you keep track of",
-            caption: "Build the tree from `DisclosureGroup(isExpanded:)` rows, and keep the open ids in a `Set`. Save that set to reopen the outline as people left it.",
+            caption: "Build the tree from `DisclosureGroup(isExpanded:)` rows and keep the open ids in a `Set` you can save, to reopen the outline as people left it.",
             code: """
             struct FileTree: View {
                 let nodes: [FileNode]
@@ -259,8 +260,7 @@ private struct OutlineExamples: View {
                 FileTree(nodes: FileNode.samples, expanded: $expanded)
             }
             """,
-            minHeight: 280,
-            aside: Aside(.note, "The examples on this page use a `FileNode` like the one in Usage, with a `symbol` property and an optional `children` array.")
+            minHeight: 280
         ) {
             ExpansionSample()
         }

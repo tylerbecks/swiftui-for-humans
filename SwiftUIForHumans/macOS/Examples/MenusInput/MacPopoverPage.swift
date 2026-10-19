@@ -4,7 +4,7 @@ extension ComponentPage {
     static let popover = ComponentPage(
         id: "popover",
         title: "Popover",
-        summary: "A small panel that points at the control that opened it and closes on its own.",
+        summary: "A small panel that points at its control and closes when people click away.",
         category: .presentation,
         kind: .modifier,
         symbol: "bubble.middle.top",
@@ -88,7 +88,7 @@ private struct MacPopoverDemo: View {
         DemoPage(
             page: page,
             initial: MacPopoverConfig(),
-            previewHeight: 220,
+            previewHeight: 150,
             usage: """
             @State private var isShowingDetails = false
 
@@ -183,7 +183,7 @@ private struct MacPopoverExamples: View {
     var body: some View {
         ExampleCard(
             title: "From a toolbar button",
-            caption: "A popover suits a toolbar button that needs a few options, like filters. Each change applies at once, so there's no Done button.",
+            caption: "A `.popover` suits a toolbar button with a few options, like filters, that apply as soon as people change them.",
             code: """
             @State private var isShowingFilters = false
             @State private var showsUnread = true

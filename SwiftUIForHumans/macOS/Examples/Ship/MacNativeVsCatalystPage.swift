@@ -4,7 +4,7 @@ extension ComponentPage {
     static let nativeVsCatalyst = ComponentPage(
         id: "native-vs-catalyst",
         title: "Native, Catalyst, or iPad App",
-        summary: "Three ways onto the Mac: a native macOS app, Mac Catalyst, or your iPad app as it is.",
+        summary: "Three ways onto the Mac: a native Mac app, Mac Catalyst, or your iPad app as it is.",
         category: .startHere,
         kind: .concept,
         symbol: "macbook.and.ipad",
@@ -26,7 +26,7 @@ extension ComponentPage {
         guidelines: [
             Guideline(
                 "Check that your app makes sense on a Mac.",
-                "Apps built around a gyroscope, accelerometer, rear camera, HealthKit, or ARKit, or around handwriting or turn-by-turn navigation, may not suit the Mac at all."
+                "Apps that depend on a gyroscope, an accelerometer, the rear camera, HealthKit, or ARKit, or that exist mainly for marking up, handwriting, or navigation, may not suit the Mac."
             ),
             Guideline(
                 "Don't offer two versions on the Mac.",
@@ -84,7 +84,7 @@ private struct MacNativeVsCatalystArticle: View {
             }
             .pickerStyle(.segmented)
             .labelsHidden()
-            .frame(maxWidth: 460)
+            .fixedSize()
             ConnectFacts(rows: path.facts)
                 .id(path)
 
@@ -99,7 +99,7 @@ private struct MacNativeVsCatalystArticle: View {
             SectionTitle("One SwiftUI app, both platforms")
             ExampleCard(
                 title: "Add Mac-only scenes",
-                caption: "In a multiplatform target, one `App` serves iPhone, iPad, and Mac. Wrap Mac-only scenes like `Settings` in `#if os(macOS)`.",
+                caption: "In a multiplatform target, one `App` serves every platform, and `#if os(macOS)` adds Mac-only scenes like `Settings`.",
                 code: """
                 @main
                 struct TripsApp: App {

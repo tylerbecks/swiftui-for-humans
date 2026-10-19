@@ -118,6 +118,7 @@ private enum TesterGroup: String, CaseIterable, Identifiable {
                 ("Who", "Up to 10,000 people, invited by email or a public link."),
                 ("Review", "The first build added to a group goes to App Review. Later builds may not need a full review."),
                 ("Before inviting", "A beta app description and Beta App Review information are required."),
+                ("Devices", "Each tester can install on up to 30 devices."),
             ]
         }
     }

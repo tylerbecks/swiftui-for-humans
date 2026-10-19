@@ -108,7 +108,7 @@ private struct PlantClipboardExample: View {
     var body: some View {
         ExampleCard(
             title: "Cut, copy, and paste list rows",
-            caption: "Give a selectable `List` all three modifiers. The validator in `.pasteDestination` drops anything you don't want, like empty lines.",
+            caption: "Give a selectable `List` all three modifiers, and let the `.pasteDestination` validator drop unwanted items, like empty lines.",
             code: """
             @State private var plants = ["Sunflowers", "Tulips", "Ferns", "Basil"]
             @State private var selection = Set<String>()
@@ -211,7 +211,7 @@ private struct PasteButtonExample: View {
             }
             """,
             minHeight: 150,
-            aside: Aside(.note, "For your own Copy button or context menu item, write to `NSPasteboard.general` directly. SwiftUI's modifiers only answer the system's Copy command.")
+            aside: Aside(.note, "Add one only where a visible button helps; people look for Edit > Paste and ⌘V first. For a Copy item of your own, like in a context menu, write to `NSPasteboard.general`, since SwiftUI's modifiers only answer the system's Copy command.")
         ) {
             VStack(spacing: 12) {
                 PasteButton(payloadType: String.self) { strings in

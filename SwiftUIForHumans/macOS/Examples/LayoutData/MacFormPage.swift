@@ -7,7 +7,7 @@ extension ComponentPage {
         summary: "Groups labeled controls for settings and data entry, in Mac columns or System Settings rows.",
         category: .layout,
         symbol: "list.bullet.rectangle",
-        availability: ["macOS 10.15+"],
+        availability: ["macOS 10.15+", "formStyle macOS 13.0+"],
         docsURL: "https://developer.apple.com/documentation/swiftui/form",
         higURL: "https://developer.apple.com/design/human-interface-guidelines/settings",
         aliases: [
@@ -223,7 +223,7 @@ private struct MacFormExamples: View {
     var body: some View {
         ExampleCard(
             title: "A classic Mac columns form",
-            caption: "`.formStyle(.columns)` right-aligns each label against its control. By Mac convention, labels in this style end with a colon.",
+            caption: "`.formStyle(.columns)` right-aligns each label against its control, and by Mac convention the labels end with a colon.",
             code: """
             @State private var startsWith = "Last session"
             @State private var fontSize = 13.0
@@ -301,7 +301,7 @@ private struct MacFormExamples: View {
 
         ExampleCard(
             title: "Read-only rows with LabeledContent",
-            caption: "`LabeledContent` shows a value with a label, laid out like the controls around it. Give it a `format:` for numbers and byte counts.",
+            caption: "`LabeledContent` shows a read-only value beside its label, and a `format:` handles numbers and byte counts.",
             code: """
             Form {
                 LabeledContent("Model", value: "Mac mini")
@@ -325,7 +325,7 @@ private struct MacFormExamples: View {
 
         ExampleCard(
             title: "Several checkboxes under one label",
-            caption: "Put toggles inside `LabeledContent` to list them under one label. There they stay checkboxes, even in a grouped form.",
+            caption: "Toggles inside `LabeledContent` list under one label and stay checkboxes, even in a grouped form.",
             code: """
             @State private var refreshesStatus = true
             @State private var fetchesRemote = false

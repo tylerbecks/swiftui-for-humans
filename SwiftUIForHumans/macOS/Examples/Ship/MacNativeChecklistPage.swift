@@ -30,6 +30,7 @@ extension ComponentPage {
             "https://developer.apple.com/design/human-interface-guidelines/windows",
             "https://developer.apple.com/design/human-interface-guidelines/drag-and-drop",
             "https://developer.apple.com/design/human-interface-guidelines/settings",
+            "https://developer.apple.com/design/human-interface-guidelines/privacy",
             "https://developer.apple.com/design/human-interface-guidelines/mac-catalyst",
         ],
         reviewed: "October 2026"

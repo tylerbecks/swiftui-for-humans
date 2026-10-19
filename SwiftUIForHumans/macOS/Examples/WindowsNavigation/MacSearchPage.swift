@@ -146,7 +146,7 @@ private struct MacSearchArticle: View {
 
             ExampleCard(
                 title: "Suggest searches",
-                caption: "`.searchSuggestions` lists views below the field. Each one's `searchCompletion` is the text it puts in the field. Click the field to see them.",
+                caption: "`.searchSuggestions` lists views below the field, and each one's `searchCompletion` is the text it fills in. Click the field to see them.",
                 code: """
                 @State private var query = ""
 

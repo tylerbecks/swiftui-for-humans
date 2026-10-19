@@ -17,10 +17,10 @@ extension ComponentPage {
         ],
         related: ["search", "navigation-split-view", "button", "menu", "toggle", "commands", "toolbars-pattern"],
         notes: [
-            "**Extra items move to an overflow menu.** When a window gets too narrow, the system adds the menu for you. Don't add your own.",
-            "**Removing the title only hides it.** After `.toolbar(removing: .title)`, VoiceOver and the Window menu still use the window's title.",
+            "**Narrow windows move items into an overflow menu.** Choose a few items that matter, so little ends up hidden there.",
+            "**Keep window titles short.** The HIG suggests under 15 characters, so the title leaves room for the toolbar's items.",
         ],
-        about: "Add `.toolbar { }` to a view in a window, and its items go in the window's toolbar. Give each `ToolbarItem` a placement that says what it's for, like `.navigation` or `.principal`, and SwiftUI puts it where that kind of item belongs on the Mac.\n\nUse `.toolbar(id:)` with an ID on each item to let people customize the toolbar: they Control-click it to add, remove, and rearrange items.",
+        about: "Add `.toolbar { }` to a view in a window, and its items go in the window's toolbar. Give each `ToolbarItem` a placement that says what it's for, like `.navigation` or `.principal`, and SwiftUI puts it where that kind of item belongs on the Mac.\n\nUse `.toolbar(id:)` with an ID on each item to let people customize the toolbar: they Control-click it and choose Customize Toolbar to add, remove, and rearrange items.",
         composition: """
         .toolbar
         ├── ToolbarItem(placement: .navigation)

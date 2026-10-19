@@ -4,7 +4,7 @@ extension ComponentPage {
     static let navigationSplitView = ComponentPage(
         id: "navigation-split-view",
         title: "NavigationSplitView",
-        summary: "A sidebar and a detail area, or three columns, where a selection on the left fills the right.",
+        summary: "Two or three columns, where a selection in the sidebar fills the detail.",
         category: .navigation,
         symbol: "sidebar.left",
         availability: ["macOS 13.0+"],
@@ -373,8 +373,8 @@ private struct SidebarHighlightSample: View {
     }
 }
 
-/// Rows drawn like a sidebar list, with a click-to-select highlight. A
-/// The demo windows use a real `List`.
+/// Rows drawn like a sidebar list, with a click-to-select highlight. The
+/// demo windows use a real `List`.
 private struct SketchList: View {
     let rows: [(title: String, symbol: String?)]
     @Binding var selection: String?

@@ -23,7 +23,7 @@ extension ComponentPage {
         guidelines: [
             Guideline(
                 "Swap the tab bar for a sidebar.",
-                "Mac apps navigate with a sidebar in a split view. Each tab becomes a sidebar row, and the layout stays familiar to people coming from your iPad app.",
+                "A split view with a sidebar follows Mac conventions. Each tab becomes a sidebar row, and using a sidebar on iPad too keeps the layout familiar.",
                 good: "Sections in a sidebar.",
                 bad: "An iPad tab bar along the bottom."
             ) {
@@ -115,7 +115,7 @@ extension ComponentPage {
             },
             Guideline(
                 "Give paged content Previous and Next buttons.",
-                "Mac users, especially people who use a mouse or only the keyboard, look for buttons as well as swipe gestures.",
+                "Swiping between pages needs a trackpad. Buttons also work with a mouse and from the keyboard.",
                 good: "Previous and Next buttons.",
                 bad: "Only page dots to swipe through."
             ) {
@@ -202,7 +202,7 @@ private struct MacIPadAppInWindowArticle: View {
             SectionTitle("From tabs to a sidebar in SwiftUI")
             ExampleCard(
                 title: "Replace a TabView with a split view",
-                caption: "On the Mac, `NavigationSplitView` with a `List` in the sidebar does the job a tab bar does on iPhone.",
+                caption: "On the Mac, `NavigationSplitView` with a `List` in the sidebar does the job a tab bar does on iPad.",
                 code: """
                 enum TripSection: String, CaseIterable, Identifiable {
                     case upcoming, past, shared

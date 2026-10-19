@@ -4,7 +4,7 @@ extension ComponentPage {
     static let shareLink = ComponentPage(
         id: "share-link",
         title: "ShareLink & Transferable",
-        summary: "A Share button that sends a link, text, or your own data to Mail, Messages, AirDrop, and more.",
+        summary: "A Share button that sends a link, text, or your own data to other apps.",
         category: .files,
         kind: .component,
         symbol: "square.and.arrow.up",
@@ -198,7 +198,7 @@ private struct MacShareLinkExamples: View {
     var body: some View {
         ExampleCard(
             title: "In the toolbar",
-            caption: "Put a `ShareLink` in the toolbar for whatever the window shows. Icon-only is fine there; add a `.help` tooltip.",
+            caption: "Put a `ShareLink` in the toolbar for whatever the window shows, icon-only with a `.help` tooltip.",
             code: """
             .toolbar {
                 ShareLink(item: photo, preview: SharePreview("Sunset", image: photo))
@@ -247,7 +247,7 @@ private struct MacShareLinkExamples: View {
 
         ExampleCard(
             title: "Share your own type",
-            caption: "Make the type `Transferable`. Here a tip shares as plain text, with a title in the preview.",
+            caption: "Make your type `Transferable`, like this tip, which shares as plain text with a title in the preview.",
             code: """
             struct GardenTip: Transferable {
                 let title: String

@@ -16,7 +16,7 @@ extension ComponentPage {
         ],
         related: ["navigation-split-view", "inspector", "stacks-grid", "windows-layout"],
         notes: [
-            "**`HSplitView` and `VSplitView` are Mac only.** They don't exist on iPhone or iPad, so code you share with an iPad app needs another layout there.",
+            "**`HSplitView` and `VSplitView` are Mac only.** If you share the view with another platform, give it another layout there.",
             "**They add nothing to the toolbar.** Unlike `NavigationSplitView`, there's no sidebar button. If a pane can hide, add your own toolbar button and menu command for it.",
         ],
         about: "`HSplitView` puts its children side by side and `VSplitView` stacks them, each with a divider people drag to resize the panes. Nest one in the other for an editor with a file list on the left and a console underneath.\n\nFor sidebar navigation, with a list that picks what the detail shows, use [NavigationSplitView](catalog://navigation-split-view) instead. It brings the sidebar look and the toolbar's sidebar button.",
@@ -31,7 +31,6 @@ extension ComponentPage {
             APIItem("`HSplitView { }`", "Side-by-side panes with draggable dividers."),
             APIItem("`VSplitView { }`", "Stacked panes with draggable dividers."),
             APIItem("`.frame(minWidth:idealWidth:maxWidth:)`", "Limits how far a pane resizes."),
-            APIItem("`.layoutPriority(_:)`", "Which pane gets extra space first."),
             APIItem("`NavigationSplitView`", "Sidebar and detail columns for navigation."),
         ],
         guidelines: [
@@ -100,10 +99,12 @@ private struct MacSplitViewsArticle: View {
             SectionTitle("Usage")
                 .id("code")
             CodeBlock(code: """
+            @State private var text = ""
+
             HSplitView {
-                FileList()
+                List(["README.md", "App.swift"], id: \\.self) { Text($0) }
                     .frame(minWidth: 150, idealWidth: 200, maxWidth: 320)
-                Editor()
+                TextEditor(text: $text)
                     .frame(minWidth: 300)
             }
             """)
@@ -135,7 +136,7 @@ private struct SplitViewExamples: View {
     var body: some View {
         ExampleCard(
             title: "A list beside an editor",
-            caption: "`HSplitView` puts a divider between its children. Drag it: the frames' minimum and maximum widths stop it.",
+            caption: "`HSplitView` puts a divider between its children that people drag, and each pane's minimum and maximum width stops it.",
             code: """
             HSplitView {
                 List(["README.md", "App.swift", "Model.swift"], id: \\.self) {
@@ -185,7 +186,7 @@ private struct SplitViewExamples: View {
 
         ExampleCard(
             title: "A pane people can hide",
-            caption: "Leave a pane out with `if`, and toggle it from a toolbar button. Add a matching menu command so it isn't the only way back.",
+            caption: "Leave a pane out with `if` and toggle it from a toolbar button, plus a matching menu command so people have another way back.",
             code: """
             @State private var showsConsole = true
 

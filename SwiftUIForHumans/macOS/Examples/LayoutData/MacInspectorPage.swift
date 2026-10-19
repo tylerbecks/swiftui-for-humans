@@ -18,14 +18,13 @@ extension ComponentPage {
         related: ["split-views", "toolbar", "navigation-split-view", "form"],
         notes: [
             "**SwiftUI remembers whether the inspector was open.** When it's a trailing column, its shown or hidden state is restored with the window.",
-            "**A fixed width doesn't stop people from closing it.** On the Mac they can still drag it shut; add `.interactiveDismissDisabled()` if it must stay.",
         ],
         about: "`.inspector(isPresented:content:)` adds a column on the trailing edge of the window, beside your content. It shows the details of the current selection and updates as the selection changes, like the inspector in Keynote.\n\nPut the button that shows and hides it in the toolbar, and add `InspectorCommands` so the menu bar has a command and ⌃⌘I for it too.",
         composition: """
         NavigationStack
         └── Editor
             ├── .toolbar
-            │   └── Toggle inspector
+            │   └── Button("Inspector")
             └── .inspector
                 └── Form
         """,
@@ -47,7 +46,7 @@ extension ComponentPage {
             ),
             Guideline(
                 "Prefer controls that adjust in one step.",
-                "Sliders, steppers, and pop-up buttons change a value right away. Text fields and lists to pick from take more steps.",
+                "Sliders and steppers change a value right away. Typing in a text field, or picking an item from a list, takes more steps.",
                 good: "A slider and a stepper adjust directly.",
                 bad: "Typing values takes extra steps."
             ) {
@@ -186,7 +185,7 @@ private struct InspectorExamples: View {
     var body: some View {
         ExampleCard(
             title: "Toggle it from the toolbar",
-            caption: "Bind `isPresented` to a `Bool`, and flip it from a toolbar button at the trailing end. Click the button in the drawn toolbar.",
+            caption: "Bind `isPresented` to a `Bool` and flip it from a button at the trailing end of the toolbar; try it in the drawn toolbar.",
             code: """
             @State private var showsInspector = true
 
@@ -230,7 +229,7 @@ private struct InspectorExamples: View {
 
         ExampleCard(
             title: "Details that follow the selection",
-            caption: "Pass a binding to the selected item into the inspector. Pick another shape and the inspector edits that one instead.",
+            caption: "Pass a binding to the selected item into the inspector, so picking another shape switches what it edits.",
             code: """
             @State private var shapes = ShapeItem.samples
             @State private var selection: ShapeItem.ID? = 1
@@ -278,19 +277,21 @@ private struct InspectorExamples: View {
 
         ExampleCard(
             title: "A width people can drag, or a fixed one",
-            caption: "`.inspectorColumnWidth(min:ideal:max:)` lets people resize the column within limits. Pass one number for a fixed width.",
+            caption: "`.inspectorColumnWidth` with `min`, `ideal`, and `max` lets people resize the column within limits, and one number fixes the width.",
             code: """
-            .inspector(isPresented: $showsInspector) {
-                InspectorForm()
-                    .inspectorColumnWidth(min: 200, ideal: 240, max: 320)
-            }
+            @State private var showsInspector = true
 
-            // Or a fixed width that people can't drag shut:
-            .inspector(isPresented: $showsInspector) {
-                InspectorForm()
-                    .inspectorColumnWidth(240)
-                    .interactiveDismissDisabled()
-            }
+            Text("Canvas")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .inspector(isPresented: $showsInspector) {
+                    Form {
+                        Text("Details")
+                    }
+                    .inspectorColumnWidth(min: 200, ideal: 240, max: 320)
+                    // Or a fixed width that people can't drag shut:
+                    // .inspectorColumnWidth(240)
+                    // .interactiveDismissDisabled()
+                }
             """,
             minHeight: 240,
             aside: Aside(.important, "On the Mac, people can drag an inspector closed even at a fixed width. Add `.interactiveDismissDisabled()` to prevent it.")

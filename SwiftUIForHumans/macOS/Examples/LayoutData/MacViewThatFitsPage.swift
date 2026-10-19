@@ -96,7 +96,7 @@ private struct MacViewThatFitsArticle: View {
             SectionTitle("ViewThatFits")
             ExampleCard(
                 title: "Labels, then icons, then a menu",
-                caption: "`ViewThatFits(in: .horizontal)` checks each child's ideal width in order. Drag the slider to narrow the space.",
+                caption: "`ViewThatFits(in: .horizontal)` shows the first child whose ideal width fits; drag the slider to narrow the space.",
                 code: """
                 ViewThatFits(in: .horizontal) {
                     HStack {

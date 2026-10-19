@@ -23,14 +23,14 @@ extension ComponentPage {
             "**Settings windows fit their content by default.** With `.automatic` resizability, a `Settings` window uses `.contentSize` and every other scene uses `.contentMinSize`.",
             "**These are starting values.** When the system restores a window, it comes back at the size and place people left it.",
         ],
-        about: "These modifiers go on a scene in your `App`, like a `WindowGroup`, not on a view. They decide how new windows start out. People can still move and resize them, within the limits you set.\n\nA few window behaviors are view modifiers instead, like `.containerBackground(_:for: .window)`, so you can set them from inside the window.",
+        about: "These modifiers go on a scene in your `App`, like a `WindowGroup`, not on a view. They decide how new windows start out. People can still move and resize them, within the limits you set.\n\nA few window behaviors are view modifiers instead, like `.containerBackground(_:for:)` with `.window`, so you can set them from inside the window.",
         api: [
             APIItem("`.defaultSize(width:height:)`", "The size a new window opens at."),
             APIItem("`.windowResizability(.contentSize)`", "Sizes the window from its content's frame."),
             APIItem("`.defaultPosition(.topTrailing)`", "Where the first window appears on screen."),
             APIItem("`.windowStyle(.hiddenTitleBar)`", "Hides the title and the title bar's backing."),
             APIItem("`.windowToolbarStyle(.unified)`", "How the toolbar and title bar combine."),
-            APIItem("`.containerBackground(_:for: .window)`", "The window's background, like a material."),
+            APIItem("`.containerBackground(_:for:)`", "With `.window`, the window's background."),
             APIItem("`WindowDragGesture()`", "Lets people drag the window by a view."),
             APIItem("`.windowResizeBehavior(.disabled)`", "Turns off resizing from inside the window."),
         ],
@@ -56,8 +56,8 @@ extension ComponentPage {
                 "People often move a window so its bottom edge is off screen. Use a bottom bar only for a little status, like Finder's item count."
             ),
             Guideline(
-                "Keep a way to drag the window.",
-                "If you hide the title bar or its background, add a drag area so people can still move the window."
+                "Keep the system's look for each window state.",
+                "People tell the active window apart by its colored window buttons and materials. Standard backgrounds and controls change with the state; custom ones have to do it themselves."
             ),
         ]
     ) {
@@ -143,11 +143,15 @@ private struct MacWindowStyleArticle: View {
                 .windowResizability(.contentSize)
                 .defaultPosition(.center)
                 """,
-                minHeight: 160
+                minHeight: 160,
+                aside: Aside(.note, "To turn off resizing, minimizing, or full screen from inside a window, set `.windowResizeBehavior`, `.windowMinimizeBehavior`, and `.windowFullScreenBehavior` to `.disabled`, as the Timer window does.")
             ) {
                 VStack(spacing: 12) {
-                    Button("Open This App's About Window", systemImage: "info.circle") {
-                        openWindow(id: AboutWindow.id)
+                    HStack(spacing: 12) {
+                        Button("Open This App's About Window", systemImage: "info.circle") {
+                            openWindow(id: AboutWindow.id)
+                        }
+                        OpenDemoWindowButton(id: "window-style-fixed", label: "Open the Timer Window")
                     }
                     Text("This app's About window uses the same frame and modifiers.")
                         .font(.callout)
@@ -194,7 +198,7 @@ private struct MacWindowStyleArticle: View {
                 .windowBackgroundDragBehavior(.enabled)
                 """,
                 minHeight: 240,
-                aside: Aside(.important, "Without a title bar, people need another place to grab the window. `.windowBackgroundDragBehavior(.enabled)` lets them drag it by its background.")
+                aside: Aside(.important, "Without a title bar, people need another place to grab the window. Set `.windowBackgroundDragBehavior` to `.enabled` so they can drag it by its background.")
             ) {
                 ZStack(alignment: .topLeading) {
                     SceneryView(.lake)
@@ -207,7 +211,7 @@ private struct MacWindowStyleArticle: View {
 
             ExampleCard(
                 title: "A see-through window",
-                caption: "From inside the window, `.containerBackground(_:for: .window)` sets its background, and you can hide the toolbar's title and backing.",
+                caption: "From inside the window, `.containerBackground(_:for:)` with `.window` sets its background, and you can hide the toolbar's title and backing.",
                 code: """
                 struct NowPlayingView: View {
                     var body: some View {
@@ -220,19 +224,16 @@ private struct MacWindowStyleArticle: View {
                         .toolbarBackgroundVisibility(.hidden, for: .windowToolbar)
                         .toolbar(removing: .title)
                         .gesture(WindowDragGesture())
-                        .allowsWindowActivationEvents(true)
+                        .allowsWindowActivationEvents()
                     }
                 }
                 """,
                 minHeight: 140,
-                aside: Aside(.note, "`WindowDragGesture` lets people move the window by dragging the view. `.allowsWindowActivationEvents(true)` lets the drag work even while the window is in the background.")
+                aside: Aside(.note, "`WindowDragGesture` lets people move the window by dragging the view. `.allowsWindowActivationEvents()` lets the drag work even while the window is in the background.")
             ) {
                 VStack(spacing: 12) {
-                    HStack(spacing: 12) {
-                        OpenDemoWindowButton(id: "window-style-clear", label: "Open the See-Through Window")
-                        OpenDemoWindowButton(id: "window-style-fixed", label: "Open a Fixed-Size Window")
-                    }
-                    Text("A material can't be drawn here, so these open real windows.")
+                    OpenDemoWindowButton(id: "window-style-clear", label: "Open the See-Through Window")
+                    Text("A material can't be drawn here, so this opens a real window.")
                         .font(.callout)
                         .foregroundStyle(.secondary)
                 }
@@ -443,7 +444,7 @@ private struct ClearWindowSample: View {
         .toolbarBackgroundVisibility(.hidden, for: .windowToolbar)
         .toolbar(removing: .title)
         .gesture(WindowDragGesture())
-        .allowsWindowActivationEvents(true)
+        .allowsWindowActivationEvents()
     }
 }
 

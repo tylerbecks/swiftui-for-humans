@@ -51,10 +51,6 @@ extension ComponentPage {
                 "Give every level a short title.",
                 "The title tells people where they are as they drill down. Aim for a word or two."
             ),
-            Guideline(
-                "Show levels side by side when there's room.",
-                "On a wide window, a split view can show the list and the detail at once, so people don't have to go back and forth."
-            ),
         ]
     ) {
         MacWindowFrame(title: "Yosemite", width: 180, height: 100) {

@@ -252,7 +252,7 @@ private struct MacAlertExamples: View {
             }
             """,
             minHeight: 140,
-            aside: Aside(.note, "OK fits here: the alert only informs, and there's nothing to choose.")
+            aside: Aside(.note, "OK fits here: the alert reports a problem and offers no choice, so its one button only acknowledges it.")
         ) {
             Button("Save") {
                 failure = SaveFailure(documentName: "Trip Notes")
@@ -267,7 +267,7 @@ private struct MacAlertExamples: View {
 
         ExampleCard(
             title: "Let people stop the question",
-            caption: "`.dialogSuppressionToggle` adds a checkbox to the dialog. Save its value with `@AppStorage`, and skip the dialog once it's on.",
+            caption: "`.dialogSuppressionToggle` adds a checkbox to the dialog; save its value with `@AppStorage` and skip the dialog once it's on.",
             code: """
             @AppStorage("skipsEmptyAlert") private var skipsEmptyAlert = false
             @State private var isConfirming = false

@@ -30,7 +30,7 @@ extension ComponentPage {
             },
             Guideline(
                 "Leave out words.",
-                "Text in an icon isn't accessible or localized, and it's usually too small to read. The app's name already appears near the icon.",
+                "Text in an icon isn't accessible or localized, and it's often too small to read. Add it only when it's essential to your brand; the app's name usually appears nearby.",
                 good: "The shape alone.",
                 bad: "The same icon with the app's name on it."
             ) {

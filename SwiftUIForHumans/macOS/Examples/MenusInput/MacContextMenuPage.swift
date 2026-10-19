@@ -292,7 +292,7 @@ private struct MacContextMenuExamples: View {
 
         ExampleCard(
             title: "Double-click to open a table row",
-            caption: "Add `primaryAction:` to run something on double-click, like opening the row in its own window. The same menu works on a `Table`.",
+            caption: "Add `primaryAction:` to run something when people double-click a row, like opening it in its own window.",
             code: """
             @State private var selection = Set<Chapter.ID>()
             @Environment(\\.openWindow) private var openWindow

@@ -247,7 +247,7 @@ private struct MacGroupBoxExamples: View {
     var body: some View {
         ExampleCard(
             title: "Titled boxes in a settings pane",
-            caption: "Two small `GroupBox`es split a settings pane into its topics. In a settings pane, end each box title with a colon.",
+            caption: "Two small `GroupBox`es split a settings pane into topics, each titled with a colon, as Mac settings panes do.",
             code: """
             @State private var opensLastWindow = true
             @State private var checksUpdates = true
@@ -326,7 +326,7 @@ private struct MacGroupBoxExamples: View {
 
         ExampleCard(
             title: "Advanced options in a form",
-            caption: "Inside a grouped `Form`, a `DisclosureGroup` becomes a row that opens to show more rows. Keep the common setting above it.",
+            caption: "Inside a grouped `Form`, a `DisclosureGroup` becomes a row that opens to more rows, below the setting most people need.",
             code: """
             @State private var quality = 0.8
             @State private var keepsOriginal = true

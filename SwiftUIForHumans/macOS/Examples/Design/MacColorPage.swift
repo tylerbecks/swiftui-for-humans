@@ -58,7 +58,7 @@ extension ComponentPage {
             ),
             Guideline(
                 "Use color sparingly on Liquid Glass.",
-                "Toolbars and sidebars look best monochrome. To call out the main action, color its background, as a prominent button does, rather than its symbol or text."
+                "Symbols and text in a toolbar are monochrome by default. To call out the main action, color its background, as a prominent button does, rather than its symbol or text."
             ),
             Guideline(
                 "Use the system color picker.",
@@ -102,7 +102,7 @@ private struct MacColorArticle: View {
                 ConnectFacts(rows: [
                     ("Multicolor", "When people leave the accent color on Multicolor, the system uses your app's accent color, from the `AccentColor` set in your asset catalog."),
                     ("Any other choice", "Their color replaces yours everywhere: buttons, selection, and sidebar icons. A sidebar icon you gave a fixed color keeps it."),
-                    ("`.tint(_:)`", "Always respected. Use it when a color carries meaning, like red for a destructive action, not to force your brand."),
+                    (".tint(_:)", "Always respected. Use it when a color carries meaning, like red for a destructive action, not to force your brand."),
                 ])
             }
 
@@ -167,7 +167,7 @@ private struct MacColorArticle: View {
 
                     ExampleCard(
                         title: "Keep one sidebar icon's color",
-                        caption: "Sidebar icons follow the accent color. Use `.listItemTint(_:)` for the rare icon whose color means something.",
+                        caption: "Sidebar icons follow the accent color, so save `.listItemTint(_:)` for the rare icon whose color means something.",
                         code: """
                         List {
                             Label("Inbox", systemImage: "tray")

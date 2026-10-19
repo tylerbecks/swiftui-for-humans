@@ -62,7 +62,7 @@ private struct MacDeveloperIDArticle: View {
                 ("App Sandbox", "Required on the Mac App Store. Recommended outside it."),
                 ("Hosting and updates", "Apple hosts App Store apps and their updates. Outside, you host both."),
                 ("In-App Purchase and Game Center", "Available only on the Mac App Store."),
-                ("Payments and support", "Apple handles them for the store. Outside, they're yours."),
+                ("Payments and support", "On the store, Apple processes payments and supports customers with billing and downloads. Outside, both are yours."),
                 ("Notarization", "Required outside the store. Not needed for the store, whose submission does equivalent checks."),
             ])
 

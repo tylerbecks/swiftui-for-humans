@@ -35,12 +35,8 @@ extension ComponentPage {
                 "A quick animation tied exactly to what someone did reads instantly. A long or showy one gets in the way."
             ),
             Guideline(
-                "Leave frequent actions alone.",
-                "Things people do over and over, like selecting rows or switching tabs, shouldn't make them watch an animation each time."
-            ),
-            Guideline(
                 "Never make people wait for an animation.",
-                "Let them keep working, or cancel, while something moves, especially for an animation they'll see more than once."
+                "Skip custom motion on things people do over and over, like selecting rows, and let them keep working or cancel while something moves."
             ),
             Guideline(
                 "Match the motion to the action.",
@@ -84,7 +80,7 @@ private struct MacMotionArticle: View {
 
     var body: some View {
         ArticlePage(page: page) {
-            Prose("Good motion shows people what changed and where it went. Many system components animate on their own; Liquid Glass, for example, responds more quietly to a trackpad than to a finger. Add your own sparingly: short, tied to what someone did, and always with a calmer version for people who turn on **Reduce Motion**.")
+            Prose("Good motion shows people what changed and where it went. Many system components animate on their own and adjust for settings like Reduce Motion. Add your own sparingly: short, tied to what someone did, and always with a calmer version for people who turn on **Reduce Motion**.")
 
             VStack(alignment: .leading, spacing: 16) {
                 SectionTitle("Try it")

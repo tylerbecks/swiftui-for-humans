@@ -71,10 +71,6 @@ extension ComponentPage {
                 MacWritingButtons(primary: "Let's Go!")
             },
             Guideline(
-                "Leave out articles.",
-                "A, an, and the make menu items longer without making them clearer. Add to Playlist reads as well as Add to the Playlist."
-            ),
-            Guideline(
                 "Let a toggled item say what it will do.",
                 "Instead of two items, one item can switch between Show Map and Hide Map. For an attribute that's on, like a text style, a checkmark works better."
             ),
@@ -148,7 +144,7 @@ private struct MacWritingArticle: View {
                         }
                         """,
                         minHeight: 140,
-                        aside: Aside(.note, "Menus can't open inside a page, so the preview draws this one. See [Commands](catalog://commands) for adding menus.")
+                        aside: Aside(.note, "Menu bar menus belong to the app, not a page, so the preview draws this one. See [Commands](catalog://commands) for adding them.")
                     ) {
                         MacDesignMenuSample(items: [
                             MacDesignMenuItem(title: "New Window", shortcut: "⌘N"),

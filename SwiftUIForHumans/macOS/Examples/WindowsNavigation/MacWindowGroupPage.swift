@@ -4,7 +4,7 @@ extension ComponentPage {
     static let windowGroup = ComponentPage(
         id: "window-group",
         title: "WindowGroup",
-        summary: "The scene for your app's main windows. People can open as many as they need.",
+        summary: "The scene for your app's main windows, where people can open as many as they need.",
         category: .windows,
         symbol: "macwindow.on.rectangle",
         availability: ["macOS 11.0+"],
@@ -97,7 +97,7 @@ private struct MacWindowGroupArticle: View {
             VStack(alignment: .leading, spacing: 10) {
                 OpenInNewWindowButton(id: page.id)
                     .controlSize(.large)
-                Prose("This app's windows come from `WindowGroup(for: ComponentPage.ID.self)`. Click the button to open this page in a window of its own. Click it again, and the window that's already showing this page comes to the front.")
+                Prose("This app's windows come from a `WindowGroup(for:)` that takes a page's ID. Click the button to open this page in a window of its own. Click it again, and the window that's already showing this page comes to the front.")
             }
 
             SectionTitle("Usage")
@@ -146,7 +146,7 @@ private struct MacWindowGroupArticle: View {
 
             ExampleCard(
                 title: "A window per item",
-                caption: "`WindowGroup(for:)` opens a window for a value, like a note's ID. Click a note twice: the second click brings its window forward.",
+                caption: "`WindowGroup(for:)` opens one window per value, like a note's ID. Open a note twice, and its window comes forward.",
                 code: """
                 @main
                 struct NotesApp: App {

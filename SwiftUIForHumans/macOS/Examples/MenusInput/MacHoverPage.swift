@@ -27,11 +27,11 @@ extension ComponentPage {
         guidelines: [
             Guideline(
                 "Show the pointer that matches what happens.",
-                "Each pointer has a meaning people know: a pointing hand for a link, an open hand for content they can drag, a crosshair for precise selection. Don't use one for anything else."
+                "Each pointer has a meaning people know: a pointing hand for a link, an open hand for content they can pan, like a map, and a crosshair for precise selection. Don't use one for anything else."
             ),
             Guideline(
-                "Use hover to reveal controls, not to hide features.",
-                "Controls that appear under the pointer keep a window tidy. Keep the same commands in a menu or context menu, so keyboard and VoiceOver users can reach them."
+                "Let the pointer bring back controls that fade away.",
+                "Controls that hide to keep the view calm, like playback controls over a video, should reappear when the pointer moves over them."
             ),
             Guideline(
                 "Keep every way of working consistent.",
@@ -172,7 +172,7 @@ private struct MacHoverExamples: View {
     var body: some View {
         ExampleCard(
             title: "Show actions on the row under the pointer",
-            caption: "Track which row is hovered and show its buttons only there. The list stays calm, and the actions are where the pointer already is.",
+            caption: "Use `.onHover` to track the row under the pointer and show its buttons only there, so the list stays calm.",
             code: """
             @State private var hoveredRow: Project.ID?
 
@@ -331,7 +331,7 @@ private struct MacHoverExamples: View {
             Text("Which pointer when")
                 .font(.title3.bold())
                 .outlineEntry("Which pointer when", level: 2)
-            RichText("The Human Interface Guidelines give each standard pointer a meaning. These are the `PointerStyle`s for the common ones:")
+            RichText("The Human Interface Guidelines give each standard pointer a meaning. These are the `PointerStyle` values for the common ones:")
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
             ConnectFacts(rows: [

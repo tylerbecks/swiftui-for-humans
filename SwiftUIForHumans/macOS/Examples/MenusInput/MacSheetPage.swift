@@ -4,7 +4,7 @@ extension ComponentPage {
     static let sheet = ComponentPage(
         id: "sheet",
         title: "Sheet",
-        summary: "A card attached to its window, for a short task like naming or adding an item.",
+        summary: "A card attached to its window, for a short task like adding an item.",
         category: .presentation,
         kind: .modifier,
         symbol: "rectangle.portrait.on.rectangle.portrait",
@@ -192,12 +192,18 @@ private struct MacSheetExamples: View {
     var body: some View {
         ExampleCard(
             title: "Edit an item",
-            caption: "`.sheet(item:)` shows a sheet for the item you set, and clears it when the sheet closes. Use it for “edit this one”.",
+            caption: "`.sheet(item:)` shows a sheet for the item you set and clears it when the sheet closes, for “edit this one” tasks.",
             code: """
             @State private var editing: Event?
 
-            List(events) { event in
-                Button(event.title) { editing = event }
+            VStack {
+                ForEach(events) { event in
+                    HStack {
+                        Text(event.title)
+                        Spacer()
+                        Button("Edit…") { editing = event }
+                    }
+                }
             }
             .sheet(item: $editing) { event in
                 EventEditor(event: event)
@@ -226,7 +232,7 @@ private struct MacSheetExamples: View {
 
         ExampleCard(
             title: "A sheet people can resize",
-            caption: "`.presentationSizing(.fitted)` sizes the sheet to its content. Give it a minimum and maximum frame, and people can resize it between them.",
+            caption: "`.presentationSizing(.fitted)` sizes the sheet to its content, and a minimum and maximum frame let people resize it between them.",
             code: """
             .sheet(isPresented: $isShowingNotes) {
                 NotesEditor()

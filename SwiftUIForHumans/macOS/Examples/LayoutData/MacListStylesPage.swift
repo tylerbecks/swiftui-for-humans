@@ -7,7 +7,7 @@ extension ComponentPage {
         summary: "Sidebar, inset, and bordered lists, with rows people click to select, one or many.",
         category: .lists,
         symbol: "list.bullet",
-        availability: ["macOS 10.15+"],
+        availability: ["macOS 10.15+", "Collapsible sections macOS 14.0+"],
         docsURL: "https://developer.apple.com/documentation/swiftui/liststyle",
         higURL: "https://developer.apple.com/design/human-interface-guidelines/lists-and-tables",
         aliases: [
@@ -17,7 +17,7 @@ extension ComponentPage {
         ],
         related: ["table", "outline", "navigation-split-view", "context-menu"],
         notes: [
-            "**Selection on the Mac needs no edit mode.** Bind `selection:` to a `Set` and people can pick several rows with the pointer and keyboard right away.",
+            "**Selection on the Mac needs no edit mode.** Bind `selection:` to a `Set` and people can select several rows right away, with no Edit button.",
             "**Sidebar section headers can collapse.** In the `.sidebar` style, people can hide a section from its header.",
         ],
         about: "A `List` shows rows in one column and handles selection and scrolling for you. Its style decides the look: `.sidebar` for the source list on the leading edge of a window, `.inset` for content with rounded selection, and `.bordered` for a boxed list inside a form or settings pane.\n\nFor several columns of data, use a [Table](catalog://table). For a hierarchy, see [Outline lists](catalog://outline).",
@@ -227,7 +227,7 @@ private struct MacListStylesExamples: View {
     var body: some View {
         ExampleCard(
             title: "A sidebar with collapsible sections",
-            caption: "`.listStyle(.sidebar)` gives the source list look. `Section(isExpanded:)` lets people fold a section, and `.badge` shows a count.",
+            caption: "`.listStyle(.sidebar)` gives the source list look, `Section(isExpanded:)` lets people fold a section, and `.badge` shows a count.",
             code: """
             @State private var selection: String? = "Inbox"
             @State private var showsFavorites = true
@@ -275,7 +275,7 @@ private struct MacListStylesExamples: View {
 
         ExampleCard(
             title: "A bordered list with add and remove buttons",
-            caption: "Use `.listStyle(.bordered)` for a short list inside a settings pane, with `+` and `−` buttons under it. `.onDeleteCommand` makes the Delete key work too.",
+            caption: "Use `.listStyle(.bordered)` for a short list in a settings pane, with `+` and `−` buttons below and `.onDeleteCommand` for the Delete key.",
             code: """
             struct BlockedSenders: View {
                 @State private var blocked = ["spam@example.com", "deals@example.net"]
@@ -330,7 +330,7 @@ private struct MacListStylesExamples: View {
 
         ExampleCard(
             title: "Select several, and double-click to open",
-            caption: "Bind `selection:` to a `Set` for multiple selection. `.contextMenu(forSelectionType:)` adds a menu for the selected rows, and its `primaryAction` runs on double-click.",
+            caption: "Bind `selection:` to a `Set` for multiple selection, and `.contextMenu(forSelectionType:)` adds a menu plus a `primaryAction` for double-click.",
             code: """
             @State private var notes = ["Groceries", "Packing list", "Book ideas"]
             @State private var selection: Set<String> = []

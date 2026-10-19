@@ -4,7 +4,7 @@ extension ComponentPage {
     static let trackpadGestures = ComponentPage(
         id: "trackpad-gestures",
         title: "Trackpad gestures",
-        summary: "Pinch to zoom and rotate with two fingers, with a way to do both with a mouse.",
+        summary: "Zoom and rotate with trackpad gestures, plus a way to do both with a mouse.",
         category: .input,
         kind: .component,
         symbol: "hand.pinch",

@@ -34,7 +34,7 @@ extension ComponentPage {
             ) {
                 PermissionCard(message: "Trips uses the camera to scan your boarding pass.")
             } bad: {
-                PermissionCard(message: "Camera access is needed for a better experience.")
+                PermissionCard(message: "Access to the camera is required to continue.")
             },
             Guideline(
                 "Ask when people reach the feature, not at launch.",
@@ -46,7 +46,7 @@ extension ComponentPage {
             ),
             Guideline(
                 "Have a plan for No.",
-                "Apple asks for an alternative where possible, like typing an address when someone declines Location."
+                "Guideline 5.1.1(iv) asks for an alternative where possible, like typing an address when someone declines Location."
             ),
         ],
         sources: [
@@ -85,7 +85,7 @@ private struct MacPrivacyPermissionsArticle: View {
                 ("In the permission prompt", "Your purpose string, from `Info.plist`, appears when the system asks for access."),
                 ("In the app bundle", "`PrivacyInfo.xcprivacy`, the privacy manifest, records the data your app and its SDKs collect."),
                 ("On the product page", "Your App Privacy answers in App Store Connect, shown to people before they download."),
-                ("In your privacy policy", "Required for macOS apps: a link in App Store Connect and one inside the app."),
+                ("In your privacy policy", "Required for Mac apps: a link in App Store Connect and one inside the app."),
             ])
 
             SectionTitle("Camera, microphone, and friends")
@@ -166,7 +166,7 @@ private struct MacPrivacyPermissionsArticle: View {
                 "In App Store Connect, open your app and click **App Privacy** in the sidebar.",
                 "Click **Get Started** and say whether you or your partners collect data.",
                 "If you do, pick every data type you and your third-party partners collect, then answer the questions for each.",
-                "Check the **Product Page Preview** and keep the answers up to date when your app changes.",
+                "Check the **Product Page Preview**, then click **Publish**. Update the answers whenever your app's data practices change.",
             ])
 
             SectionTitle("Before you submit")

@@ -26,6 +26,12 @@ struct RegistryTests {
         #expect(reachable.count == Catalog.pages.count)
     }
 
+    @Test func everyCategoryHasPages() {
+        for category in ComponentCategory.allCases {
+            #expect(!Catalog.pages(in: category).isEmpty, "\(category) has no pages")
+        }
+    }
+
     @Test func linksAreHTTPS() {
         for page in Catalog.pages {
             for url in [page.docsURL, page.higURL].compactMap(\.self) + page.sources {

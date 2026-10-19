@@ -215,7 +215,7 @@ private struct MacDocumentGroupArticle: View {
             }
             """)
 
-            Aside(.note, "macOS 27 adds a newer `Document` protocol, and Apple's documentation now lists `FileDocument` as deprecated. `FileDocument` still builds without warnings and runs on every macOS version this app supports, so this page teaches it.")
+            Aside(.note, "Apple's documentation marks `FileDocument` deprecated in macOS 27.2, in favor of the new `Document` protocol, which needs macOS 27. For an app that also runs on earlier versions, `FileDocument` is still the one to use.")
         }
     }
 }

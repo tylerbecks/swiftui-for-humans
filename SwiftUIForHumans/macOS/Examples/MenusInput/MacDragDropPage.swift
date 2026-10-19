@@ -115,7 +115,7 @@ private struct MacDragDropArticle: View {
                 .id("examples")
             ExampleCard(
                 title: "Drag text onto a target",
-                caption: "Make each chip `.draggable` and the box a `.dropDestination`. Highlight the box with `.onDropSessionUpdated` while a drag is over it.",
+                caption: "Make each chip `.draggable` and the box a `.dropDestination`, and highlight the box with `.onDropSessionUpdated` during a drag.",
                 code: """
                 @State private var basket: [String] = []
                 @State private var isTargeted = false
@@ -150,7 +150,7 @@ private struct MacDragDropArticle: View {
 
             ExampleCard(
                 title: "Drag your own type",
-                caption: "Make your type `Transferable`. Here a card moves between columns as itself, and lands in other apps as its title.",
+                caption: "Make your type `Transferable`, so a card moves between columns as itself and lands in other apps as its title.",
                 code: """
                 struct TodoCard: Identifiable, Codable, Transferable {
                     var id = UUID()

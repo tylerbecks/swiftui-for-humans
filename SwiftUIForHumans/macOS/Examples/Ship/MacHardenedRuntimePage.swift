@@ -62,9 +62,9 @@ private struct MacHardenedRuntimeArticle: View {
             SectionTitle("When you need it")
             ConnectFacts(rows: [
                 ("Outside the Mac App Store", "**Required.** Apple notarizes only apps with the Hardened Runtime on, and Developer ID software must be notarized. See [Developer ID & Notarization](catalog://developer-id-notarization)."),
-                ("On the Mac App Store", "Apple doesn't notarize App Store apps: the submission process does equivalent checks. Its docs tie the Hardened Runtime requirement to notarization."),
+                ("On the Mac App Store", "You don't notarize App Store apps, because the submission process includes equivalent checks. Apple ties the Hardened Runtime requirement to notarization."),
             ])
-            Aside(.note, "Apple's documentation doesn't list the Hardened Runtime among Mac App Store requirements. The App Sandbox is the one the store requires.")
+            Aside(.note, "On the store, Guideline 2.4.5(i) requires the App Sandbox. See [App Sandbox](catalog://app-sandbox).")
 
             SectionTitle("Turn it on")
             ConnectSteps(steps: [

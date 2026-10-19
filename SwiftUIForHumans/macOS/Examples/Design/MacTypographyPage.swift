@@ -4,7 +4,7 @@ extension ComponentPage {
     static let typography = ComponentPage(
         id: "typography",
         title: "Typography",
-        summary: "Mac text is smaller than iPhone text: body is 13 points, and nothing goes below 10.",
+        summary: "Mac text is smaller than iPhone text: 13 points by default, and 10 at the smallest.",
         category: .foundations,
         kind: .concept,
         symbol: "textformat.size",
@@ -14,7 +14,6 @@ extension ComponentPage {
         aliases: ["font", "fonts", "text styles", "text size", "font size", "SF Pro", "San Francisco", "SF Mono", "NSFont", "headline", "body", "caption", "large title", "font-size", "line height", "leading", "monospaced"],
         related: ["text-label", "sf-symbols", "writing", "contrast-transparency"],
         notes: [
-            "**The Mac has no Dynamic Type.** Each text style has one fixed size on the Mac, so the ramp above is exactly what people see.",
             "**Custom fonts follow the same sizes.** Keep body text at 13 points and the smallest text at 10, and go larger if the font is thin.",
         ],
         api: [

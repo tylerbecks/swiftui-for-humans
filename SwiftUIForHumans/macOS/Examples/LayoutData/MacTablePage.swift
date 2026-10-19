@@ -7,7 +7,7 @@ extension ComponentPage {
         summary: "Rows of data in columns that people sort, resize, and select, like Finder's list view.",
         category: .lists,
         symbol: "tablecells",
-        availability: ["macOS 12.0+"],
+        availability: ["macOS 12.0+", "Column customization macOS 14.0+"],
         docsURL: "https://developer.apple.com/documentation/swiftui/table",
         higURL: "https://developer.apple.com/design/human-interface-guidelines/lists-and-tables",
         aliases: [
@@ -18,7 +18,7 @@ extension ComponentPage {
         related: ["list-styles", "outline", "context-menu", "inspector"],
         notes: [
             "**Sorting is your job.** The table shows which column is sorted and in which direction, but you sort the data yourself when `sortOrder` changes.",
-            "**A `Table` scrolls on its own, in both directions.** Extra columns scroll sideways, and scroll bars follow the person's Show scroll bars setting.",
+            "**A `Table` scrolls on its own.** Don't wrap it in a `ScrollView`; give it a frame, or let the window size it.",
         ],
         about: "`Table` shows a collection as rows, with one `TableColumn` per property. People can click a column header to sort, drag column edges to resize, and select one row or many.\n\nUse it when each item has several values worth comparing side by side. For one value per row, a [List](catalog://list-styles) is simpler.",
         composition: """
@@ -47,7 +47,7 @@ extension ComponentPage {
                 "Values vary in width. Resizing lets people read clipped text or focus on the columns they care about."
             ),
             Guideline(
-                "Stripe the rows of a wide table.",
+                "Consider striped rows in a wide table.",
                 "Alternating row colors help the eye follow one row across many columns."
             ),
             Guideline(
@@ -286,7 +286,7 @@ private struct MacTableExamples: View {
 
         ExampleCard(
             title: "Columns people can hide and reorder",
-            caption: "Give each column a `.customizationID` and pass a `TableColumnCustomization`. Store it with `@SceneStorage` so the layout comes back with the window.",
+            caption: "Give each column a `.customizationID` and pass a `TableColumnCustomization`, stored with `@SceneStorage` so the layout comes back with the window.",
             code: """
             @SceneStorage("FilesTable") private var columns = TableColumnCustomization<FileRow>()
 
@@ -309,7 +309,7 @@ private struct MacTableExamples: View {
 
         ExampleCard(
             title: "Columns with sensible widths",
-            caption: "`.width(min:ideal:max:)` sets how far people can resize a column. A fixed `.width(_:)` suits short values like a size.",
+            caption: "`.width(min:ideal:max:)` sets how far people can resize a column, and a fixed `.width(_:)` suits short values like a size.",
             code: """
             Table(FileRow.samples) {
                 TableColumn("Name", value: \\.name)

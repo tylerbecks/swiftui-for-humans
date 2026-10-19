@@ -109,7 +109,7 @@ private struct MacCommandsArticle: View {
             if let about = page.about {
                 AboutSection(text: about)
             }
-            Aside(.note, "Try it in this app: its Go menu is a `CommandMenu`. Control-click a page in the sidebar to open it in a new window, then choose Go > Next Page. Only the window in front moves on.")
+            Aside(.note, "Try it in this app: its Go menu is a `CommandMenu`. Control-click a sidebar page, choose Open in New Window, then choose Go > Next Page: only the window in front moves on.")
 
             SectionTitle("Usage")
                 .id("code")
@@ -161,7 +161,8 @@ private struct MacCommandsArticle: View {
                     (".saveItem", "Close, Save, Duplicate, and Revert to Saved."),
                     (".importExport", "Empty, for import and export commands."),
                     (".pasteboard", "Cut, Copy, Paste, Delete, and Select All."),
-                    (".sidebar, .toolbar", "Show or hide the sidebar and toolbar, in View."),
+                    (".sidebar", "Show Sidebar and Enter Full Screen, in View."),
+                    (".toolbar", "Show Toolbar and Customize Toolbar, in View."),
                     (".help", "The app's help item, in Help."),
                 ])
                 Aside(.note, "`CommandGroup(replacing:)` removes the system's items in that group. Replacing `.newItem` removes File > New.")
@@ -183,7 +184,7 @@ private struct StoryMenuExample: View {
     var body: some View {
         ExampleCard(
             title: "A menu of your own",
-            caption: "`CommandMenu` holds buttons, toggles, and `Menu` submenus. Shortcuts you add appear next to each item.",
+            caption: "`CommandMenu` holds buttons, toggles, and `Menu` submenus, and shows each item's shortcut beside it.",
             code: """
             @State private var showsWordCount = true
 
@@ -295,7 +296,7 @@ private struct FocusedNoteExample: View {
             }
             """,
             minHeight: 200,
-            aside: Aside(.note, "Click a field, then the button. It stands in for a menu item and reads the same kind of `@FocusedValue`, so it's dimmed until a field has focus. `.focusedSceneValue` would keep the value while focus moves elsewhere in the window.")
+            aside: Aside(.note, "Click a field, then the button: it stands in for a menu item and reads the same kind of `@FocusedValue`, so it's dimmed until a field has focus. `.focusedSceneValue` would keep the value while focus moves elsewhere in the window.")
         ) {
             VStack(alignment: .leading, spacing: 12) {
                 PinFocusedNoteButton(pinned: $pinned)

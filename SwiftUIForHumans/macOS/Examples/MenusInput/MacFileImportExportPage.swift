@@ -70,12 +70,13 @@ private struct MacFileImportExportArticle: View {
     var body: some View {
         ArticlePage(page: page) {
             Prose("`.fileImporter`, `.fileExporter`, and `.fileMover` show the Mac's open and save panels. Each gives you back a URL for what people picked.")
-            Prose("The URLs are **security-scoped**: a sandboxed app can use them, but only between `startAccessingSecurityScopedResource()` and the matching stop call, and only with the user-selected file entitlement. See [App Sandbox](catalog://app-sandbox).")
+            Prose("The URLs are **security-scoped**. Call `startAccessingSecurityScopedResource()` before you read or bookmark one, and the matching stop call when you're done. A sandboxed app also needs the user-selected file entitlement. See [App Sandbox](catalog://app-sandbox).")
 
             SectionTitle("Usage")
                 .id("code")
             CodeBlock(code: """
             @State private var isImporting = false
+            @State private var text = ""
 
             Button("Open…") { isImporting = true }
                 .fileImporter(isPresented: $isImporting,
@@ -88,7 +89,7 @@ private struct MacFileImportExportArticle: View {
                     text = (try? String(contentsOf: url, encoding: .utf8)) ?? ""
                 }
             """)
-            Aside(.important, "Without the start and stop calls, reading the file fails in a sandboxed app even though the panel worked.")
+            Aside(.important, "Apple's docs ask you to pair every start call with a stop call. `defer` makes sure the stop call runs, even when reading fails.")
 
             SectionTitle("Examples")
                 .id("examples")
@@ -108,7 +109,7 @@ private struct ImportManyExample: View {
     var body: some View {
         ExampleCard(
             title: "Pick several files",
-            caption: "Pass `allowsMultipleSelection: true` to get an array of URLs. Set a message and a button title that fit the task.",
+            caption: "Pass `allowsMultipleSelection: true` to get an array of URLs, and set a message and button title that fit the task.",
             code: """
             @State private var isImporting = false
             @State private var picked: [String] = []

@@ -20,6 +20,7 @@ extension ComponentPage {
         api: [
             APIItem("`.help(_:)`", "Adds a tooltip and an accessibility hint."),
             APIItem("`.help(Text)`", "The same, from a `Text`."),
+            APIItem("`Button(_:systemImage:action:)`", "A button with a title and a symbol."),
             APIItem("`.labelStyle(.iconOnly)`", "Shows only a label's icon; the title stays for VoiceOver."),
         ],
         guidelines: [
@@ -140,7 +141,7 @@ private struct MacTooltipsExamples: View {
     var body: some View {
         ExampleCard(
             title: "Icon-only toolbar buttons",
-            caption: "Toolbar buttons are often just a symbol. Add `.help` to each one so people can find out what it does before they click.",
+            caption: "Add `.help` to each icon-only toolbar button, so people can find out what it does before they click.",
             code: """
             .toolbar {
                 Button("New Note", systemImage: "square.and.pencil") { newNote() }
@@ -173,7 +174,7 @@ private struct MacTooltipsExamples: View {
 
         ExampleCard(
             title: "A tooltip that follows the state",
-            caption: "When a button switches between two actions, switch its tooltip too, so it always describes what the next click does.",
+            caption: "When a button switches between two actions, switch its `.help` text too, so it describes the next click.",
             code: """
             @State private var isPinned = false
 

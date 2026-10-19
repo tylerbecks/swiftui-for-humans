@@ -4,7 +4,7 @@ extension ComponentPage {
     static let menuBarExtra = ComponentPage(
         id: "menu-bar-extra",
         title: "MenuBarExtra",
-        summary: "An icon in the menu bar that opens a menu or a small window, even when your app isn't in front.",
+        summary: "A menu bar icon that opens a menu or a small window, whichever app is in front.",
         category: .windows,
         symbol: "menubar.arrow.up.rectangle",
         availability: ["macOS 13.0+"],
@@ -29,7 +29,7 @@ extension ComponentPage {
         """,
         api: [
             APIItem("`MenuBarExtra(_:systemImage:) { }`", "An icon and title, with a menu."),
-            APIItem("`MenuBarExtra(_:systemImage:isInserted:)`", "Shown only while the binding is true."),
+            APIItem("`MenuBarExtra(…, isInserted:)`", "Shown only while the binding is true."),
             APIItem("`.menuBarExtraStyle(.menu)`", "The content as a menu that pulls down."),
             APIItem("`.menuBarExtraStyle(.window)`", "The content in a small, popover-like window."),
             APIItem("`@Environment(\\.openWindow)`", "Opens one of your app's windows from the menu."),
@@ -120,7 +120,9 @@ private struct MacMenuBarExtraArticle: View {
                     Button("Start Focus Session") { }
                     Toggle("Pause Notifications", isOn: $isPaused)
                     Divider()
-                    Button("Settings…") { }
+                    SettingsLink {
+                        Text("Settings…")
+                    }
                 }
                 """,
                 minHeight: 220

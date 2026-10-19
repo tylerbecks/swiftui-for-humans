@@ -53,6 +53,8 @@ private struct MacPricingCategoryArticle: View {
 
     var body: some View {
         ArticlePage(page: page) {
+            Prose("Before you submit, App Store Connect needs a primary category, a price, and the countries or regions where the app is sold. A Mac app also names its category in Xcode.")
+
             SectionTitle("Category: set it twice")
             Prose("Pick a primary and an optional secondary category in App Store Connect. A Mac app also declares its category in its `Info.plist` with `LSApplicationCategoryType`, and Apple says the primary category in App Store Connect should match it. Choose the one that best describes what the app does; Guideline **2.3.5** lets Apple change a category that's way off.")
             CategoryPicker()
@@ -80,7 +82,7 @@ private struct MacPricingCategoryArticle: View {
             ])
 
             SectionTitle("Unlocking features")
-            Prose("Guideline **3.1.1** applies on the Mac too: unlock features with In-App Purchase, not license keys or codes of your own. To offer a free trial of a paid app, Apple describes a non-consumable in-app purchase at price tier 0 named like “14-day Trial”, and the app must say before the trial starts how long it lasts and what it costs afterward.")
+            Prose("Guideline **3.1.1** applies on the Mac too: unlock features with In-App Purchase, not license keys or codes of your own. To offer a free trial of a paid app, Apple describes a non-consumable in-app purchase at price tier 0 named like “14-day Trial”, and before the trial starts the app must say how long it lasts, what stops working when it ends, and what the full version costs.")
         }
     }
 }

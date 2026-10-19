@@ -24,7 +24,7 @@ extension ComponentPage {
         guidelines: [
             Guideline(
                 "Show the app in use.",
-                "Guideline 2.3.3 asks for screenshots of the app doing its job, not just title art, a sign-in window, or a splash screen. Text overlays are fine when they explain, not hide.",
+                "Guideline 2.3.3 asks for screenshots of the app doing its job, not just title art, a sign-in window, or a splash screen. Text and image overlays are allowed.",
                 good: "The app's window, with real content.",
                 bad: "Only the icon and name."
             ) {
@@ -103,9 +103,10 @@ private struct MacScreenshotsArticle: View {
             SectionTitle("App previews")
             ConnectFacts(rows: [
                 ("Optional", "Up to three per language for each size."),
+                ("Size and length", "1920 × 1080 pixels (16:9), 15 to 30 seconds, and up to 500 MB."),
                 ("Orientation", "Landscape only for Mac apps."),
                 ("Formats", "`.mov`, `.m4v`, or `.mp4` with H.264, or `.mov` with ProRes 422 (HQ only)."),
-                ("Order", "Previews always show before screenshots. One with a different aspect ratio from your screenshots goes in the “A Closer Look” section instead."),
+                ("Order", "Previews always show before screenshots. A preview with a different aspect ratio from your screenshots, like 16:9 next to 16:10, appears in the “A Closer Look” section instead."),
                 ("Content", "Only video captured from the app itself (Guideline 2.3.4). Narration and text overlays are fine."),
             ])
 
