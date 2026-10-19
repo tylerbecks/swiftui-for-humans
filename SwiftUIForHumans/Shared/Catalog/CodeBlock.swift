@@ -97,6 +97,15 @@ struct CodeBlock: View {
                 }
         }
         .buttonStyle(.plain)
+        // A feathered patch of the panel color, so in a narrow column the
+        // code beside the button fades out instead of running into it.
+        .background {
+            Surface.code
+                .padding(.horizontal, -24)
+                .padding(.vertical, -12)
+                .blur(radius: 12)
+                .allowsHitTesting(false)
+        }
     }
 
     private var copyButton: some View {

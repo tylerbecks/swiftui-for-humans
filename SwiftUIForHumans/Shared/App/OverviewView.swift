@@ -6,6 +6,7 @@ struct OverviewView: View {
     let tab: AppTab
     @Environment(\.openPage) private var openPage
     @State private var filter: ComponentCategory?
+    @State private var scroll = ListScroll()
     @Environment(\.isCompactLayout) private var isCompact
 
     private var categories: [ComponentCategory] {
@@ -33,12 +34,11 @@ struct OverviewView: View {
         }
         .background(alignment: .top) {
             // On iPad the overview is the tab's first screen, so it carries
-            // the tab's wallpaper; on iPhone that's the list, one step back.
+            // the tab's wallpaper, scrolling with the content and dimmed
+            // behind the title and intro; on iPhone that's the list, one
+            // step back.
             if !isCompact {
-                Wallpaper(seed: tab.rawValue, tab: tab)
-                    .mask(WallpaperFade())
-                    .frame(height: 360)
-                    .ignoresSafeArea(edges: .top)
+                HeroBackdrop(tab: tab, scroll: scroll, background: .catalogBackground)
             }
         }
         .navigationTitle(tab.title)
@@ -66,6 +66,11 @@ struct OverviewView: View {
             .padding(.bottom, 28)
             .frame(maxWidth: 1100, alignment: .leading)
             .frame(maxWidth: .infinity)
+        }
+        .onScrollGeometryChange(for: ListScroll.Reading.self) {
+            ListScroll.Reading(offset: $0.contentOffset.y + $0.contentInsets.top, underBar: $0.contentInsets.top)
+        } action: { _, new in
+            scroll.reading = new
         }
     }
 
@@ -141,6 +146,15 @@ struct OverviewView: View {
 private struct CategorySection: View {
     let category: ComponentCategory
     let open: (ComponentPage.ID) -> Void
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    /// One card per row at accessibility sizes, where two columns leave
+    /// room for only a few words per line.
+    private var columns: [GridItem] {
+        dynamicTypeSize.isAccessibilitySize
+            ? [GridItem(.flexible(), spacing: 14)]
+            : [GridItem(.adaptive(minimum: 220), spacing: 14)]
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -151,7 +165,7 @@ private struct CategorySection: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 220), spacing: 14)], spacing: 14) {
+            LazyVGrid(columns: columns, spacing: 14) {
                 ForEach(Catalog.pages(in: category)) { page in
                     Button {
                         open(page.id)
@@ -175,11 +189,17 @@ private struct CategorySection: View {
 /// 150pt-tall box and not interactive.
 struct GalleryCard: View {
     let page: ComponentPage
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             page.makeThumbnail()
-                .frame(maxWidth: .infinity)
+                // The thumbnail is a picture in a fixed box and hidden from
+                // VoiceOver, so its text stops growing at a size that fits.
+                .dynamicTypeSize(...DynamicTypeSize.large)
+                // `minWidth: 0` keeps a wide thumbnail from widening the
+                // card past its grid column; the extra is clipped.
+                .frame(minWidth: 0, maxWidth: .infinity)
                 .frame(height: 150)
                 .clipped()
                 .allowsHitTesting(false)
@@ -200,7 +220,9 @@ struct GalleryCard: View {
                 Text(page.summary)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
-                    .lineLimit(2, reservesSpace: true)
+                    // At accessibility sizes two lines hold only a few words,
+                    // and with one card per row there's no neighbor to match.
+                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? 5 : 2, reservesSpace: !dynamicTypeSize.isAccessibilitySize)
                     .multilineTextAlignment(.leading)
             }
             .padding(12)

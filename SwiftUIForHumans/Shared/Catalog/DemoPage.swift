@@ -31,6 +31,7 @@ struct DemoPage<Config, Preview: View, Controls: View, Examples: View>: View {
     @State private var showControls = false
     @State private var didSetInitialControls = false
     @State private var width: CGFloat = 0
+    @State private var isPreviewVisible = true
     @Environment(\.isCompactLayout) private var isCompact
     @Environment(\.makeRoomForInspector) private var makeRoomForInspector
 
@@ -78,6 +79,7 @@ struct DemoPage<Config, Preview: View, Controls: View, Examples: View>: View {
                         preview($config)
                     }
                     .id("preview")
+                    .onScrollVisibilityChange(threshold: 0.5) { isPreviewVisible = $0 }
                     #endif
                     Divider()
                     CodeBlock(code: code(config), isCollapsible: true, isAttached: true)
@@ -149,8 +151,15 @@ struct DemoPage<Config, Preview: View, Controls: View, Examples: View>: View {
                 // The sheet covers the bottom of the screen: bring the
                 // preview to the top so edits stay visible.
                 withAnimation { proxy.scrollTo("preview", anchor: .top) }
-            } else if width < Self.inspectorMinWidth {
-                makeRoomForInspector()
+            } else {
+                if width < Self.inspectorMinWidth {
+                    makeRoomForInspector()
+                }
+                // The inspector edits the preview, so bring it back into
+                // view if the page has scrolled past it.
+                if !isPreviewVisible {
+                    withAnimation { proxy.scrollTo("preview", anchor: .top) }
+                }
             }
         }
         #endif

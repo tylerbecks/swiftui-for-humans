@@ -93,6 +93,27 @@ private struct CatalogPageTitle: ViewModifier {
     }
 }
 
+extension Color {
+    /// The plain background behind content: white or black on iOS, the
+    /// window background on the Mac.
+    static var catalogBackground: Color {
+        #if canImport(UIKit)
+        Color(.systemBackground)
+        #else
+        Color(nsColor: .windowBackgroundColor)
+        #endif
+    }
+
+    /// The background behind grouped lists and forms.
+    static var catalogGroupedBackground: Color {
+        #if canImport(UIKit)
+        Color(.systemGroupedBackground)
+        #else
+        Color(nsColor: .windowBackgroundColor)
+        #endif
+    }
+}
+
 enum CatalogPlatform {
     /// Whether pages and overviews show their title as a large heading in
     /// the content. iOS shows it as the navigation bar's large title; the

@@ -242,7 +242,7 @@ private struct Sidebar: View {
             }
         }
         .background {
-            if showsHero { Color(.systemGroupedBackground).ignoresSafeArea() }
+            if showsHero { Color.catalogGroupedBackground.ignoresSafeArea() }
         }
         .openInNewWindowMenu()
         .sheet(isPresented: $showsAbout) {
@@ -254,36 +254,6 @@ private struct Sidebar: View {
                 ComingSoonView(tab: tab)
             }
         }
-    }
-}
-
-/// How far a list has scrolled from rest, and how tall the bars above it are.
-/// An observable object rather than state on the list's view, so a scroll
-/// redraws only what reads it (the hero backdrop), not the whole list.
-@Observable private final class ListScroll {
-    struct Reading: Equatable {
-        var offset: CGFloat = 0
-        var underBar: CGFloat = 0
-    }
-
-    var reading = Reading()
-}
-
-/// The tab's wallpaper behind the sidebar list, moving with it: full width,
-/// up under the large title, and fading out behind the first rows. Scrolling
-/// only moves it, so it never rebuilds while the list scrolls.
-private struct HeroBackdrop: View {
-    let tab: AppTab
-    let scroll: ListScroll
-
-    var body: some View {
-        let reading = scroll.reading
-        Wallpaper(seed: tab.rawValue, tab: tab)
-            .overlay(TextScrim(titleBottom: reading.underBar, color: Color(.systemGroupedBackground)))
-            .mask(WallpaperFade())
-            .frame(height: reading.underBar + 260)
-            .offset(y: -reading.offset)
-            .ignoresSafeArea(edges: [.top, .horizontal])
     }
 }
 

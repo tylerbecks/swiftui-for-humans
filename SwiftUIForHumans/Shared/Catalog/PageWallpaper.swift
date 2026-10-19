@@ -10,9 +10,10 @@ import SwiftUI
 /// same wallpaper. It has a bright light version and a deeper dark one, and
 /// holds still with Reduce Motion on.
 ///
-/// It stays cheap while things scroll over it: the drift is one repeating
-/// animation of the mesh points rather than a per-frame timeline, and the
-/// grain is a single image drawn once.
+/// It stays cheap while things scroll over it: the drift follows the clock
+/// through one `TimelineView` at 30 frames a second, which pauses when the
+/// wallpaper is off screen or `isPaused`, and the grain is a single image
+/// drawn once.
 struct Wallpaper: View {
     let seed: String
     let tab: AppTab
