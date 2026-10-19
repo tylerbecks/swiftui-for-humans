@@ -1,8 +1,13 @@
 import SwiftUI
 
 /// A page built around one live, configurable demo: preview, generated code,
-/// and a controls inspector that edits `Config`. Optional `examples` go below
-/// the code (use `ExampleCard`s for common variations).
+/// and controls that edit `Config`. Optional `examples` go below the code
+/// (use `ExampleCard`s for common variations).
+///
+/// Where the controls go: on iPhone, a sheet; on iPad, an inspector. On the
+/// Mac they sit inside the demo card, beside the preview, so they scroll
+/// away with the demo they change instead of staying on screen with
+/// nothing to act on.
 ///
 /// Each demo supplies:
 /// - `initial`: the starting configuration
@@ -65,10 +70,15 @@ struct DemoPage<Config, Preview: View, Controls: View, Examples: View>: View {
         PageScaffold(page: page) {
             VStack(alignment: .leading, spacing: 12) {
                 VStack(spacing: 0) {
+                    #if os(macOS)
+                    attachedPlayground
+                        .id("preview")
+                    #else
                     PreviewCard(minHeight: previewHeight, isAttached: true) {
                         preview($config)
                     }
                     .id("preview")
+                    #endif
                     Divider()
                     CodeBlock(code: code(config), isCollapsible: true, isAttached: true)
                 }
@@ -108,6 +118,7 @@ struct DemoPage<Config, Preview: View, Controls: View, Examples: View>: View {
                 .id("examples")
             }
         }
+        #if os(iOS)
         .modifier(ControlsPresentation(isPresented: $showControls) {
             Form {
                 controls($config)
@@ -118,10 +129,12 @@ struct DemoPage<Config, Preview: View, Controls: View, Examples: View>: View {
                 }
             }
         })
+        #endif
         // Set again outside the inspector: on iPad, a title set only inside
         // `.inspector`'s content doesn't reach the navigation bar.
         .navigationTitle(page.title)
         .catalogPageTitle()
+        #if os(iOS)
         .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width in
             self.width = width
             // Open the controls on first layout only when the page stays
@@ -140,9 +153,56 @@ struct DemoPage<Config, Preview: View, Controls: View, Examples: View>: View {
                 makeRoomForInspector()
             }
         }
+        #endif
     }
+
+    #if os(macOS)
+    /// The preview with its controls beside it, in the same card. In a
+    /// narrow window the controls move under the preview.
+    private var attachedPlayground: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 0) {
+                PreviewCard(minHeight: previewHeight, isAttached: true) {
+                    preview($config)
+                }
+                .frame(minWidth: 340, maxHeight: .infinity)
+                // The controls can be taller than the preview; fill the
+                // rest of the height with the same surface.
+                .background(Surface.preview)
+                Divider()
+                controlsPanel
+                    .frame(width: 280)
+            }
+            .fixedSize(horizontal: false, vertical: true)
+            VStack(spacing: 0) {
+                PreviewCard(minHeight: previewHeight, isAttached: true) {
+                    preview($config)
+                }
+                Divider()
+                controlsPanel
+            }
+        }
+    }
+
+    private var controlsPanel: some View {
+        Form {
+            controls($config)
+            Section {
+                Button("Reset", systemImage: "arrow.counterclockwise") {
+                    withAnimation { config = initial }
+                }
+            }
+        }
+        .formStyle(.grouped)
+        .scrollDisabled(true)
+        .scrollContentBackground(.hidden)
+        .fixedSize(horizontal: false, vertical: true)
+        .background(.background.secondary)
+    }
+    #endif
 }
 
+#if os(iOS)
 /// Shows the controls form as a side inspector on wide screens, and as a
 /// half-height sheet on iPhone that leaves the preview visible above it.
 private struct ControlsPresentation<Panel: View>: ViewModifier {
@@ -200,6 +260,7 @@ private struct ControlsPresentation<Panel: View>: ViewModifier {
             }
     }
 }
+#endif
 
 extension DemoPage where Examples == EmptyView {
     init(

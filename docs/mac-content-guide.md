@@ -64,6 +64,7 @@ Link only to IDs in this table. Until every group is merged, the registry test r
 
 - **Defaults change.** A `Toggle` is a checkbox, but a switch in a grouped `Form`. `Picker` is a pop-up button, `Form` uses columns unless you set `.formStyle(.grouped)`. Say what the default is, and show it in the demo.
 - **Control sizes.** `.controlSize(.mini/.small/.regular/.large)` matters on the Mac. Offer it in a `DemoPage`'s controls when the control supports it.
+- **A `DemoPage`'s controls sit inside the demo card**, beside the preview, not in an inspector. Keep them to what fits in a 280-point column: a few short sections, no long explanations.
 - **Keyboard and menus** are part of most components: shortcuts, focus, Tab order, menu items. Mention them where they apply.
 - **No haptics, no sheet detents, no size classes.** Don't write about them.
 
