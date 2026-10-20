@@ -131,8 +131,10 @@ struct MacContentView: View {
         )
     }
 
-    /// Picks the first place: the page this window was opened for, then
-    /// the restored location, then launch flags (first window only).
+    /// Picks the first place: the restored location, then the page this
+    /// window was opened for, then launch flags (first window only). A
+    /// restored page window goes back to where it was last, even if you
+    /// moved on from the page it was opened for.
     private func restore() {
         guard !didRestore else { return }
         didRestore = true
@@ -141,12 +143,12 @@ struct MacContentView: View {
         // needs the window server to draw.
         if LaunchSnapshot.isRequested { columns = .detailOnly }
         #endif
-        if let windowPage, let page = Catalog.page(id: windowPage) {
-            nav.restore(Location(item: .category(page.category), page: page.id))
-            return
-        }
         if let data = savedLocation, let saved = try? JSONDecoder().decode(SavedWindow.self, from: data) {
             nav.restore(saved.location, shownArea: saved.shownArea)
+            if windowPage != nil { return }
+        } else if let windowPage, let page = Catalog.page(id: windowPage) {
+            nav.restore(Location(item: .category(page.category), page: page.id))
+            return
         }
         guard !LaunchOptions.didApplyToWindow else { return }
         LaunchOptions.didApplyToWindow = true
