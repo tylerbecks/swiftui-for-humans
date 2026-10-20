@@ -8,9 +8,9 @@ extension AppTab {
     /// One line at the top of the tab's overview.
     var intro: String {
         switch self {
-        case .components: "Every SwiftUI component, live. Change it, see it, copy the code."
-        case .design: "Apple's Human Interface Guidelines in plain language."
-        case .ship: "What Apple checks before your app goes live."
+        case .design: "How great iPhone and iPad apps look, feel, and behave."
+        case .build: "Every SwiftUI component, live. Tweak it, then copy the code."
+        case .ship: "Everything Apple checks before your app goes live."
         case .search: ""
         }
     }
@@ -48,7 +48,7 @@ enum ComponentCategory: String, CaseIterable, Identifiable, Sendable {
         switch self {
         case .foundations, .accessibility, .patterns: .design
         case .startHere, .feelsNative, .requiredByApple, .appStoreConnect, .testAndRelease: .ship
-        default: .components
+        default: .build
         }
     }
 

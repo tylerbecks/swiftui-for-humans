@@ -5,7 +5,7 @@ import SwiftUI
 /// `MeshGradient`, so it's sharp at any size and cheap to draw.
 ///
 /// The seed picks the colors and the shape, within a palette for the tab:
-/// blue, lavender, and pink for Components; peach, coral, and gold for
+/// blue, lavender, and pink for Build; peach, coral, and gold for
 /// Design; sky, teal, and mint for Ship. The same seed always gives the
 /// same wallpaper. It has a bright light version and a deeper dark one, and
 /// holds still with Reduce Motion on.

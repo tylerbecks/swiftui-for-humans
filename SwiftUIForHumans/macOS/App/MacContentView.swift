@@ -2,20 +2,20 @@ import SwiftUI
 
 /// A Mac window: a sidebar of one tab's pages beside the open page.
 ///
-/// The Mac has no tab bar. Components, Design, and Ship switch with the
+/// The Mac has no tab bar. Design, Build, and Ship switch with the
 /// control at the top of the sidebar (like Xcode's navigators) or ⌘1–⌘3,
 /// and the search field at the top of the sidebar searches all three.
 struct MacContentView: View {
     /// The page this window was opened for with "Open in New Window".
     var windowPage: ComponentPage.ID? = nil
-    @State private var tab: AppTab = .components
+    @State private var tab: AppTab = .design
     @State private var componentsSelection: String?
     @State private var designSelection: String?
     @State private var shipSelection: String?
     /// Saved per window, so relaunching returns to the last tab and page.
     /// Kept apart from the state above because scene storage only works in
     /// a real scene, and launch snapshots draw the view without one.
-    @SceneStorage("tab") private var savedTab: AppTab = .components
+    @SceneStorage("tab") private var savedTab: AppTab = .design
     @SceneStorage("selection") private var savedComponents: String?
     @SceneStorage("selection.design") private var savedDesign: String?
     @SceneStorage("selection.ship") private var savedShip: String?
@@ -121,7 +121,7 @@ struct MacContentView: View {
     private func restore() {
         guard !didRestore else { return }
         didRestore = true
-        tab = savedTab == .search ? .components : savedTab
+        tab = savedTab == .search ? .design : savedTab
         componentsSelection = savedComponents
         designSelection = savedDesign
         shipSelection = savedShip

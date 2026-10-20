@@ -1,7 +1,7 @@
 import SwiftUI
 import StoreKit
 
-/// The app's root: a tab bar with Components, Design, and Ship, plus a
+/// The app's root: a tab bar with Design, Build, and Ship, plus a
 /// search tab at the trailing edge that searches all three.
 ///
 /// Each tab is its own `NavigationSplitView`: on iPad, a sidebar of that
@@ -17,7 +17,7 @@ struct ContentView: View {
     var windowPage: ComponentPage.ID? = nil
     @Environment(\.horizontalSizeClass) private var sizeClass
     /// Restored per window, so relaunching returns to the last tab and page.
-    @SceneStorage("tab") private var tab: AppTab = .components
+    @SceneStorage("tab") private var tab: AppTab = .design
     @SceneStorage("selection") private var componentsSelection: String?
     @SceneStorage("selection.design") private var designSelection: String?
     @SceneStorage("selection.ship") private var shipSelection: String?
@@ -109,7 +109,7 @@ struct ContentView: View {
         }
         if let id = LaunchOptions.value(for: "-open") {
             if id == Catalog.overviewID {
-                let current = tab == .search ? AppTab.components : tab
+                let current = tab == .search ? AppTab.design : tab
                 selection(for: current).wrappedValue = id
                 tab = current
             } else {
@@ -190,9 +190,6 @@ private struct Sidebar: View {
     /// On iPhone this list is the tab's first screen, so the tab's wallpaper
     /// goes here; on iPad it tops the overview instead.
     private var showsHero: Bool { showsBoard && !Catalog.pages(in: tab).isEmpty }
-    /// Space between the title and the first row, where the wallpaper shows.
-    private static let heroHeight: CGFloat = 36
-
     var body: some View {
         List(selection: $selection) {
             Section {
@@ -202,9 +199,17 @@ private struct Sidebar: View {
                     .accessibilityIdentifier("row-overview")
             } header: {
                 if showsHero {
-                    // Holds the board's place; the board itself is behind
-                    // the list, where it can run edge to edge and under the title.
-                    Color.clear.frame(height: Self.heroHeight)
+                    // What the tab is for, over the wallpaper. The wallpaper
+                    // itself is behind the list, where it can run edge to
+                    // edge and under the title.
+                    Text(tab.intro)
+                        .font(.subheadline)
+                        // Stronger than .secondary, which washes out over the wallpaper.
+                        .foregroundStyle(Color.primary.opacity(0.8))
+                        .textCase(nil)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.bottom, 14)
                 }
             }
             ForEach(tab.categories) { category in

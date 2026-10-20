@@ -8,8 +8,8 @@ Each component gets a live preview you can tweak, code you can copy, and Apple's
 
 117 pages in three tabs:
 
-- **Components (79):** controls, text, layout, navigation, modifiers, data flow, animation, and blocks
 - **Design (22):** foundations like color, type, dark mode, motion, and app icons; accessibility; and patterns like loading, feedback, and asking for permission
+- **Build (79):** every component: controls, text, layout, navigation, modifiers, data flow, animation, and blocks
 - **Ship (16):** getting through App Review: what Apple requires, common rejections, App Store Connect forms, TestFlight, and release
 
 Across the app:
@@ -42,7 +42,7 @@ SwiftUIForHumans/
     App/                    Engagement, tips, About
     Catalog/                Page model, registry, page layout, code blocks, guidelines
   iOS/                      The iPhone and iPad app
-    App/                    App shell: tabs (Components, Design, Ship, Search), sidebars, in-app browser
+    App/                    App shell: tabs (Design, Build, Ship, Search), sidebars, in-app browser
     Catalog/                iOS-only page parts, like the phone frame
     Examples/               One file per page, grouped by category
     Edition.swift           The iOS categories, tab intros, and page list

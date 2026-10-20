@@ -16,8 +16,8 @@ The app has three content tabs and a search tab. Each category belongs to one ta
 
 | Tab | Categories (`ComponentCategory` cases) |
 | --- | --- |
-| Components | `.controls`, `.textInput`, `.textAndImages`, `.layout`, `.lists`, `.presentation`, `.modifiers`, `.dataFlow`, `.animation`, `.graphics`, `.frameworks`, `.blocks` |
 | Design | `.foundations`, `.accessibility`, `.patterns` |
+| Build (`AppTab.build`, stored as `components`) | `.controls`, `.textInput`, `.textAndImages`, `.layout`, `.lists`, `.presentation`, `.modifiers`, `.dataFlow`, `.animation`, `.graphics`, `.frameworks`, `.blocks` |
 | Ship | `.startHere`, `.feelsNative`, `.requiredByApple`, `.appStoreConnect`, `.testAndRelease` |
 
 Search lives in its own tab and searches every page's title, summary, and aliases. A category with no pages is hidden, and a tab with no pages shows "Coming Soon".
@@ -163,7 +163,7 @@ Launch arguments open the app in a known state:
 
 | Argument | Effect |
 | --- | --- |
-| `-tab <components\|design\|ship\|search>` | Starts on a tab |
+| `-tab <design\|components\|ship\|search>` | Starts on a tab (`components` is the Build tab) |
 | `-open <page id>` | Opens a page in its tab (`overview` for the current tab's overview) |
 | `-search <text>` | Opens the Search tab and fills in the field |
 | `-showControls` | Opens the Customize panel on a `DemoPage` |

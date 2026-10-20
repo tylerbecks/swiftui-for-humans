@@ -6,20 +6,23 @@ import SwiftUI
 /// Each edition (iOS, macOS) supplies its own `ComponentCategory` enum,
 /// `Catalog.pages`, and `AppTab.intro` in its `Edition.swift`.
 enum AppTab: String, CaseIterable, Identifiable, Sendable {
-    case components
     case design
+    /// Shown as "Build". The raw value stays "components" so saved tabs,
+    /// the `-tab components` launch flag, and the tab's wallpaper seed
+    /// carry over from before the rename.
+    case build = "components"
     case ship
     case search
 
     var id: Self { self }
 
     /// The tabs that hold pages, in tab bar order.
-    static let contentTabs: [AppTab] = [.components, .design, .ship]
+    static let contentTabs: [AppTab] = [.design, .build, .ship]
 
     var title: String {
         switch self {
-        case .components: "Components"
         case .design: "Design"
+        case .build: "Build"
         case .ship: "Ship"
         case .search: "Search"
         }
@@ -28,8 +31,8 @@ enum AppTab: String, CaseIterable, Identifiable, Sendable {
     /// Outline symbols: the tab bar fills them in when selected.
     var symbol: String {
         switch self {
-        case .components: "square.grid.2x2"
         case .design: "paintpalette"
+        case .build: "hammer"
         case .ship: "paperplane"
         case .search: "magnifyingglass"
         }

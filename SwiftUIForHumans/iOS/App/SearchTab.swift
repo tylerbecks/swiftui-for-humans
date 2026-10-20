@@ -61,7 +61,7 @@ struct SearchTab: View {
         if count > 0 {
             ContentUnavailableView("Pick a Result", systemImage: "sidebar.left", description: Text("^[\(count) page](inflect: true) found for “\(query)”."))
         } else {
-            ContentUnavailableView("Search Every Tab", systemImage: "magnifyingglass", description: Text("Components, design guidelines, and shipping rules. Try a web term like “dropdown”."))
+            ContentUnavailableView("Search Every Tab", systemImage: "magnifyingglass", description: Text("Design guidelines, components, and shipping rules. Try a web term like “dropdown”."))
         }
     }
 }
