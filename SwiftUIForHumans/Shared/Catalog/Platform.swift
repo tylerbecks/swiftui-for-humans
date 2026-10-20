@@ -118,6 +118,16 @@ enum CatalogPlatform {
     /// Whether pages and overviews show their title as a large heading in
     /// the content. iOS shows it as the navigation bar's large title; the
     /// Mac's window toolbar shows it small, so the page shows it too.
+    /// The modifiers for Previous / Next Page. ⌘[ and ⌘] are Back and
+    /// Forward on the Mac, as in Finder and Safari, so pages step with ⌥⌘.
+    static var pageStepModifiers: EventModifiers {
+        #if os(macOS)
+        [.command, .option]
+        #else
+        [.command]
+        #endif
+    }
+
     static var showsTitleInContent: Bool {
         #if os(macOS)
         true

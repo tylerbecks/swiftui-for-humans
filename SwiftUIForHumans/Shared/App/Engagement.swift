@@ -32,6 +32,11 @@ final class Engagement {
         recordActiveDay()
     }
 
+    /// Every page opened on this device, for "read" marks.
+    var viewedPages: Set<ComponentPage.ID> {
+        Set(defaults.stringArray(forKey: Key.pages) ?? [])
+    }
+
     // MARK: Events
 
     func recordPageView(_ id: ComponentPage.ID) {

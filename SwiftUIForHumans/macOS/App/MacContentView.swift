@@ -1,66 +1,40 @@
 import SwiftUI
 
-/// A Mac window: a sidebar of one tab's pages beside the open page.
-///
-/// The Mac has no tab bar. Design, Build, and Ship switch with the
-/// control at the top of the sidebar (like Xcode's navigators) or ⌘1–⌘3,
-/// and the search field at the top of the sidebar searches all three.
+/// A Mac window, laid out like Podcasts, TV, and Freeform: the sidebar
+/// opens with four destinations (Search, Design, Build, Ship), then the
+/// current area's categories. Each area has a home, each category a list,
+/// and pages open in the detail with Back / Forward and a jump bar in the
+/// toolbar.
 struct MacContentView: View {
     /// The page this window was opened for with "Open in New Window".
     var windowPage: ComponentPage.ID? = nil
-    @State private var tab: AppTab = .design
-    @State private var componentsSelection: String?
-    @State private var designSelection: String?
-    @State private var shipSelection: String?
-    /// Saved per window, so relaunching returns to the last tab and page.
-    /// Kept apart from the state above because scene storage only works in
-    /// a real scene, and launch snapshots draw the view without one.
-    @SceneStorage("tab") private var savedTab: AppTab = .design
-    @SceneStorage("selection") private var savedComponents: String?
-    @SceneStorage("selection.design") private var savedDesign: String?
-    @SceneStorage("selection.ship") private var savedShip: String?
-    @State private var searchText = ""
-    @FocusState private var isSearchFocused: Bool
+    @State private var nav = WindowNavigator()
+    /// Saved per window, so relaunching returns to the same place.
+    @SceneStorage("location") private var savedLocation: Data?
     @State private var columns = NavigationSplitViewVisibility.all
     @State private var didRestore = false
 
     var body: some View {
         NavigationSplitView(columnVisibility: $columns) {
-            MacSidebar(tab: $tab, selection: selection(for: tab), searchText: $searchText, open: open)
-                .navigationSplitViewColumnWidth(min: 220, ideal: 250, max: 340)
+            MacSidebar(nav: nav)
+                .navigationSplitViewColumnWidth(min: 220, ideal: 250, max: 320)
         } detail: {
-            NavigationStack {
-                if let page = Catalog.page(id: selection(for: tab).wrappedValue) {
-                    page.makeContent()
-                        .id(page.id)
-                } else {
-                    OverviewView(tab: tab)
-                }
-            }
-            // With no title in the toolbar, this keeps the page's buttons
-            // at the trailing edge, where Mac toolbars put them.
-            .toolbar {
-                ToolbarSpacer(.flexible)
-            }
+            detail
+                .frame(minWidth: 560)
+                .toolbar { toolbar }
         }
-        .searchable(text: $searchText, placement: .sidebar, prompt: "Search")
-        .searchFocused($isSearchFocused)
-        // The page shows its title as a large heading, so the toolbar
-        // doesn't repeat it. The window keeps it for the Window menu and
-        // Mission Control.
-        .navigationTitle(windowTitle)
+        // The content shows a large title, so the toolbar doesn't repeat
+        // it. The window keeps it for the Window menu and Mission Control.
+        .navigationTitle(nav.windowTitle)
         .toolbar(removing: .title)
         .environment(\.openPage, OpenPageAction { id in
-            open(id)
-        })
-        .environment(\.makeRoomForInspector, MakeRoomAction {
-            withAnimation { columns = .detailOnly }
+            nav.open(id)
         })
         .environment(\.openURL, OpenURLAction { url in
             // `catalog://<page id>` opens a page here; every other link
             // opens in the default browser.
             if url.scheme == "catalog", let id = url.host(), Catalog.page(id: id) != nil {
-                open(id)
+                nav.open(id)
                 return .handled
             }
             return .systemAction
@@ -68,198 +42,118 @@ struct MacContentView: View {
         .focusedSceneValue(\.catalogNavigator, navigator)
         .modifier(ReviewPrompt())
         .onAppear(perform: restore)
-        .onChange(of: tab) { savedTab = tab }
-        .onChange(of: componentsSelection) { savedComponents = componentsSelection }
-        .onChange(of: designSelection) { savedDesign = designSelection }
-        .onChange(of: shipSelection) { savedShip = shipSelection }
+        .onChange(of: nav.current) {
+            savedLocation = try? JSONEncoder().encode(nav.current)
+        }
     }
 
-    private var windowTitle: String {
-        Catalog.page(id: selection(for: tab).wrappedValue)?.title ?? tab.title
+    @ViewBuilder
+    private var detail: some View {
+        if let page = nav.currentPage {
+            page.makeContent()
+                .id(page.id)
+        } else {
+            switch nav.current.item {
+            case .search:
+                MacSearchView(nav: nav)
+            case .area(let tab):
+                MacAreaHome(tab: tab, nav: nav)
+                    .id(tab)
+            case .category(let category):
+                MacCategoryList(category: category, nav: nav)
+                    .id(category)
+            }
+        }
+    }
+
+    @ToolbarContentBuilder
+    private var toolbar: some ToolbarContent {
+        ToolbarItemGroup(placement: .navigation) {
+            Button("Back", systemImage: "chevron.backward") { nav.goBack() }
+                .disabled(!nav.canGoBack)
+                .help("Back")
+            Button("Forward", systemImage: "chevron.forward") { nav.goForward() }
+                .disabled(!nav.canGoForward)
+                .help("Forward")
+        }
+        if let page = nav.currentPage {
+            ToolbarSpacer(.fixed, placement: .navigation)
+            ToolbarItem(placement: .navigation) {
+                JumpBar(page: page, nav: nav)
+            }
+        }
+        // Keeps the page's own buttons at the trailing edge.
+        ToolbarSpacer(.flexible)
+        if let page = nav.currentPage {
+            ToolbarItem(placement: .primaryAction) {
+                OpenInNewWindowButton(id: page.id)
+                    .help("Open in New Window")
+            }
+        }
     }
 
     /// For the Go menu and its keyboard shortcuts.
     private var navigator: CatalogNavigator {
-        let current = selection(for: tab).wrappedValue
-        let neighbors = current.map { Catalog.neighbors(of: $0) }
+        let neighbors = nav.current.page.map { Catalog.neighbors(of: $0) }
         return CatalogNavigator(
-            tab: tab,
+            tab: nav.shownArea,
             previous: neighbors?.previous?.id,
             next: neighbors?.next?.id,
-            select: { newTab in
-                if newTab == .search {
-                    isSearchFocused = true
+            select: { tab in
+                if tab == .search {
+                    nav.showSearch()
                 } else {
-                    // A search replaces the sidebar's page list, so end it
-                    // to show the section ⌘1–⌘3 asked for.
-                    searchText = ""
-                    tab = newTab
+                    nav.show(.area(tab))
                 }
             },
-            open: { open($0) }
+            open: { nav.open($0) },
+            history: CatalogNavigator.History(
+                canGoBack: nav.canGoBack,
+                canGoForward: nav.canGoForward,
+                canGoUp: nav.canGoUp,
+                back: { nav.goBack() },
+                forward: { nav.goForward() },
+                up: { nav.goUp() }
+            )
         )
     }
 
-    private func selection(for tab: AppTab) -> Binding<ComponentPage.ID?> {
-        switch tab {
-        case .design: $designSelection
-        case .ship: $shipSelection
-        default: $componentsSelection
-        }
-    }
-
-    private func open(_ id: ComponentPage.ID) {
-        guard let page = Catalog.page(id: id) else { return }
-        let pageTab = page.category.tab
-        selection(for: pageTab).wrappedValue = id
-        tab = pageTab
-    }
-
-    /// Picks the first tab and page: `-tab`, `-open <id>`, and `-search`
-    /// (used when testing), then the restored state. Each tab starts on
-    /// its overview.
+    /// Picks the first place: the page this window was opened for, then
+    /// the restored location, then launch flags (first window only).
     private func restore() {
         guard !didRestore else { return }
         didRestore = true
-        tab = savedTab == .search ? .design : savedTab
-        componentsSelection = savedComponents
-        designSelection = savedDesign
-        shipSelection = savedShip
         #if DEBUG
-        // A snapshot shows the page column alone: the sidebar's Liquid
-        // Glass needs the window server to draw.
+        // A snapshot shows the detail alone: the sidebar's Liquid Glass
+        // needs the window server to draw.
         if LaunchSnapshot.isRequested { columns = .detailOnly }
         #endif
-        for contentTab in AppTab.contentTabs {
-            let current = selection(for: contentTab)
-            let isValid = current.wrappedValue.map { Catalog.page(id: $0)?.category.tab == contentTab || $0 == Catalog.overviewID } ?? false
-            if !isValid {
-                current.wrappedValue = Catalog.overviewID
-            }
-        }
-        if let windowPage {
-            open(windowPage)
+        if let windowPage, let page = Catalog.page(id: windowPage) {
+            nav.restore(Location(item: .category(page.category), page: page.id))
             return
         }
-        // Launch flags set up the first window only, not ones opened later.
+        if let data = savedLocation, let location = try? JSONDecoder().decode(Location.self, from: data) {
+            nav.restore(location)
+        }
         guard !LaunchOptions.didApplyToWindow else { return }
         LaunchOptions.didApplyToWindow = true
-        if let name = LaunchOptions.value(for: "-tab"), let launchTab = AppTab(rawValue: name), launchTab != .search {
-            tab = launchTab
+        if let name = LaunchOptions.value(for: "-tab"), let tab = AppTab(rawValue: name), tab != .search {
+            nav.restore(Location(item: .area(tab)))
+        }
+        if let name = LaunchOptions.value(for: "-category"),
+           let category = ComponentCategory.allCases.first(where: { "\($0)" == name || $0.rawValue == name }) {
+            nav.restore(Location(item: .category(category)))
         }
         if let id = LaunchOptions.value(for: "-open") {
-            if id == Catalog.overviewID {
-                selection(for: tab).wrappedValue = id
-            } else {
-                open(id)
+            if let page = Catalog.page(id: id) {
+                nav.restore(Location(item: .category(page.category), page: id))
+            } else if id == Catalog.overviewID {
+                nav.restore(Location(item: .area(nav.shownArea)))
             }
         }
         if let query = LaunchOptions.value(for: "-search") {
-            searchText = query
+            nav.searchText = query
+            nav.restore(Location(item: .search))
         }
     }
 }
-
-/// The sidebar: the tab switcher, then either the tab's pages by category
-/// or, while searching, matches from every tab.
-private struct MacSidebar: View {
-    @Binding var tab: AppTab
-    @Binding var selection: ComponentPage.ID?
-    @Binding var searchText: String
-    let open: (ComponentPage.ID) -> Void
-    @Environment(\.openWindow) private var openWindow
-
-    private var query: String {
-        searchText.trimmingCharacters(in: .whitespaces)
-    }
-
-    var body: some View {
-        Group {
-            if query.isEmpty {
-                pageList
-            } else {
-                SearchResults(query: query, open: open)
-            }
-        }
-        .safeAreaInset(edge: .top, spacing: 0) {
-            Picker("Section", selection: $tab) {
-                ForEach(AppTab.contentTabs) { tab in
-                    Label(tab.title, systemImage: tab.symbol)
-                        .tag(tab)
-                }
-            }
-            .pickerStyle(.segmented)
-            .labelsHidden()
-            .padding(.horizontal, 10)
-            .padding(.vertical, 8)
-            .disabled(!query.isEmpty)
-        }
-    }
-
-    private var pageList: some View {
-        List(selection: $selection) {
-            Label("Overview", systemImage: "square.grid.2x2")
-                .tag(Catalog.overviewID)
-                .accessibilityIdentifier("row-overview")
-            ForEach(tab.categories) { category in
-                let pages = Catalog.pages(in: category)
-                if !pages.isEmpty {
-                    Section(category.rawValue) {
-                        ForEach(pages) { page in
-                            SidebarRow(page: page)
-                                .tag(page.id)
-                                .accessibilityIdentifier("row-\(page.id)")
-                        }
-                    }
-                }
-            }
-        }
-        .openInNewWindowMenu()
-    }
-}
-
-/// Matches from every tab, grouped by tab, with the alias that matched
-/// when the title didn't.
-private struct SearchResults: View {
-    let query: String
-    let open: (ComponentPage.ID) -> Void
-    @State private var selection: ComponentPage.ID?
-
-    private var matches: [ComponentPage] {
-        Catalog.pages.filter { $0.matches(query) }
-    }
-
-    var body: some View {
-        List(selection: $selection) {
-            ForEach(AppTab.contentTabs) { tab in
-                let pages = matches.filter { $0.category.tab == tab }
-                if !pages.isEmpty {
-                    Section(tab.title) {
-                        ForEach(pages) { page in
-                            SidebarRow(page: page, detail: detail(for: page))
-                                .tag(page.id)
-                                .accessibilityIdentifier("row-\(page.id)")
-                        }
-                    }
-                }
-            }
-        }
-        .openInNewWindowMenu()
-        .onChange(of: selection) { _, id in
-            if let id { open(id) }
-        }
-        .overlay {
-            if matches.isEmpty {
-                ContentUnavailableView.search(text: query)
-            }
-        }
-    }
-
-    private func detail(for page: ComponentPage) -> String {
-        if let alias = page.aliasMatch(for: query) {
-            return "\(page.category.rawValue) · Matches “\(alias)”"
-        }
-        return page.category.rawValue
-    }
-}
-

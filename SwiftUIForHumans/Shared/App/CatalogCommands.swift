@@ -9,6 +9,18 @@ struct CatalogNavigator {
     let next: ComponentPage.ID?
     let select: @MainActor (AppTab) -> Void
     let open: @MainActor (ComponentPage.ID) -> Void
+    /// Back, Forward, and Enclosing Level, where the window keeps a
+    /// history (the Mac). Without it the Go menu leaves them out.
+    var history: History? = nil
+
+    struct History {
+        let canGoBack: Bool
+        let canGoForward: Bool
+        let canGoUp: Bool
+        let back: @MainActor () -> Void
+        let forward: @MainActor () -> Void
+        let up: @MainActor () -> Void
+    }
 }
 
 extension FocusedValues {
@@ -34,16 +46,28 @@ struct CatalogCommands: Commands {
                 navigator?.select(.search)
             }
             .keyboardShortcut("f")
+            if let history = navigator?.history {
+                Divider()
+                Button("Back", systemImage: "chevron.backward") { history.back() }
+                    .keyboardShortcut("[")
+                    .disabled(!history.canGoBack)
+                Button("Forward", systemImage: "chevron.forward") { history.forward() }
+                    .keyboardShortcut("]")
+                    .disabled(!history.canGoForward)
+                Button("Enclosing Level", systemImage: "arrow.up") { history.up() }
+                    .keyboardShortcut(.upArrow)
+                    .disabled(!history.canGoUp)
+            }
             Divider()
             Button("Previous Page", systemImage: "arrow.left") {
                 if let id = navigator?.previous { navigator?.open(id) }
             }
-            .keyboardShortcut("[")
+            .keyboardShortcut("[", modifiers: CatalogPlatform.pageStepModifiers)
             .disabled(navigator?.previous == nil)
             Button("Next Page", systemImage: "arrow.right") {
                 if let id = navigator?.next { navigator?.open(id) }
             }
-            .keyboardShortcut("]")
+            .keyboardShortcut("]", modifiers: CatalogPlatform.pageStepModifiers)
             .disabled(navigator?.next == nil)
         }
     }

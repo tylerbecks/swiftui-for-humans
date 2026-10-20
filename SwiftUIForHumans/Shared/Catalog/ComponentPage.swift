@@ -5,7 +5,7 @@ import SwiftUI
 ///
 /// Each edition (iOS, macOS) supplies its own `ComponentCategory` enum,
 /// `Catalog.pages`, and `AppTab.intro` in its `Edition.swift`.
-enum AppTab: String, CaseIterable, Identifiable, Sendable {
+enum AppTab: String, CaseIterable, Identifiable, Codable, Sendable {
     case design
     /// Shown as "Build". The raw value stays "components" so saved tabs,
     /// the `-tab components` launch flag, and the tab's wallpaper seed

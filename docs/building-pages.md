@@ -165,6 +165,7 @@ Launch arguments open the app in a known state:
 | --- | --- |
 | `-tab <design\|components\|ship\|search>` | Starts on a tab (`components` is the Build tab) |
 | `-open <page id>` | Opens a page in its tab (`overview` for the current tab's overview) |
+| `-category <name>` | Mac only: opens a category's page list, such as `controls` |
 | `-search <text>` | Opens the Search tab and fills in the field |
 | `-showControls` | Opens the Customize panel on a `DemoPage` |
 | `-showScrubber` | Keeps the page scrubber on screen |

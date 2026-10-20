@@ -237,7 +237,8 @@ struct GalleryCard: View {
     }
 }
 
-private struct CardButtonStyle: ButtonStyle {
+/// A card that shrinks a little while pressed.
+struct CardButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .scaleEffect(configuration.isPressed ? 0.97 : 1)

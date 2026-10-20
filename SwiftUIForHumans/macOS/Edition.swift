@@ -17,7 +17,7 @@ extension AppTab {
 }
 
 /// Sidebar sections, in display order. Each one belongs to a tab.
-enum ComponentCategory: String, CaseIterable, Identifiable, Sendable {
+enum ComponentCategory: String, CaseIterable, Identifiable, Codable, Sendable {
     // Components
     case controls = "Controls"
     case textInput = "Text Input"
