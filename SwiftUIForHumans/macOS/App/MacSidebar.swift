@@ -37,6 +37,12 @@ struct MacSidebar: View {
                         .simultaneousGesture(TapGesture().onEnded {
                             nav.show(.category(category))
                         })
+                        // The tap gesture hides the label from VoiceOver,
+                        // which would read only the count.
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel(category.rawValue)
+                        .accessibilityValue("\(count) pages")
+                        .accessibilityAddTraits(.isButton)
                         .accessibilityIdentifier("cat-\(category.id)")
                     }
                 }
@@ -47,6 +53,9 @@ struct MacSidebar: View {
                         .frame(width: 6, height: 6)
                     Text(nav.shownArea.title)
                 }
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("\(nav.shownArea.title) categories")
+                .accessibilityAddTraits(.isHeader)
             }
             .id(nav.shownArea)
         }

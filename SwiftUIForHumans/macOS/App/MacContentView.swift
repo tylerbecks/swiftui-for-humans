@@ -18,6 +18,10 @@ struct MacContentView: View {
         NavigationSplitView(columnVisibility: $columns) {
             MacSidebar(nav: nav)
                 .navigationSplitViewColumnWidth(min: 220, ideal: 250, max: 320)
+                // The system's toggle sits over the floating sidebar, which
+                // takes its clicks on macOS 27. Ours leads the toolbar's
+                // navigation group instead.
+                .toolbar(removing: .sidebarToggle)
         } detail: {
             detail
                 .frame(minWidth: 560)
@@ -68,6 +72,15 @@ struct MacContentView: View {
 
     @ToolbarContentBuilder
     private var toolbar: some ToolbarContent {
+        ToolbarItem(placement: .navigation) {
+            let isHidden = columns == .detailOnly
+            Button(isHidden ? "Show Sidebar" : "Hide Sidebar", systemImage: "sidebar.leading") {
+                withAnimation {
+                    columns = isHidden ? .all : .detailOnly
+                }
+            }
+            .help(isHidden ? "Show Sidebar" : "Hide Sidebar")
+        }
         ToolbarItemGroup(placement: .navigation) {
             Button("Back", systemImage: "chevron.backward") { nav.goBack() }
                 .disabled(!nav.canGoBack)

@@ -35,6 +35,10 @@ struct MacAreaHome: View {
             HeroBackdrop(tab: tab, scroll: scroll, background: .catalogBackground)
                 // Mirrors the ribbons under the floating sidebar.
                 .backgroundExtensionEffect()
+                // It's only decoration. The mirrored copy reaches under the
+                // toolbar and would otherwise swallow clicks on the sidebar
+                // button beside the traffic lights.
+                .allowsHitTesting(false)
         }
         .scrollEdgeEffectStyle(.soft, for: .top)
     }
