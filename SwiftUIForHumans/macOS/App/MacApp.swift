@@ -41,7 +41,9 @@ struct SwiftUIForHumansMacApp: App {
         WindowGroup(id: DemoWindow.sceneID, for: DemoWindow.ID.self) { $id in
             DemoWindowRoot(id: id)
         }
-        .defaultSize(width: 720, height: 460)
+        // The window fits its content: each demo opens at its own size
+        // (`DemoWindow.size`, see `DemoWindowRoot`), then can be resized.
+        .windowResizability(.contentMinSize)
     }
 }
 

@@ -47,7 +47,7 @@ struct MacContentView: View {
         .modifier(ReviewPrompt())
         .onAppear(perform: restore)
         .onChange(of: nav.current) {
-            savedLocation = try? JSONEncoder().encode(nav.current)
+            savedLocation = try? JSONEncoder().encode(nav.saved)
         }
     }
 
@@ -145,8 +145,8 @@ struct MacContentView: View {
             nav.restore(Location(item: .category(page.category), page: page.id))
             return
         }
-        if let data = savedLocation, let location = try? JSONDecoder().decode(Location.self, from: data) {
-            nav.restore(location)
+        if let data = savedLocation, let saved = try? JSONDecoder().decode(SavedWindow.self, from: data) {
+            nav.restore(saved.location, shownArea: saved.shownArea)
         }
         guard !LaunchOptions.didApplyToWindow else { return }
         LaunchOptions.didApplyToWindow = true

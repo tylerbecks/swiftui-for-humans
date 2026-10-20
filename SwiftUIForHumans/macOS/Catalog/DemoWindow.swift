@@ -58,15 +58,27 @@ struct OpenDemoWindowButton: View {
     }
 }
 
-/// The root of a demo window.
+/// The root of a demo window. It opens at the demo's own size: the frame is
+/// fixed for the first layout, so the window fits it, then relaxes to a
+/// minimum so people can resize the window.
 struct DemoWindowRoot: View {
     let id: DemoWindow.ID?
+    @State private var isSized = false
 
     var body: some View {
         if let window = Catalog.demoWindow(id: id) {
             window.makeContent()
-                .frame(minWidth: 320, idealWidth: window.size.width, minHeight: 200, idealHeight: window.size.height)
+                .frame(
+                    minWidth: isSized ? 320 : window.size.width,
+                    maxWidth: isSized ? .infinity : window.size.width,
+                    minHeight: isSized ? 200 : window.size.height,
+                    maxHeight: isSized ? .infinity : window.size.height
+                )
                 .navigationTitle(window.title)
+                .task {
+                    try? await Task.sleep(for: .milliseconds(300))
+                    isSized = true
+                }
         } else {
             ContentUnavailableView("No Demo", systemImage: "macwindow", description: Text("This demo window isn't available."))
                 .frame(minWidth: 320, minHeight: 200)

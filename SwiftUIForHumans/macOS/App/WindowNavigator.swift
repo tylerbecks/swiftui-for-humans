@@ -14,6 +14,13 @@ struct Location: Hashable, Codable, Sendable {
     var page: ComponentPage.ID? = nil
 }
 
+/// What a window saves to come back to: where it was, and which area the
+/// sidebar showed. Search has no area of its own, so it needs the second.
+struct SavedWindow: Codable, Sendable {
+    var location: Location
+    var shownArea: AppTab
+}
+
 /// One window's place in the app, with Back and Forward like Finder or
 /// System Settings. A `NavigationStack` can only go back, so the Mac keeps
 /// its own history.
@@ -126,13 +133,22 @@ final class WindowNavigator {
 
     /// Puts the window somewhere without adding history, for restoring a
     /// window or applying launch flags. A page that no longer exists falls
-    /// back to its area's home.
-    func restore(_ location: Location) {
+    /// back to its area's home. `shownArea` is the sidebar's area for a
+    /// place without one of its own, like Search.
+    func restore(_ location: Location, shownArea area: AppTab? = nil) {
         var location = location
         if let id = location.page, Catalog.page(id: id) == nil {
-            location = Location(item: .area(Self.area(of: Location(item: location.item)) ?? .design))
+            location = Location(item: .area(Self.area(of: Location(item: location.item)) ?? area ?? .design))
+        }
+        if let area, AppTab.contentTabs.contains(area) {
+            shownArea = area
         }
         move(to: location)
+    }
+
+    /// What to save so the window comes back the same way.
+    var saved: SavedWindow {
+        SavedWindow(location: current, shownArea: shownArea)
     }
 
     private func move(to location: Location) {

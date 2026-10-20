@@ -4,10 +4,10 @@ import SwiftUI
 /// and controls that edit `Config`. Optional `examples` go below the code
 /// (use `ExampleCard`s for common variations).
 ///
-/// Where the controls go: on iPhone, a sheet; on iPad, an inspector. On the
-/// Mac they sit inside the demo card, beside the preview, so they scroll
-/// away with the demo they change instead of staying on screen with
-/// nothing to act on.
+/// Where the controls go is `CatalogPlatform.demoControlsPlacement`: on
+/// iPhone a sheet and on iPad an inspector (`.presented`); on the Mac inside
+/// the demo card, beside the preview (`.attached`), so they scroll away with
+/// the demo they change instead of staying on screen with nothing to act on.
 ///
 /// Each demo supplies:
 /// - `initial`: the starting configuration
@@ -71,16 +71,16 @@ struct DemoPage<Config, Preview: View, Controls: View, Examples: View>: View {
         PageScaffold(page: page) {
             VStack(alignment: .leading, spacing: 12) {
                 VStack(spacing: 0) {
-                    #if os(macOS)
-                    attachedPlayground
+                    if Self.attachesControls {
+                        attachedPlayground
+                            .id("preview")
+                    } else {
+                        PreviewCard(minHeight: previewHeight, isAttached: true) {
+                            preview($config)
+                        }
                         .id("preview")
-                    #else
-                    PreviewCard(minHeight: previewHeight, isAttached: true) {
-                        preview($config)
+                        .onScrollVisibilityChange(threshold: 0.5) { isPreviewVisible = $0 }
                     }
-                    .id("preview")
-                    .onScrollVisibilityChange(threshold: 0.5) { isPreviewVisible = $0 }
-                    #endif
                     Divider()
                     CodeBlock(code: code(config), isCollapsible: true, isAttached: true)
                 }
@@ -120,8 +120,7 @@ struct DemoPage<Config, Preview: View, Controls: View, Examples: View>: View {
                 .id("examples")
             }
         }
-        #if os(iOS)
-        .modifier(ControlsPresentation(isPresented: $showControls) {
+        .catalogControlsPresentation(isPresented: $showControls, isEnabled: !Self.attachesControls) {
             Form {
                 controls($config)
                 Section {
@@ -130,23 +129,21 @@ struct DemoPage<Config, Preview: View, Controls: View, Examples: View>: View {
                     }
                 }
             }
-        })
-        #endif
+        }
         // Set again outside the inspector: on iPad, a title set only inside
         // `.inspector`'s content doesn't reach the navigation bar.
         .navigationTitle(page.title)
         .catalogPageTitle()
-        #if os(iOS)
         .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width in
             self.width = width
             // Open the controls on first layout only when the page stays
             // readable beside them; otherwise they wait for the toolbar button.
-            guard !didSetInitialControls else { return }
+            guard !Self.attachesControls, !didSetInitialControls else { return }
             didSetInitialControls = true
             showControls = LaunchOptions.take("-showControls", page: page.id) || (!isCompact && width >= Self.inspectorMinWidth)
         }
         .onChange(of: showControls) { _, isShown in
-            guard isShown else { return }
+            guard isShown, !Self.attachesControls else { return }
             if isCompact {
                 // The sheet covers the bottom of the screen: bring the
                 // preview to the top so edits stay visible.
@@ -162,10 +159,12 @@ struct DemoPage<Config, Preview: View, Controls: View, Examples: View>: View {
                 }
             }
         }
-        #endif
     }
 
-    #if os(macOS)
+    private static var attachesControls: Bool {
+        CatalogPlatform.demoControlsPlacement == .attached
+    }
+
     /// The preview with its controls beside it, in the same card. In a
     /// narrow window the controls move under the preview.
     private var attachedPlayground: some View {
@@ -210,68 +209,7 @@ struct DemoPage<Config, Preview: View, Controls: View, Examples: View>: View {
         .frame(maxHeight: .infinity, alignment: .top)
         .background(.background.secondary)
     }
-    #endif
 }
-
-#if os(iOS)
-/// Shows the controls form as a side inspector on wide screens, and as a
-/// half-height sheet on iPhone that leaves the preview visible above it.
-private struct ControlsPresentation<Panel: View>: ViewModifier {
-    @Binding var isPresented: Bool
-    @ViewBuilder let panel: Panel
-    @Environment(\.isCompactLayout) private var isCompact
-
-    /// Tall enough for about four rows, short enough to leave most of the
-    /// preview visible above it.
-    private static var compactDetent: PresentationDetent { .height(300) }
-
-    func body(content: Content) -> some View {
-        #if os(iOS)
-        if isCompact {
-            content
-                .sheet(isPresented: $isPresented) {
-                    NavigationStack {
-                        panel
-                            .navigationTitle("Controls")
-                            .navigationBarTitleDisplayMode(.inline)
-                            .toolbar {
-                                ToolbarItem(placement: .confirmationAction) {
-                                    Button("Done", systemImage: "checkmark") { isPresented = false }
-                                }
-                            }
-                    }
-                    .presentationDetents([Self.compactDetent, .large])
-                    .presentationBackgroundInteraction(.enabled(upThrough: Self.compactDetent))
-                }
-        } else {
-            inspector(content)
-        }
-        #else
-        inspector(content)
-        #endif
-    }
-
-    private func inspector(_ content: Content) -> some View {
-        content
-            .inspector(isPresented: $isPresented) {
-                panel
-                    .inspectorColumnWidth(min: 280, ideal: 320, max: 400)
-            }
-            // The page scaffold's appearance button doesn't reach the
-            // bar once `.inspector` wraps the page, so it's added here.
-            .toolbar {
-                ToolbarItemGroup(placement: .primaryAction) {
-                    #if os(iOS)
-                    PreviewSchemeMenu()
-                    #endif
-                    Button("Controls", systemImage: "slider.horizontal.3") {
-                        isPresented.toggle()
-                    }
-                }
-            }
-    }
-}
-#endif
 
 extension DemoPage where Examples == EmptyView {
     init(

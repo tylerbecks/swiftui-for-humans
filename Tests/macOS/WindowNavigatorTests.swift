@@ -74,6 +74,19 @@ struct WindowNavigatorTests {
         #expect(!nav.canGoBack)
     }
 
+    @Test func restoringSearchKeepsTheSidebarArea() throws {
+        let nav = makeNavigator()
+        nav.show(.area(.ship))
+        nav.showSearch()
+        let data = try JSONEncoder().encode(nav.saved)
+
+        let relaunched = makeNavigator()
+        let saved = try JSONDecoder().decode(SavedWindow.self, from: data)
+        relaunched.restore(saved.location, shownArea: saved.shownArea)
+        #expect(relaunched.current.item == .search)
+        #expect(relaunched.shownArea == .ship)
+    }
+
     @Test func locationsSurviveEncoding() throws {
         let location = Location(item: .category(.windows), page: "settings-scene")
         let data = try JSONEncoder().encode(location)
