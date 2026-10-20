@@ -4,11 +4,11 @@ How a page is put together in code. For what to write on it, see [content-guide.
 
 ## Adding a page
 
-1. Create `Examples/<Group>/<Name>Page.swift`.
+1. Create `iOS/Examples/<Group>/<Name>Page.swift`.
 2. Define its `ComponentPage` (see below).
-3. Add it to the group's registry, `Examples/<Group>/<Group>Pages.swift`, in the order it should appear in the sidebar.
+3. Add it to the group's registry, `iOS/Examples/<Group>/<Group>Pages.swift`, in the order it should appear in the sidebar.
 
-`Catalog/Registry.swift` combines the group lists. Sidebar sections come from each page's `category`, not from its folder, so a page in `Navigation/` can appear under "Presentation".
+`Shared/Catalog/Registry.swift` combines the group lists. Sidebar sections come from each page's `category`, not from its folder, so a page in `Navigation/` can appear under "Presentation".
 
 ## Tabs and categories
 
@@ -16,13 +16,13 @@ The app has three content tabs and a search tab. Each category belongs to one ta
 
 | Tab | Categories (`ComponentCategory` cases) |
 | --- | --- |
-| Components | `.controls`, `.textInput`, `.textAndImages`, `.layout`, `.lists`, `.presentation`, `.modifiers`, `.dataFlow`, `.animation`, `.graphics`, `.frameworks`, `.blocks` |
 | Design | `.foundations`, `.accessibility`, `.patterns` |
+| Build (`AppTab.build`, stored as `components`) | `.controls`, `.textInput`, `.textAndImages`, `.layout`, `.lists`, `.presentation`, `.modifiers`, `.dataFlow`, `.animation`, `.graphics`, `.frameworks`, `.blocks` |
 | Ship | `.startHere`, `.feelsNative`, `.requiredByApple`, `.appStoreConnect`, `.testAndRelease` |
 
 Search lives in its own tab and searches every page's title, summary, and aliases. A category with no pages is hidden, and a tab with no pages shows "Coming Soon".
 
-**File names must be unique across the package.** Swift Playgrounds packages compile every file into one module.
+**File names must be unique within an app target.** `Shared/` and an edition's folder compile into one module, and Xcode can't build two files with the same name.
 
 ## Page metadata
 
@@ -60,7 +60,7 @@ extension ComponentPage {
 - **Aliases:** what someone would search for when they don't know the SwiftUI name. Include web terms (`dropdown`, `<select>`, `useState`), UIKit names (`UISwitch`), and common misspellings.
 - **Aliases on Ship pages:** add the App Review Guideline numbers the page covers, such as `"Guideline 4.0"` or `"5.1.1(v)"`. Searching "5.1" finds 5.1.1(v), and "2.1" doesn't find 12.1.
 - **URLs:** both must point to pages that exist.
-- **Sources and reviewed:** `sources` lists the official pages you based the page on (App Review Guidelines, HIG, Apple docs, App Store Connect Help). `reviewed` is the month you last checked them, such as `"October 2026"`. They render above Previous / Next as one quiet line, "iOS 15.0+ · 9 sources · Checked October 2026", that expands into the list. Both are required on Ship pages, because rules and deadlines change. Check every URL with `curl -sI` first, then add its title to `Catalog/SourceTitles.swift`: Apple's own page title, so the list reads `fullScreenCover`, not the URL's `fullscreencover`.
+- **Sources and reviewed:** `sources` lists the official pages you based the page on (App Review Guidelines, HIG, Apple docs, App Store Connect Help). `reviewed` is the month you last checked them, such as `"October 2026"`. They render above Previous / Next as one quiet line, "iOS 15.0+ · 9 sources · Checked October 2026", that expands into the list. Both are required on Ship pages, because rules and deadlines change. Check every URL with `curl -sI` first, then add its title to `Shared/Catalog/SourceTitles.swift`: Apple's own page title, so the list reads `fullScreenCover`, not the URL's `fullscreencover`.
 
 ## DemoPage or ArticlePage
 
@@ -112,7 +112,7 @@ Item ids key the saved state, so keep them stable once a page ships. `page:` tak
 The app follows Apple's iPad navigation conventions:
 
 - **Tab bar on top, a sidebar inside each tab.** The tabs use `.tabBarOnly`, not `.sidebarAdaptable`: the adaptable style would add a second sidebar beside each tab's page list. The HIG says to use a split view for a sidebar that never turns into a tab bar.
-- **Menu bar and shortcuts.** `App/CatalogCommands.swift` adds a Go menu: ⌘1–⌘3 switch tabs, ⌘F opens Search with the field focused, and ⌘[ / ⌘] go to the previous and next page. The system adds Toggle Sidebar and Toggle Inspector. Hold ⌘ on a hardware keyboard to see them.
+- **Menu bar and shortcuts.** `iOS/App/CatalogCommands.swift` adds a Go menu: ⌘1–⌘3 switch tabs, ⌘F opens Search with the field focused, and ⌘[ / ⌘] go to the previous and next page. The system adds Toggle Sidebar and Toggle Inspector. Hold ⌘ on a hardware keyboard to see them.
 - **More than one window.** Long-press a sidebar row, a search result, or an overview card for "Open in New Window". Each window keeps its own tab and page.
 - **Pointer.** Overview cards lift and footer links highlight under the pointer.
 
@@ -154,17 +154,18 @@ Prefer SwiftUI styles like `.background`, `.secondary`, and `.fill.tertiary` ove
 Build from the command line:
 
 ```sh
-cd SwiftUIForHumans.swiftpm
-xcodebuild -scheme "SwiftUI for Humans" -destination 'generic/platform=iOS Simulator' -derivedDataPath /tmp/dd build
-xcrun simctl install <udid> "/tmp/dd/Build/Products/Debug-iphonesimulator/SwiftUI for Humans.app"
+scripts/build.sh ios        # prints the built .app path
+xcrun simctl install <udid> ".build/DerivedData/Build/Products/Debug-iphonesimulator/SwiftUI for Humans.app"
+scripts/build.sh test-ios   # Swift Testing suite on a test simulator
 ```
 
 Launch arguments open the app in a known state:
 
 | Argument | Effect |
 | --- | --- |
-| `-tab <components\|design\|ship\|search>` | Starts on a tab |
+| `-tab <design\|components\|ship\|search>` | Starts on a tab (`components` is the Build tab) |
 | `-open <page id>` | Opens a page in its tab (`overview` for the current tab's overview) |
+| `-category <name>` | Mac only: opens a category's page list, such as `controls` |
 | `-search <text>` | Opens the Search tab and fills in the field |
 | `-showControls` | Opens the Customize panel on a `DemoPage` |
 | `-showScrubber` | Keeps the page scrubber on screen |

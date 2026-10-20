@@ -1,7 +1,7 @@
 {
   "name": "SwiftUI for Humans",
-  "kind": "swiftpm",
-  "path": "SwiftUIForHumans.swiftpm",
+  "kind": "xcodeproj",
+  "path": "SwiftUIForHumans.xcodeproj",
   "scheme": "SwiftUI for Humans",
   "bundleId": "com.swiftuiforhumans.app",
   "teamId": "CJVZR779TW",
