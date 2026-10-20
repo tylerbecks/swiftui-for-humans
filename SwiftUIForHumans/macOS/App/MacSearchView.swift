@@ -5,7 +5,6 @@ import SwiftUI
 /// are grouped by area and say why each page matched.
 struct MacSearchView: View {
     @Bindable var nav: WindowNavigator
-    @State private var scope = SearchScope.all
     @State private var selection: ComponentPage.ID?
     @FocusState private var isFieldFocused: Bool
 
@@ -30,7 +29,7 @@ struct MacSearchView: View {
         }
         .background(alignment: .top) { AreaGlow(tab: nav.shownArea) }
         .searchable(text: $nav.searchText, placement: .toolbarPrincipal, prompt: "Pages, web terms, guideline numbers, APIs")
-        .searchScopes($scope) {
+        .searchScopes($nav.searchScope) {
             ForEach(SearchScope.allCases) { scope in
                 Text(scope.title).tag(scope)
             }
@@ -71,7 +70,7 @@ struct MacSearchView: View {
     // MARK: Results
 
     private var resultList: some View {
-        let shown = results.filter { scope.tab == nil || $0.page.category.tab == scope.tab }
+        let shown = results.filter { nav.searchScope.tab == nil || $0.page.category.tab == nav.searchScope.tab }
         return List(selection: $selection) {
             ForEach(AppTab.contentTabs) { tab in
                 let group = shown.filter { $0.page.category.tab == tab }

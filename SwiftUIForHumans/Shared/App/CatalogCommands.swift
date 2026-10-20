@@ -89,7 +89,7 @@ private struct OpenInNewWindowMenu: ViewModifier {
         content.contextMenu(forSelectionType: ComponentPage.ID.self) { ids in
             if supportsMultipleWindows, let id = ids.first, Catalog.page(id: id) != nil {
                 Button("Open in New Window", systemImage: "macwindow.badge.plus") {
-                    openWindow(value: id)
+                    openWindow(id: ComponentPage.windowGroupID, value: id)
                 }
             }
         }
@@ -106,8 +106,15 @@ struct OpenInNewWindowButton: View {
     var body: some View {
         if supportsMultipleWindows {
             Button("Open in New Window", systemImage: "macwindow.badge.plus") {
-                openWindow(value: id)
+                openWindow(id: ComponentPage.windowGroupID, value: id)
             }
         }
     }
+}
+
+extension ComponentPage {
+    /// The id of the window group that shows a page in a window of its
+    /// own. The Mac's demo windows also take a `String`, so `openWindow`
+    /// needs this to pick the page group.
+    static let windowGroupID = "page"
 }

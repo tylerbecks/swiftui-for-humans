@@ -36,6 +36,8 @@ final class WindowNavigator {
     private(set) var shownArea: AppTab
     /// The search field's text, kept while you open a result and come back.
     var searchText = ""
+    /// The search scope (All, Design, Build, Ship), kept the same way.
+    var searchScope = SearchScope.all
     /// Bumped by ⌘F, so the search field takes focus even when Search is
     /// already open.
     private(set) var searchFocusRequest = 0

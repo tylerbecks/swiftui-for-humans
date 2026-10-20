@@ -58,6 +58,18 @@ struct WindowNavigatorTests {
         #expect(nav.shownArea == .ship)
     }
 
+    @Test func searchKeepsItsQueryAndScopeAcrossAResult() {
+        let nav = makeNavigator()
+        nav.showSearch()
+        nav.searchText = "toggle"
+        nav.searchScope = .build
+        nav.open("toggle")
+        nav.goBack()
+        #expect(nav.current.item == .search)
+        #expect(nav.searchText == "toggle")
+        #expect(nav.searchScope == .build)
+    }
+
     @Test func eachAreaRemembersItsLastPage() {
         let nav = makeNavigator()
         nav.open("toggle")
