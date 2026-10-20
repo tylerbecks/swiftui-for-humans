@@ -60,6 +60,17 @@ extension View {
         #endif
     }
 
+    /// Brings back the iPhone's large title when a page opens from a
+    /// scrolled-down page. Nothing to do on iPad or the Mac.
+    @ViewBuilder
+    func catalogExpandsLargeTitle() -> some View {
+        #if os(iOS)
+        modifier(ExpandsLargeTitle())
+        #else
+        self
+        #endif
+    }
+
     /// A small, inline title for a sheet. The Mac has no navigation bar
     /// title modes, so it adds nothing there.
     @ViewBuilder
@@ -94,6 +105,16 @@ private struct CatalogPageTitle: ViewModifier {
 }
 
 extension Color {
+    /// Behind live previews. On iOS plain white or black; on the Mac the
+    /// real window background, so previews look as they would in a window.
+    static func catalogPreviewSurface(isDark: Bool) -> Color {
+        #if os(macOS)
+        Color(nsColor: .windowBackgroundColor)
+        #else
+        isDark ? Color.black : Color.white
+        #endif
+    }
+
     /// The plain background behind content: white or black on iOS, the
     /// window background on the Mac.
     static var catalogBackground: Color {
@@ -241,3 +262,55 @@ private struct ControlsPresentation<Panel: View>: ViewModifier {
             }
     }
 }
+
+#if os(iOS)
+/// Adds the large-title probe on compact widths (iPhone).
+private struct ExpandsLargeTitle: ViewModifier {
+    @Environment(\.isCompactLayout) private var isCompact
+
+    func body(content: Content) -> some View {
+        content.background {
+            if isCompact {
+                LargeTitleExpander()
+            }
+        }
+    }
+}
+
+
+/// Shows the page's large title when the page appears.
+///
+/// Why UIKit: on iPhone, a page opened from a scrolled-down page (Next,
+/// Related) reuses that page's navigation bar, which stays collapsed.
+/// SwiftUI has no way to expand a large title, so this asks the hosting
+/// navigation bar to size itself again, which brings the large title back.
+struct LargeTitleExpander: UIViewRepresentable {
+    func makeUIView(context: Context) -> ProbeView {
+        ProbeView()
+    }
+
+    func updateUIView(_ view: ProbeView, context: Context) {}
+
+    final class ProbeView: UIView {
+        override func didMoveToWindow() {
+            super.didMoveToWindow()
+            guard window != nil else { return }
+            Task { @MainActor [weak self] in
+                guard let self, let bar = self.navigationController?.navigationBar else { return }
+                bar.sizeToFit()
+            }
+        }
+
+        private var navigationController: UINavigationController? {
+            var responder: UIResponder? = self
+            while let next = responder?.next {
+                if let controller = next as? UIViewController, let navigation = controller.navigationController {
+                    return navigation
+                }
+                responder = next
+            }
+            return nil
+        }
+    }
+}
+#endif

@@ -14,7 +14,6 @@ import SwiftUI
 struct PageScaffold<Content: View>: View {
     let page: ComponentPage
     @ViewBuilder let content: Content
-    @Environment(\.isCompactLayout) private var isCompact
     @State private var position = ScrollPosition(edge: .top)
     @State private var scroll = PageScrollModel()
 
@@ -52,13 +51,7 @@ struct PageScaffold<Content: View>: View {
                 .padding(.bottom, 48)
                 .frame(maxWidth: .infinity)
                 .coordinateSpace(.named(PageScrubber.contentSpace))
-                #if os(iOS)
-                .background {
-                    if isCompact {
-                        LargeTitleExpander()
-                    }
-                }
-                #endif
+                .catalogExpandsLargeTitle()
             }
             .scrollPosition($position)
             .onAppear { Engagement.shared.recordPageView(page.id) }
@@ -546,13 +539,7 @@ struct Surface: View {
     var body: some View {
         let isDark = colorScheme == .dark
         switch kind {
-        case .preview:
-            #if os(macOS)
-            // The real window background, so previews look as they would in a window.
-            Color(nsColor: .windowBackgroundColor)
-            #else
-            isDark ? Color.black : Color.white
-            #endif
+        case .preview: Color.catalogPreviewSurface(isDark: isDark)
         case .code: isDark ? Color(white: 0.09) : Color(white: 0.965)
         }
     }

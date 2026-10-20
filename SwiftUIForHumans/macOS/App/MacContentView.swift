@@ -150,8 +150,8 @@ struct MacContentView: View {
         }
         guard !LaunchOptions.didApplyToWindow else { return }
         LaunchOptions.didApplyToWindow = true
-        if let name = LaunchOptions.value(for: "-tab"), let tab = AppTab(rawValue: name), tab != .search {
-            nav.restore(Location(item: .area(tab)))
+        if let name = LaunchOptions.value(for: "-tab"), let tab = AppTab(rawValue: name) {
+            nav.restore(Location(item: tab == .search ? .search : .area(tab)))
         }
         if let name = LaunchOptions.value(for: "-category"),
            let category = ComponentCategory.allCases.first(where: { "\($0)" == name || $0.rawValue == name }) {
