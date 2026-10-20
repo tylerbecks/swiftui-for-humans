@@ -19,10 +19,13 @@ derived="$root/.build/DerivedData"
 lock=/tmp/swiftui-for-humans-build.lock
 
 # Take the machine-wide lock. A lock left by a process that no longer
-# exists is stale and gets cleared.
+# exists is stale and gets cleared, and so is one that never got its pid
+# (killed between mkdir and writing it) once it's a few seconds old.
 until mkdir "$lock" 2>/dev/null; do
     owner=$(cat "$lock/pid" 2>/dev/null || true)
-    if [[ -n $owner ]] && ! kill -0 "$owner" 2>/dev/null; then
+    created=$(stat -f %m "$lock" 2>/dev/null || date +%s)
+    if { [[ -n $owner ]] && ! kill -0 "$owner" 2>/dev/null; } ||
+       { [[ -z $owner ]] && (( $(date +%s) - created > 10 )); }; then
         rm -rf "$lock"
         continue
     fi
