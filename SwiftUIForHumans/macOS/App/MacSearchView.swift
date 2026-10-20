@@ -106,9 +106,10 @@ struct MacSearchView: View {
                 ContentUnavailableView.search(text: query)
             }
         }
-        .onChange(of: query) {
-            // The top hit is selected, so Return opens it.
-            selection = shown.first?.page.id
+        .onChange(of: shown.map(\.page.id), initial: true) { _, ids in
+            // The top hit is selected, so Return opens it. This runs when
+            // the query or the scope changes what's shown.
+            selection = ids.first
         }
     }
 }

@@ -123,6 +123,7 @@ private struct MacWelcomeWindowArticle: View {
         @Environment(\\.openDocument) private var openDocument
         @Environment(\\.dismissWindow) private var dismissWindow
         @State private var isImporting = false
+        @State private var openError: String?
 
         // SwiftUI has no list of recent documents; AppKit keeps it.
         private let recents = NSDocumentController.shared.recentDocumentURLs
@@ -177,12 +178,27 @@ private struct MacWelcomeWindowArticle: View {
                     open(url)
                 }
             }
+            .alert("Couldn't Open the Document", isPresented: Binding {
+                openError != nil
+            } set: { isShown in
+                if !isShown { openError = nil }
+            }) {
+                Button("OK") {}
+            } message: {
+                Text(openError ?? "")
+            }
         }
 
+        // Close the welcome window only once the document is open. A recent
+        // file may have moved; keep the window so people can pick another.
         private func open(_ url: URL) {
             Task {
-                try? await openDocument(at: url)
-                dismissWindow(id: "welcome")
+                do {
+                    try await openDocument(at: url)
+                    dismissWindow(id: "welcome")
+                } catch {
+                    openError = error.localizedDescription
+                }
             }
         }
     }
