@@ -1,0 +1,16 @@
+id: dynamic-type-weather
+title: Weather card that scales with Dynamic Type
+platform: ios
+category: hig
+prompt: >
+  Build a weather card showing the city name, a large current temperature, the
+  condition with an SF Symbol, and today's high and low.
+checks:
+  forbid:
+    - label: No fixed point font sizes
+      pattern: '\.system\(\s*size:\s*\d'
+rubric:
+  - All text scales with Dynamic Type (text styles, or @ScaledMetric for custom sizes).
+  - The layout adapts at accessibility sizes, for example with ViewThatFits or by switching from a row to a column.
+  - VoiceOver reads the card in a sensible order or as one combined element with a clear summary.
+  - The condition symbol is labeled or hidden from VoiceOver, not read as its symbol name.

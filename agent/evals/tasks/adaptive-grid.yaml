@@ -1,0 +1,19 @@
+id: adaptive-grid
+title: Photo grid that adapts to screen width
+platform: ios
+category: deprecated-api
+prompt: >
+  Make a photo gallery grid of 30 colored placeholder tiles. It should show two
+  columns on iPhone in portrait and more columns on wider screens, like iPad or
+  landscape.
+checks:
+  require:
+    - label: Uses a lazy grid
+      pattern: '\bLazyVGrid\b'
+  forbid:
+    - label: Doesn't read UIScreen.main
+      pattern: '\bUIScreen\.main\b'
+rubric:
+  - The column count adapts through GridItem(.adaptive(minimum:)), size classes, or the container's size, not by reading the screen size.
+  - Tiles keep a consistent aspect ratio as the column count changes.
+  - The grid scrolls and uses system spacing.

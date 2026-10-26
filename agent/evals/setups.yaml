@@ -1,0 +1,58 @@
+# Named setups to compare. Each one is an agent plus the context it gets.
+#
+#   agent:      claude | codex
+#   skills_dir: a folder of skills (each a subfolder with SKILL.md), or one
+#               skill folder, copied into the temp project's .claude/skills
+#               and .agents/skills. null for none.
+#   primer:     a Markdown file appended to the temp project's AGENTS.md and
+#               CLAUDE.md. null for none.
+#   model:      optional model name passed to the agent CLI.
+#
+# Relative paths resolve from the repo root; `~` expands. A setup whose
+# skills_dir or primer doesn't exist yet fails before any agent runs.
+# Third-party skills go in agent/evals/vendor/ (gitignored); see README.md.
+
+setups:
+  claude-baseline:
+    agent: claude
+    skills_dir: null
+    primer: null
+
+  codex-baseline:
+    agent: codex
+    skills_dir: null
+    primer: null
+
+  # Apple's Xcode 27 skills, exported with `xcrun agent skills export`.
+  claude-apple:
+    agent: claude
+    skills_dir: agent/evals/vendor/apple-xcode27
+    primer: null
+
+  # Paul Hudson's SwiftUI Pro.
+  claude-hudson:
+    agent: claude
+    skills_dir: agent/evals/vendor/swiftui-pro
+    primer: null
+
+  # Antoine van der Lee's swiftui-expert-skill.
+  claude-vanderlee:
+    agent: claude
+    skills_dir: agent/evals/vendor/swiftui-expert-skill
+    primer: null
+
+  # Ours (phase 2 output), with and without the always-on primer.
+  claude-ours:
+    agent: claude
+    skills_dir: agent/skills
+    primer: null
+
+  claude-ours-primer:
+    agent: claude
+    skills_dir: agent/skills
+    primer: agent/primer/AGENTS.snippet.md
+
+  codex-ours-primer:
+    agent: codex
+    skills_dir: agent/skills
+    primer: agent/primer/AGENTS.snippet.md

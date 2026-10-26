@@ -1,0 +1,19 @@
+id: search-onchange
+title: Searchable list that remembers the last query
+platform: ios
+category: deprecated-api
+prompt: >
+  Add a searchable list of 20 city names. Whenever the search text changes,
+  filter the list and save the text to UserDefaults, so the last search is
+  restored the next time the app launches.
+checks:
+  require:
+    - label: Uses .searchable
+      pattern: '\.searchable\('
+  forbid:
+    - label: No one-parameter onChange
+      pattern: '\.onChange\(of:[^)]*\)\s*\{\s*(?:\[[^\]]*\]\s*)?\w+\s+in\b'
+rubric:
+  - Uses .searchable rather than a custom TextField search bar.
+  - The saved query is restored on launch (for example with @AppStorage).
+  - Shows ContentUnavailableView.search or a similar empty state when nothing matches.

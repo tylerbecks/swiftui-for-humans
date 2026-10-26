@@ -1,0 +1,22 @@
+id: mac-menu-commands
+title: Mac menu bar commands that act on the window
+platform: macos
+category: mac
+prompt: >
+  This is a notes app. Show a list of notes in the main window, and add menu bar
+  commands: New Note with Command-N (replacing the default New Window item), and
+  Toggle Pin with Shift-Command-P in a new Note menu. The commands act on the
+  notes in the main window.
+checks:
+  require:
+    - label: Adds commands to the scene
+      pattern: '\.commands\s*\{'
+    - label: Uses CommandGroup or CommandMenu
+      pattern: '\bCommandGroup\(|\bCommandMenu\('
+    - label: Sets keyboard shortcuts
+      pattern: '\.keyboardShortcut\('
+rubric:
+  - Replaces the default New item with CommandGroup(replacing: .newItem).
+  - Adds a CommandMenu named Note for Toggle Pin.
+  - Commands reach the window's state through focusedSceneValue / @FocusedValue (or a model passed to the commands), not a global singleton.
+  - Toggle Pin is disabled when no note is selected.

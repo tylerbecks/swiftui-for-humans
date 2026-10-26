@@ -1,0 +1,18 @@
+id: list-detail-navigation
+title: Recipe list that pushes to a detail screen
+platform: ios
+category: deprecated-api
+prompt: >
+  Show a list of five recipes, each with a name and cooking time. Tapping a
+  recipe opens a detail screen with its ingredients. Give the list a title.
+checks:
+  require:
+    - label: Uses NavigationStack or NavigationSplitView
+      pattern: '\bNavigationStack\b|\bNavigationSplitView\b'
+  forbid:
+    - label: No NavigationView
+      pattern: '\bNavigationView\b'
+rubric:
+  - The detail screen is pushed onto the navigation stack (NavigationLink with a value plus navigationDestination, or NavigationLink with a destination), not shown as a sheet.
+  - The list screen has a navigation title.
+  - Recipes are identifiable model values, not array indices.

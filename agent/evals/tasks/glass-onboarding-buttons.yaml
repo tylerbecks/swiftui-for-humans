@@ -1,0 +1,20 @@
+id: glass-onboarding-buttons
+title: Onboarding buttons with glass styles and a fallback
+platform: ios
+category: liquid-glass
+prompt: >
+  Create an onboarding screen with an illustration (an SF Symbol), a headline,
+  a short description, a Get Started button, and a Sign In button. On iOS 26
+  and later, use the Liquid Glass button styles; on earlier versions, keep the
+  standard look.
+checks:
+  require:
+    - label: Uses a glass button style
+      pattern: '\.glassProminent\b|\.glass\b|GlassButtonStyle|GlassProminentButtonStyle'
+    - label: Guards iOS 26 APIs with availability
+      pattern: '[#@]available\(\s*iOS\s+2[6-9]'
+rubric:
+  - On iOS 26 and later, Get Started uses .glassProminent and Sign In uses .glass (or another clearly secondary style).
+  - On earlier versions, Get Started uses .borderedProminent and Sign In uses .bordered or a plain style.
+  - Get Started is the only prominent button on the screen.
+  - The availability branch is factored into a reusable modifier or helper rather than duplicating the whole screen.

@@ -1,0 +1,19 @@
+id: observable-cart
+title: Shared cart model across two screens
+platform: ios
+category: deprecated-api
+prompt: >
+  Add a simple shop: a product list where each row has an Add to Cart button,
+  and a cart screen showing the items and the total. Both screens share the
+  same cart, and the button that opens the cart shows how many items are in it.
+checks:
+  require:
+    - label: Uses the @Observable macro
+      pattern: '@Observable\b'
+  forbid:
+    - label: No ObservableObject / @Published / @StateObject / @EnvironmentObject
+      pattern: '\bObservableObject\b|@Published\b|@StateObject\b|@EnvironmentObject\b'
+rubric:
+  - The shared cart is an @Observable class owned with @State and passed through the environment or as a property.
+  - The cart count on the button updates live as items are added.
+  - Prices are formatted with a currency format style, not string concatenation.

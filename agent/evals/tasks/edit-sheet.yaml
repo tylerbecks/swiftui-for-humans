@@ -1,0 +1,20 @@
+id: edit-sheet
+title: Edit form with Cancel and Save
+platform: ios
+category: hig
+prompt: >
+  Show a profile screen with a name and a bio. Add an Edit button that opens a
+  form where the user can change both fields, with Cancel and Save buttons.
+  Save keeps the changes; Cancel throws them away.
+checks:
+  require:
+    - label: Presents the editor as a sheet
+      pattern: '\.sheet\('
+  forbid:
+    - label: No presentationMode
+      pattern: '\bpresentationMode\b'
+rubric:
+  - Editing is presented modally in a sheet, with Cancel in the leading toolbar position and Save as the confirming action (cancellationAction / confirmationAction placements or the equivalent).
+  - Cancel discards edits because the form edits a draft copy, not the live values.
+  - The form uses Form with labeled text fields, and the bio field allows multiple lines.
+  - The sheet closes with @Environment(\.dismiss) or by resetting its presentation binding.

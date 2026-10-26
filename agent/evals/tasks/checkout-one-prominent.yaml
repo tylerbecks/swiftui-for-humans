@@ -1,0 +1,17 @@
+id: checkout-one-prominent
+title: Checkout summary with one primary action
+platform: ios
+category: hig
+prompt: >
+  Build a checkout summary screen showing three line items, the subtotal, tax,
+  and total, with buttons to Place Order, Apply Coupon, and Edit Cart.
+checks:
+  max:
+    - label: At most one prominent button style
+      pattern: '\.borderedProminent\b|\.glassProminent\b|BorderedProminentButtonStyle'
+      count: 1
+rubric:
+  - Place Order is the only prominent (filled) button; Apply Coupon and Edit Cart look secondary.
+  - Place Order is easy to reach, for example pinned to the bottom with safeAreaInset, and full width.
+  - Prices use a currency format style, not string concatenation.
+  - The total is visually emphasized and the line items use a List or Form with sections.

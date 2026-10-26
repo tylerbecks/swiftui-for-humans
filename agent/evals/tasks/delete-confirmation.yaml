@@ -1,0 +1,22 @@
+id: delete-confirmation
+title: Delete a note with confirmation
+platform: ios
+category: hig
+prompt: >
+  Show a list of notes. Notes can be deleted with swipe to delete, and each
+  note's detail screen has a Delete Note button. Deleting from the detail
+  screen must ask the user to confirm first.
+checks:
+  require:
+    - label: Uses confirmationDialog or alert
+      pattern: '\.confirmationDialog\(|\.alert\('
+    - label: Marks the delete action destructive
+      pattern: 'role:\s*\.destructive'
+  forbid:
+    - label: No ActionSheet or Alert struct
+      pattern: '\bActionSheet\b|\.actionSheet\(|\bAlert\('
+rubric:
+  - The confirmation is a confirmationDialog or alert whose delete button has the destructive role, with a way to cancel.
+  - The confirming button names the action (for example "Delete Note"), not "OK" or "Yes".
+  - After deleting from the detail screen, the app returns to the list.
+  - Swipe to delete uses onDelete or a destructive swipe action.

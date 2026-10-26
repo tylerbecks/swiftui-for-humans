@@ -1,0 +1,22 @@
+id: async-load
+title: Load posts from the network with loading and error states
+platform: ios
+category: deprecated-api
+prompt: >
+  Load a list of posts from https://jsonplaceholder.typicode.com/posts and show
+  their titles. Show a loading indicator while it loads, and an error message
+  with a Retry button if it fails.
+checks:
+  require:
+    - label: Starts loading with .task
+      pattern: '\.task\s*[({]'
+    - label: Uses async/await
+      pattern: '\bawait\b'
+  forbid:
+    - label: No DispatchQueue.main
+      pattern: '\bDispatchQueue\.main\b'
+rubric:
+  - Loading starts in .task (cancelled automatically when the view goes away), not onAppear with a manual Task or completion handlers.
+  - Uses URLSession's async API and decodes the JSON with Codable.
+  - Shows a ProgressView while loading, and ContentUnavailableView or a clear message with a Retry button on failure.
+  - Pull to refresh (.refreshable) is offered or the Retry path reuses the same load function.
