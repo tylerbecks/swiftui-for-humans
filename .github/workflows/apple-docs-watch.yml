@@ -84,7 +84,9 @@ jobs:
           if report["flood_hash"]:
               print(f"Flood hash: `{report['flood_hash']}`\n")
           for change in report["changes"]:
-              print(f"- {change['url']} ({', '.join(change['reasons'])})")
+              new_pages = change.get("new_pages", [])
+              extra = f", {len(new_pages)} new pages" if new_pages else ""
+              print(f"- {change['url']} ({', '.join(change['reasons'])}{extra})")
           if report["errors"]:
               print(f"\n{len(report['errors'])} pages couldn't be fetched (not counted as changes).")
           if report["sources_stale"]:

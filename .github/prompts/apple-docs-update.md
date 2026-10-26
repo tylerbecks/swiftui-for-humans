@@ -10,7 +10,8 @@ Each entry in `changes` has:
 - `reasons`: any of `status` (the HTTP status changed, for example to 404), `redirect` (the page now redirects elsewhere), and `content` (the text changed).
 - `sections.changed` and `sections.added`: section headings whose text changed or appeared. `sections.removed` is a count only, because the lockfile stores hashes, not headings.
 - `files` and `pages`: the files that cite the URL and the page ids defined in them. Most files are Swift pages; a file under `agent/src/` (a topic, overlay, skill source, or `corrections.yaml`) is an agent pack source and has no page id. `anchors` lists the fragments we link to, such as `#in-app-purchase` on the App Review Guidelines.
-- `signal: true`: the entry is one of Apple's change logs (`documentation/updates/...`), the App Review Guidelines, or App Store Connect release notes. No page depends on it alone. Read it to find new APIs or rules.
+- `signal: true`: the entry is one of Apple's change logs (`documentation/updates/...`, the HIG's What's New), the App Review Guidelines, or App Store Connect release notes. No page depends on it alone. Read it to find new APIs or rules.
+- `index: true`: the entry is an index page watched as a set of links: the HIG index (with its category pages), the HIG's What's New, the SwiftUI topic index (with its topic pages), or the list of change logs. `new_pages` lists pages Apple now links that weren't there last time and that the app doesn't cite yet (a new guideline, view, modifier, or framework change log). `removed_pages` is a count only. An index's prose isn't compared, only its links.
 
 `errors` lists pages that couldn't be fetched (throttled, server errors, timeouts). They aren't changes; ignore them. `unbaselined` lists new sources with no hash yet; `--update-lock` will record them. `flood_hash` identifies this exact set of changed URLs; the flood mode below records it.
 
@@ -43,6 +44,14 @@ Work through every entry in `changes`. For each one, fetch the live page (`curl 
   - When an entry's `files` include agent pack sources under `agent/src/` (topics, overlays, skill sources, `corrections.yaml`), fix those the same way. Never hand-edit the generated agent pack (`agent/skills/`, `agent/primer/`, `website/agents/`, `website/llms*.txt`, `mcp/data/`); the verify step regenerates it.
 - **(c) Worth a new page.** A new API, component, or guideline that fits the app (often found on signal pages). Don't create pages. List each one in the PR body with its link and a sentence on why it fits.
 
+For an `index` entry, read each URL in `new_pages` (`curl -sL <url>.md` for docs and HIG pages) and sort it:
+
+- **Page idea:** a new HIG guideline, or a new SwiftUI view, modifier, or concept that a beginner building an iOS or Mac app would use (the content guide's bar). List it under (c) with a sentence on which tab and category it would go in.
+- **Fold into an existing page:** a new initializer, style, or option for something the app already covers. Name the page id. If it's small and clearly in scope, treat it as (b) and add it to that page now.
+- **Skip:** visionOS- or watchOS-only APIs, deep symbols (protocol requirements, internal types), sample code projects, and anything outside the app's scope. Don't list these one by one; give a count and a few examples.
+
+A WWDC drop can add hundreds of links at once. List at most 30 ideas, the most useful first, and say how many more there are. A new framework change log under `documentation/updates/` is worth one line too, so the owner can decide whether the watcher should follow it.
+
 ### Verify
 
 Once all entries are handled:
@@ -62,7 +71,7 @@ Once all entries are handled:
    - a link to this workflow run
 3. If `gh pr list --state open --search "Apple docs: in:title"` shows an earlier watcher PR that is still open, mention it in the body so the owner can close whichever is stale.
 
-Even when every entry is (a), open the PR: it carries the refreshed lockfile, and without it the same changes are reported again next run.
+Even when every entry is (a), open the PR: it carries the refreshed lockfile, and without it the same changes are reported again next run. When the only changes are new pages on index pages, title it `Apple docs: new Apple pages (<date>)`.
 
 ## Limits
 
