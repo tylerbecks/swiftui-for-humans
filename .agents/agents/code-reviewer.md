@@ -29,7 +29,8 @@ functions, not whole large files). Assume it builds. Cite `AGENTS.md`, `docs/bui
   ExampleCard `code`, Do / Don't sample) that wouldn't compile; a rating prompt other than
   `requestReview`, or one behind a button or in the buddy; a new required-reason API missing from
   `PrivacyInfo.xcprivacy`, or a new stored value or web service missing from `website/privacy.html`;
-  a hand edit to the generated `.xcodeproj` instead of `project.yml`.
+  a hand edit to a generated file: the `.xcodeproj` instead of `project.yml`, or the agent pack
+  (`agent/skills/`, `agent/primer/`, `website/agents/`) instead of the page or `agent/src/`.
 - **Naming** — names that hide a side effect; contentless names; a new name distinguishable from a
   sibling only by a noise word. Propose a replacement, or say the real fix is a split.
 

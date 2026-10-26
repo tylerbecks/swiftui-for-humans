@@ -94,7 +94,7 @@ Fixing them is the `papercuts` skill, run when asked.
 
 ## Agent skills
 
-Skills and subagents live in `.agents/` (`.claude/skills` and `.claude/agents` link there).
+These are for working on this repo, not the agent pack people install (`agent/`). They live in `.agents/` (`.claude/skills` and `.claude/agents` link there).
 
 | Skill | Use |
 |---|---|
@@ -112,4 +112,4 @@ Codex reviews every PR through its GitHub integration and follows this section. 
 - Hold the App Store requirements: ratings only through `requestReview`, the in-app browser only for Apple's sites, and a new stored value, service or required-reason API updates `website/privacy.html` and `PrivacyInfo.xcprivacy` in the same PR.
 - A `project.yml` change needs the regenerated `SwiftUIForHumans.xcodeproj` in the same PR; flag hand edits to the project file.
 - On a re-review (new commits on an already-reviewed PR), report only P0/P1 issues in the lines changed since your last review. Don't raise new P2s on code you already reviewed.
-- Skip `.papercuts.jsonl`, the generated `.xcodeproj`, and `website/images/`.
+- Skip `.papercuts.jsonl`, `website/images/`, and generated files: the `.xcodeproj`, `agent/skills/`, `agent/primer/`, `website/agents/`, `website/llms*.txt`, and `mcp/data/`. Review the page or `agent/src/` change that produced them instead, and flag hand edits to them.

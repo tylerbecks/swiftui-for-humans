@@ -28,7 +28,8 @@ Stop when:
 
 Before opening the PR, run the tests for each edition the change touches: `scripts/build.sh test-ios`
 for `iOS/`, `scripts/build.sh test-mac` for `macOS/`, both for `Shared/`, `Tests/Shared` or
-`project.yml`. Then run only the `code-reviewer` agent on the completed change and fix confirmed
+`project.yml`. When pages or `agent/src/` changed, also run `python3 scripts/agent-build.py --check`
+(see the Agent pack note in `AGENTS.md`). Then run only the `code-reviewer` agent on the completed change and fix confirmed
 Critical findings. Use the `clean-code` skill instead when the user asks for a full review.
 
 ## Title

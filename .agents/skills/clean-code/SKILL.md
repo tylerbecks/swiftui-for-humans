@@ -28,7 +28,8 @@ Argument: **$ARGUMENTS**
 | `A..B` / `A...B` / a rev | that range, or `git show <rev>`                                                                                                                                  |
 | paths                    | those files, whole                                                                                                                                               |
 
-Drop generated files (`SwiftUIForHumans.xcodeproj/`, `website/images/hero/`), `.papercuts.jsonl`,
+Drop generated files (`SwiftUIForHumans.xcodeproj/`, `agent/skills/`, `agent/primer/`,
+`website/agents/`, `website/llms*.txt`, `mcp/data/`, `website/images/hero/`), `.papercuts.jsonl`,
 images, videos and other binaries. Page prose (guidelines, captions, Do / Don't text) is reviewed
 against `docs/content-guide.md`, not by these reviewers; include it only when the argument names it
 explicitly.
