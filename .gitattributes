@@ -5,3 +5,6 @@ agent/skills/**/references/** linguist-generated=true
 website/agents/*.md linguist-generated=true
 website/llms-full.txt linguist-generated=true
 mcp/data/** linguist-generated=true
+
+# Agents append papercuts from parallel branches; union keeps every line (scripts/papercuts.swift counts a duplicated line once).
+.papercuts.jsonl merge=union

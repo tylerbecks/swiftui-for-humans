@@ -52,6 +52,7 @@ The website's hero board tiles (`iOS/App/HeroTiles.swift`) are real components r
 ## Building and checking
 
 - Build and test with `scripts/build.sh` (`ios`, `test-ios`, `mac`, `test-mac`). It passes `-jobs 4` and `ARCHS=arm64` and holds a machine-wide lock, so builds from parallel worktrees wait their turn instead of bogging down the user's machine. Don't call `xcodebuild` directly for routine builds.
+- **An agent hook checks your changes before a turn ends** (`scripts/agent-hook.sh`, wired in `.claude/settings.json` and `.codex/hooks.json`; Codex asks you to trust it once in `/hooks`). It blocks on a leftover `_SnippetCheck.swift`, a `project.yml` change without the regenerated project, a new `docsURL` or `higURL` that doesn't return 200, and a build failure in an edition whose sources changed. It skips the build when nothing changed since the last one passed. The same failures twice in a row let the turn end, so read what it reports.
 - **Mac screenshots:** `scripts/mac-shot.sh <file.png> [light|dark] [launch flags]`. The debug app draws its own window off screen and quits, so it needs no Screen Recording permission and doesn't take focus. Use a tall `SIZE` (like `1100x4200`) for a whole page; the snapshot can't show a scrolled page, the sidebar, or Liquid Glass. The Mac window is a `WindowNavigator` (`macOS/App/WindowNavigator.swift`): sidebar destinations (Search, Design, Build, Ship), each area's home, category lists, and pages, with Back / Forward (⌘[ ⌘]) and a jump bar on pages. Previous / Next Page are ⌥⌘[ ⌥⌘] on the Mac. Sidebar identifiers are `dest-<area>` and `cat-<category>`.
 - **Catalog export:** `scripts/export-catalog.sh` writes every page's text to `agent/build/ios.json` and `macos.json` (gitignored). `ExportCatalogTests` renders each page offscreen with the export switched on (`Shared/Catalog/CatalogExport.swift`) and writes the file when `SFH_EXPORT_DIR` is set. xcodebuild passes `TEST_RUNNER_<NAME>` variables to tests as `<NAME>`, so `TEST_RUNNER_SFH_EXPORT_DIR=<dir> scripts/build.sh test-ios` works by hand. The sandboxed Mac app attaches its file to the test results instead, and the script copies it out. New body views that show page text should report an `ExportBlock` with `.exportBlock { … }`.
 - **Agent pack:** `agent/skills/` and `agent/primer/` are generated from that export plus `agent/src/` by `scripts/agent-build.py`, and committed, because people install them straight from `main`. After changing a page or anything in `agent/src/`, run `scripts/export-catalog.sh` (when pages changed), then `scripts/agent-build.py`, and commit the result; `scripts/agent-build.py --check` must pass. It enforces the token budgets and that every `related` id resolves. Never edit generated files by hand: change the page, an overlay in `agent/src/overlays/`, or a topic in `agent/src/topics/`. See [agent/README.md](agent/README.md).
@@ -71,4 +72,44 @@ The website's hero board tiles (`iOS/App/HeroTiles.swift`) are real components r
 
 ## Commits
 
-Use conventional commits with an emoji prefix (🚀 feat, 🐛 fix, 📚 docs, 🛠️ refactor, ⚡ perf, 🧪 test, 🧹 chore). Commit only when asked.
+Use conventional commits with an emoji prefix (🚀 feat, 🐛 fix, 📚 docs, 🛠️ refactor, ⚡ perf, 🧪 test, 🧹 chore), through the `commit` skill. Commit only when asked. PRs are squash-merged with their own title and description, and neither commits nor PRs carry AI attribution (`Co-authored-by`, "Generated with").
+
+## Papercuts
+
+When the repo itself costs you time (a misleading doc, a command that fails on a clean checkout, a missing script, a hook that misfires, a footgun config, an error message that hid the real cause), file it in one line and keep working:
+
+```bash
+scripts/papercuts.swift add "<what you hit, and what would have prevented it>" --tag <area> [--severity major] \
+  [--evidence "<the command, the error line, a run or PR id, what got you past it>"]
+```
+
+- **Only repo-fixable friction:** a contributor on a fresh checkout would hit it too, and a change to code, config, scripts or docs would prevent it. Not your sandbox or network, your own typo, a flake that passed on retry, a third-party limit with no repo-side workaround, or a product bug (fix or report that as usual).
+- **Severity:** `minor` (default) an annoyance, `major` cost real time, `blocker` you couldn't proceed.
+- **Evidence** lets someone who wasn't there fix it: give it for anything past an obvious one-liner. Quote the failing lines, not the whole output (4 KB max; `--evidence -` reads stdin).
+- **Already filed?** `scripts/papercuts.swift list` first; if it's there, `scripts/papercuts.swift again <id>` instead. Repeat hits are what review fixes first.
+- **Tags** name the area: `ios`, `mac`, `engine`, `pages`, `tests`, `website`, `ship`, `hooks`, `docs`, `ci`.
+- No secrets, tokens, signing details or env dumps in the text or evidence: the log is committed. Don't fix the cut mid-task unless it blocks you; `.papercuts.jsonl` is committed with your branch.
+
+Fixing them is the `papercuts` skill, run when asked.
+
+## Agent skills
+
+These are for working on this repo, not the agent pack people install (`agent/`). They live in `.agents/` (`.claude/skills` and `.claude/agents` link there).
+
+| Skill | Use |
+|---|---|
+| `commit` | Conventional commit with emoji, no scope |
+| `pr` | Push and open a GitHub PR with a reviewer briefing |
+| `babysit` | Watch a PR through Codex review, fix findings, and squash-merge it |
+| `clean-code` | Review a change with the `code-reviewer` + `comment-reviewer` agents |
+| `papercuts` | Triage the papercut log and fix the most-hit repo friction |
+
+## Code Review Rules
+
+Codex reviews every PR through its GitHub integration and follows this section. Comment `@codex review` to rerun it.
+
+- Hold changes to the Rules above: `Shared/` never names a page or edition-only type, pages never use `#if os`, every snippet compiles, `related` ids exist, no copied Apple text, no stock or Apple photos.
+- Hold the App Store requirements: ratings only through `requestReview`, the in-app browser only for Apple's sites, and a new stored value, service or required-reason API updates `website/privacy.html` and `PrivacyInfo.xcprivacy` in the same PR.
+- A `project.yml` change needs the regenerated `SwiftUIForHumans.xcodeproj` in the same PR; flag hand edits to the project file.
+- On a re-review (new commits on an already-reviewed PR), report only P0/P1 issues in the lines changed since your last review. Don't raise new P2s on code you already reviewed.
+- Skip `.papercuts.jsonl`, `website/images/`, and generated files: the `.xcodeproj`, `agent/skills/`, `agent/primer/`, `website/agents/`, `website/llms*.txt`, and `mcp/data/`. Review the page or `agent/src/` change that produced them instead, and flag hand edits to them.
