@@ -112,29 +112,7 @@ struct NoteSheet: View {
 }
 ```
 
-### Full-screen cover
-
-Use `.fullScreenCover` for immersive content. It can't be swiped away, so add a clear close button.
-
-```swift
-@State private var isViewing = false
-
-Button("View Photo") { isViewing = true }
-    .fullScreenCover(isPresented: $isViewing) {
-        NavigationStack {
-            Image(systemName: "photo")
-                .font(.system(size: 120))
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .toolbar {
-                    Button("Close", systemImage: "xmark", role: .close) {
-                        isViewing = false
-                    }
-                }
-        }
-    }
-```
-
-More variants, left out to keep this file short: Popover that adapts. Apple's docs: https://developer.apple.com/documentation/swiftui/view/fullscreencover(ispresented:ondismiss:content:).md
+More variants, left out to keep this file short: Full-screen cover, Popover that adapts. Apple's docs: https://developer.apple.com/documentation/swiftui/view/fullscreencover(ispresented:ondismiss:content:).md
 
 ## Related
 

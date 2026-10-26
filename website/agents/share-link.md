@@ -11,8 +11,6 @@ hig: https://developer.apple.com/design/human-interface-guidelines/activity-view
 
 A button that opens the share sheet to send a link, text, or image.
 
-Also called: share sheet, share button, navigator.share, web share, UIActivityViewController, activity view, export, send, AirDrop.
-
 ## Contents
 
 - Default code
@@ -49,12 +47,7 @@ ShareLink(item: article) {
 
 ## Key APIs
 
-- `ShareLink(item:)`: A Share button for a `URL` or `String`.
-- `ShareLink(item:preview:)`: Shares any `Transferable` item, like an `Image`.
-- `SharePreview(_:image:)`: The title and thumbnail at the top of the sheet.
-- `subject:` / `message:`: Email subject and extra text, where apps support them.
-- `ShareLink(items:)`: Shares several items at once.
-- `label:`: A custom label instead of the standard Share button.
+`ShareLink(item:)`, `ShareLink(item:preview:)`, `SharePreview(_:image:)`, `subject:` / `message:`, `ShareLink(items:)`, `label:`
 
 ## Variants
 
@@ -95,24 +88,6 @@ VStack {
 }
 ```
 
-### Share several items
-
-Pass an array to `items:`, and build a `SharePreview` for each one in the closure.
-
-```swift
-let links = [
-    URL(string: "https://www.swift.org")!,
-    URL(string: "https://developer.apple.com")!,
-]
-
-ShareLink(items: links) { url in
-    SharePreview(url.host() ?? "Link")
-} label: {
-    Label("Share 2 Links", systemImage: "link")
-}
-.buttonStyle(.bordered)
-```
-
 ## On macOS
 
 A Share button that sends a link, text, or your own data to other apps.
@@ -138,9 +113,7 @@ ShareLink(item: URL(string: "https://developer.apple.com/xcode/swiftui/")!)
 
 ### Key APIs
 
-- `ShareLink(_:item:)`: The same, with your own title.
-- `subject:`, `message:`: Fill in a subject and message, like for Mail.
-- `Transferable`: Makes your own type shareable.
+`ShareLink(_:item:)`, `subject:`, `message:`, `Transferable`
 
 ### Variants
 
@@ -185,6 +158,8 @@ struct GardenTip: Transferable {
 
 ShareLink(item: tip, preview: SharePreview(tip.title, image: Image(systemName: "leaf")))
 ```
+
+More variants, left out to keep this file short: Share several items. Apple's docs: https://developer.apple.com/documentation/swiftui/sharelink.md
 
 ## Related
 

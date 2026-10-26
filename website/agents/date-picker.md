@@ -78,29 +78,6 @@ DatePicker("Alarm", selection: $alarm, displayedComponents: .hourAndMinute)
     .labelsHidden()
 ```
 
-### Birthday (past dates only)
-
-A one-sided range like `in: ...Date.now` stops the calendar at today.
-
-```swift
-@State private var birthday = Date.now
-
-DatePicker("Birthday", selection: $birthday, in: ...Date.now, displayedComponents: .date)
-```
-
-### Several days with MultiDatePicker
-
-Use `MultiDatePicker` (iOS 16+) to pick several days, stored as a `Set<DateComponents>`.
-
-```swift
-@State private var days: Set<DateComponents> = []
-
-MultiDatePicker("Days off", selection: $days)
-Text("\(days.count) days selected")
-```
-
-**Note:** Each day is a `DateComponents`, not a `Date`. Convert one with `Calendar.current.date(from:)` when you need it.
-
 ## On macOS
 
 A date and time field, or a calendar, for picking a moment in time.
@@ -164,19 +141,7 @@ Pass `.hourAndMinute` to show only a time, for something like a daily reminder w
 DatePicker("Remind me at:", selection: $reminder, displayedComponents: .hourAndMinute)
 ```
 
-#### A start and an end
-
-For a range, use two pickers and limit the second to dates after the first, so the end can never come first.
-
-```swift
-@State private var tripStart = Date.now
-@State private var tripEnd = Date.now
-
-Form {
-    DatePicker("Leaving:", selection: $tripStart, displayedComponents: .date)
-    DatePicker("Returning:", selection: $tripEnd, in: tripStart..., displayedComponents: .date)
-}
-```
+More variants, left out to keep this file short: Birthday (past dates only), Several days with MultiDatePicker, A start and an end (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/datepicker.md
 
 ## Related
 

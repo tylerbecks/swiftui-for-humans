@@ -63,13 +63,7 @@ Text("Are we still on for lunch tomorrow?")
 
 ## Key APIs
 
-- `.font(.body)`: A text style. All of them scale.
-- `@ScaledMetric`: Scales your own numbers, like an icon size.
-- `\.dynamicTypeSize`: The current size, to adapt a layout.
-- `.isAccessibilitySize`: True for the five largest sizes.
-- `ViewThatFits`: Picks the first layout that fits.
-- `.dynamicTypeSize(_:)`: Sets or limits the size for a view.
-- `.accessibilityShowsLargeContentViewer()`: A big popup for items that must stay small.
+`.font(.body)`, `@ScaledMetric`, `\.dynamicTypeSize`, `.isAccessibilitySize`, `ViewThatFits`, `.dynamicTypeSize(_:)`, `.accessibilityShowsLargeContentViewer()`
 
 ## Variants
 

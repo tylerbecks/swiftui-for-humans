@@ -53,14 +53,7 @@ DocumentGroup(newDocument:)
 
 ## Key APIs
 
-- `DocumentGroup(newDocument:editor:)`: Creates, opens, and edits one document type.
-- `FileDocument`: A struct document. Undo comes for free.
-- `ReferenceFileDocument`: A class document. You register undo.
-- `readableContentTypes`: The file types the document opens.
-- `init(configuration:)`: Reads the document from a file.
-- `fileWrapper(configuration:)`: Writes the document to a file.
-- `file.$document`: A binding that edits the open document.
-- `file.fileURL`: Where it's saved; `nil` until the first save.
+`DocumentGroup(newDocument:editor:)`, `FileDocument`, `ReferenceFileDocument`, `readableContentTypes`, `init(configuration:)`, `fileWrapper(configuration:)`, `file.$document`, `file.fileURL`
 
 ## Variants
 

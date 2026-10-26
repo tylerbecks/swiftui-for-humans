@@ -12,8 +12,6 @@ reviewed: October 2026
 
 Let people reach every control and command without touching the pointer.
 
-Also called: Full Keyboard Access, keyboard navigation, tab order, focus order, focus ring, tabindex, FocusState, focusable, focusSection, onKeyPress.
-
 ## Contents
 
 - Rules
@@ -56,13 +54,7 @@ These come from the HIG's list of standard shortcuts. Test your window with them
 
 ## Key APIs
 
-- `.focusable(_:interactions:)`: Lets a custom view take keyboard focus.
-- `@FocusState`: Reads and moves focus from your code.
-- `.focused(_:equals:)`: Ties a view to a `@FocusState` value.
-- `.defaultFocus(_:_:)`: Picks what has focus when the window opens.
-- `.focusSection()`: Visits a group's views before moving on.
-- `.onKeyPress(_:action:)`: Handles a key while the view has focus.
-- `.keyboardShortcut(_:modifiers:)`: Gives a button or menu item a shortcut.
+`.focusable(_:interactions:)`, `@FocusState`, `.focused(_:equals:)`, `.defaultFocus(_:_:)`, `.focusSection()`, `.onKeyPress(_:action:)`, `.keyboardShortcut(_:modifiers:)`
 
 ## Variants
 
@@ -116,29 +108,7 @@ Form {
 .defaultFocus($focus, .name)
 ```
 
-### Keep a column together
-
-Tab moves across a row first, so add `.focusSection()` to each column to finish one before the next.
-
-```swift
-@State private var shipping = ["", ""]
-@State private var billing = ["", ""]
-
-HStack(alignment: .top) {
-    VStack {
-        TextField("Shipping street", text: $shipping[0])
-        TextField("Shipping city", text: $shipping[1])
-    }
-    .focusSection()
-    VStack {
-        TextField("Billing street", text: $billing[0])
-        TextField("Billing city", text: $billing[1])
-    }
-    .focusSection()
-}
-```
-
-**Note:** Without `.focusSection()`, Tab would go from Shipping street to Billing street, across the row.
+More variants, left out to keep this file short: Keep a column together. Apple's docs: https://developer.apple.com/documentation/swiftui/focus.md
 
 ## Related
 

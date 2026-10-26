@@ -143,28 +143,7 @@ struct AccountsEmptyState: View {
 }
 ```
 
-#### Look inactive when the window isn't key
-
-Read `appearsActive` in custom views and drop the accent color when it's false. Click another window to see this badge turn gray.
-
-```swift
-struct LiveBadge: View {
-    @Environment(\.appearsActive) private var appearsActive
-
-    var body: some View {
-        Label("Live", systemImage: "dot.radiowaves.left.and.right")
-            .font(.callout.weight(.semibold))
-            .padding(.horizontal, 10)
-            .padding(.vertical, 4)
-            .foregroundStyle(appearsActive ? .white : .secondary)
-            .background(appearsActive ? Color.accentColor : Color.secondary.opacity(0.2), in: .capsule)
-    }
-}
-```
-
-**Note:** Selection in lists and tables turns gray on its own. Views and styles you draw yourself need to check `appearsActive`.
-
-More variants, left out to keep this file short: Your own value with @Entry, Respect Reduce Motion, Your own value with @Entry (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/environment.md
+More variants, left out to keep this file short: Your own value with @Entry, Respect Reduce Motion, Look inactive when the window isn't key (macOS), Your own value with @Entry (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/environment.md
 
 ## Related
 

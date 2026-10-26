@@ -11,8 +11,6 @@ hig: https://developer.apple.com/design/human-interface-guidelines/search-fields
 
 A search field in the toolbar or sidebar, with suggestions and tokens.
 
-Also called: searchable, search field, search bar, NSSearchField, filter, find, Command-F, ⌘F, searchSuggestions, searchCompletion.
-
 ## Contents
 
 - Use when
@@ -137,47 +135,7 @@ NavigationStack {
 }
 ```
 
-### Focus the field with a shortcut
-
-`.searchFocused` binds the field's focus to a `@FocusState`. Publish an action that sets it, and call it from a Find command.
-
-```swift
-struct FindAction {
-    let perform: @MainActor () -> Void
-}
-
-extension FocusedValues {
-    @Entry var findAction: FindAction?
-}
-
-struct FindCommands: Commands {
-    @FocusedValue(\.findAction) private var findAction
-
-    var body: some Commands {
-        CommandGroup(after: .textEditing) {
-            Button("Find…") { findAction?.perform() }
-                .keyboardShortcut("f")
-                .disabled(findAction == nil)
-        }
-    }
-}
-
-struct LibraryView: View {
-    @State private var query = ""
-    @FocusState private var isSearchFocused: Bool
-
-    var body: some View {
-        NavigationStack {
-            List { Text("Results") }
-                .searchable(text: $query)
-                .searchFocused($isSearchFocused)
-        }
-        .focusedSceneValue(\.findAction, FindAction { isSearchFocused = true })
-    }
-}
-```
-
-**Note:** The Mac's standard shortcuts list ⌘F for Find and ⌥⌘F for jumping to the search field. The Library window uses ⌥⌘F, because this app's own Go > Search already takes ⌘F.
+More variants, left out to keep this file short: Focus the field with a shortcut. Apple's docs: https://developer.apple.com/documentation/swiftui/adding-a-search-interface-to-your-app.md
 
 ## Related
 

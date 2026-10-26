@@ -11,8 +11,6 @@ hig: https://developer.apple.com/design/human-interface-guidelines/outline-views
 
 Folders inside folders: rows with disclosure triangles that open to show their children.
 
-Also called: OutlineGroup, outline view, NSOutlineView, tree, tree view, hierarchy, nested list, children, List children, disclosure triangle.
-
 ## Contents
 
 - Use when
@@ -52,11 +50,7 @@ List(files, children: \.children)
 
 ## Key APIs
 
-- `List(_:children:rowContent:)`: A whole list built from a tree.
-- `OutlineGroup(_:children:)`: A tree inside a list or section.
-- `Table(_:children:columns:)`: An outline with columns, like Finder.
-- `DisclosureGroup(isExpanded:)`: One branch whose state you control.
-- `DisclosureTableRow`: A table row that opens to more rows.
+`List(_:children:rowContent:)`, `OutlineGroup(_:children:)`, `Table(_:children:columns:)`, `DisclosureGroup(isExpanded:)`, `DisclosureTableRow`
 
 ## Variants
 
@@ -138,40 +132,7 @@ Table(FileNode.samples, children: \.children, selection: $selection) {
 .frame(width: 420, height: 220)
 ```
 
-### Expansion you keep track of
-
-Build the tree from `DisclosureGroup(isExpanded:)` rows and keep the open ids in a `Set` you can save, to reopen the outline as people left it.
-
-```swift
-struct FileTree: View {
-    let nodes: [FileNode]
-    @Binding var expanded: Set<FileNode.ID>
-
-    var body: some View {
-        ForEach(nodes) { node in
-            if let children = node.children {
-                DisclosureGroup(isExpanded: Binding {
-                    expanded.contains(node.id)
-                } set: { isOpen in
-                    if isOpen { expanded.insert(node.id) } else { expanded.remove(node.id) }
-                }) {
-                    FileTree(nodes: children, expanded: $expanded)
-                } label: {
-                    Label(node.name, systemImage: node.symbol)
-                }
-            } else {
-                Label(node.name, systemImage: node.symbol)
-            }
-        }
-    }
-}
-
-@State private var expanded: Set<FileNode.ID> = ["Documents"]
-
-List {
-    FileTree(nodes: FileNode.samples, expanded: $expanded)
-}
-```
+More variants, left out to keep this file short: Expansion you keep track of. Apple's docs: https://developer.apple.com/documentation/swiftui/outlinegroup.md
 
 ## Related
 

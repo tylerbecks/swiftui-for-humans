@@ -133,35 +133,7 @@ VStack(alignment: .leading) {
 }
 ```
 
-#### Select all, with a mixed state
-
-`Toggle(sources:isOn:)` turns a group on or off together, and shows a dash when they don't match.
-
-```swift
-struct TextStyleSetting: Identifiable {
-    let name: String
-    var isOn: Bool
-    var id: String { name }
-}
-
-@State private var styles = [
-    TextStyleSetting(name: "Bold", isOn: true),
-    TextStyleSetting(name: "Italic", isOn: false),
-    TextStyleSetting(name: "Underline", isOn: true),
-]
-
-VStack(alignment: .leading) {
-    Toggle(sources: $styles, isOn: \.isOn) {
-        Text("All styles")
-    }
-    ForEach($styles) { $style in
-        Toggle(style.name, isOn: $style.isOn)
-            .padding(.leading, 20)
-    }
-}
-```
-
-More variants, left out to keep this file short: Checkbox-style agreement, Switches in a grouped form (macOS), A toggle in the toolbar (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/toggle.md
+More variants, left out to keep this file short: Checkbox-style agreement, Select all, with a mixed state (macOS), Switches in a grouped form (macOS), A toggle in the toolbar (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/toggle.md
 
 ## Related
 

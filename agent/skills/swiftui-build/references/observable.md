@@ -146,50 +146,7 @@ struct ReaderApp: App {
 
 **Note:** Change the setting in the small window and the toolbar of the other one follows. They read the same model.
 
-#### Edit it with @Bindable
-
-Declare the view's model `@Bindable` to get bindings like `$article.title` for controls, such as the fields in an inspector.
-
-```swift
-@Observable
-class EditableArticle {
-    var title = "Designing for the Mac"
-    var author = "Sam Lee"
-    var isRead = false
-}
-
-struct ArticleInspector: View {
-    @Bindable var article: EditableArticle
-
-    var body: some View {
-        Form {
-            TextField("Title", text: $article.title)
-            TextField("Author", text: $article.author)
-            Toggle("Read", isOn: $article.isRead)
-        }
-    }
-}
-```
-
-#### Read it from the environment
-
-Deep in the view tree, read the model with `@Environment(ReadingList.self)`. For bindings, wrap it in a local `@Bindable` inside `body`.
-
-```swift
-struct UnreadSettings: View {
-    @Environment(ReadingList.self) private var readingList
-
-    var body: some View {
-        @Bindable var readingList = readingList
-        Form {
-            Toggle("Show unread count", isOn: $readingList.showsUnreadCount)
-            LabeledContent("Unread", value: readingList.unreadCount, format: .number)
-        }
-    }
-}
-```
-
-More variants, left out to keep this file short: Views only watch what they read, Share a model through the environment, Leave a property out with @ObservationIgnored (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/managing-model-data-in-your-app.md
+More variants, left out to keep this file short: Views only watch what they read, Share a model through the environment, Edit it with @Bindable (macOS), Read it from the environment (macOS), Leave a property out with @ObservationIgnored (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/managing-model-data-in-your-app.md
 
 ## Related
 

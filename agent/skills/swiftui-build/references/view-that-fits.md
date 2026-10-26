@@ -138,37 +138,7 @@ ViewThatFits(in: .horizontal) {
 
 **Note:** List the children in order of preference, usually widest first. `in: .horizontal` checks only the width, so a child that's taller still counts as fitting.
 
-#### Stack the columns below a width you choose
-
-`.onGeometryChange` turns the width into a `Bool`, and `AnyLayout` switches between `HStackLayout` and `VStackLayout` without losing the state of the views inside.
-
-```swift
-@State private var isNarrow = false
-
-let layout = isNarrow
-    ? AnyLayout(VStackLayout(alignment: .leading))
-    : AnyLayout(HStackLayout(alignment: .top))
-
-layout {
-    Image(systemName: "photo")
-        .font(.largeTitle)
-        .frame(width: 120, height: 80)
-        .background(.fill.tertiary, in: .rect(cornerRadius: 8))
-    VStack(alignment: .leading) {
-        Text("Lake Tahoe").font(.headline)
-        Text("Clear water and granite peaks.")
-            .foregroundStyle(.secondary)
-    }
-}
-.frame(maxWidth: .infinity, alignment: .leading)
-.onGeometryChange(for: Bool.self) { proxy in
-    proxy.size.width < 360
-} action: { narrow in
-    isNarrow = narrow
-}
-```
-
-**Note:** The transform runs often, so keep it cheap and return the smallest value you need. The action runs only when that value changes.
+More variants, left out to keep this file short: Stack the columns below a width you choose (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/viewthatfits.md
 
 ## Related
 

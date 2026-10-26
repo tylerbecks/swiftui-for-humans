@@ -68,27 +68,6 @@ Text("The quick brown fox")
 
 **Note:** A bundled font also needs its file listed under `UIAppFonts` in Info.plist. Georgia ships with iOS.
 
-### Stack items at large sizes
-
-Check `isAccessibilitySize` on the `dynamicTypeSize` environment value, and switch a row to a column.
-
-```swift
-@Environment(\.dynamicTypeSize) private var typeSize
-
-let layout = typeSize.isAccessibilitySize
-    ? AnyLayout(VStackLayout(alignment: .leading))
-    : AnyLayout(HStackLayout())
-
-layout {
-    Text("Delivery")
-    Spacer(minLength: 0)
-    Text("Friday, 9–11 AM")
-        .foregroundStyle(.secondary)
-}
-```
-
-**Note:** Accessibility sizes can make text more than three times larger. Avoid fixed heights so rows can grow.
-
 ## On macOS
 
 Mac text is smaller than iPhone text: 13 points by default, and 10 at the smallest.
@@ -140,18 +119,7 @@ HStack {
 .frame(width: 220)
 ```
 
-#### Keep changing numbers still
-
-Add `.monospacedDigit()` to a clock or a column of numbers, so the digits don't shift as the value changes.
-
-```swift
-TimelineView(.periodic(from: .now, by: 1)) { context in
-    Text(context.date, format: .dateTime.hour().minute().second())
-        .font(.title.monospacedDigit())
-}
-```
-
-More variants, left out to keep this file short: Scale your own numbers, Numbers that don't jump, Monospaced text for code (macOS), Loose leading for long passages (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/font.md
+More variants, left out to keep this file short: Stack items at large sizes, Scale your own numbers, Numbers that don't jump, Keep changing numbers still (macOS), Monospaced text for code (macOS), Loose leading for long passages (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/font.md
 
 ## Related
 

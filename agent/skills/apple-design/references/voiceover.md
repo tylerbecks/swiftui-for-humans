@@ -12,16 +12,6 @@ reviewed: October 2026
 
 Labels, traits, and grouping that tell the screen reader what each view is.
 
-## Contents
-
-- Rules
-- Pitfalls
-- Guide
-- Key APIs
-- Variants
-- On macOS
-- Related
-
 ## Rules
 
 - **Label every icon-only button.** Without a label, VoiceOver has nothing useful to say, and people can't tell what the button does.
@@ -95,24 +85,7 @@ Labels, grouping, and rotors that let the screen reader describe your windows.
 
 `.accessibilityAddTraits(.isHeader)`, `.accessibilityRotor(_:entries:entryLabel:)`
 
-### Variants
-
-#### Label an icon-only button
-
-Use a `Label` with `.labelStyle(.iconOnly)`: the icon shows, and the title becomes what VoiceOver reads.
-
-```swift
-Button {
-    // Share the note
-} label: {
-    Label("Share", systemImage: "square.and.arrow.up")
-        .labelStyle(.iconOnly)
-}
-```
-
-**Note:** With a plain `Image` as the label, add `.accessibilityLabel("Share")` to the button instead.
-
-More variants, left out to keep this file short: Read a row as one stop, Describe a custom control, Name your gestures, Mark section headings, Read a row as one element (macOS), Offer hover-only buttons as actions (macOS), Add a rotor for what people look for (macOS), Announce a change (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/view-accessibility.md
+More variants, left out to keep this file short: Read a row as one stop, Describe a custom control, Name your gestures, Mark section headings, Label an icon-only button (macOS), Read a row as one element (macOS), Offer hover-only buttons as actions (macOS), Add a rotor for what people look for (macOS), Announce a change (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/view-accessibility.md
 
 ## Related
 

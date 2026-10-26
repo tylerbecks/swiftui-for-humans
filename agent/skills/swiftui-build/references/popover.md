@@ -78,31 +78,6 @@ HStack {
 }
 ```
 
-### Popover on iPad, sheet on iPhone
-
-Leave out the adaptation for bigger content: `.popover` floats on iPad and becomes a sheet on iPhone.
-
-```swift
-@State private var showSort = false
-@State private var sort = "Date"
-
-Button("Sort", systemImage: "arrow.up.arrow.down") {
-    showSort = true
-}
-.popover(isPresented: $showSort) {
-    Form {
-        Picker("Sort by", selection: $sort) {
-            ForEach(["Date", "Name", "Size"], id: \.self) { Text($0) }
-        }
-        .pickerStyle(.inline)
-    }
-    .frame(minWidth: 280, minHeight: 220)
-    .presentationDetents([.medium])
-}
-```
-
-**Note:** `.presentationDetents` only applies when the popover turns into a sheet, so it's safe to add for iPhone.
-
 ## On macOS
 
 A small panel that points at its control and closes when people click away.
@@ -166,7 +141,7 @@ A `.popover` suits a toolbar button with a few options, like filters, that apply
 
 **Note:** A real `.toolbar` here would land in this window's own toolbar, so the preview draws one. The button and popover are real.
 
-More variants, left out to keep this file short: Close it after a choice (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/view/popover(ispresented:attachmentanchor:arrowedge:content:).md
+More variants, left out to keep this file short: Popover on iPad, sheet on iPhone, Close it after a choice (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/view/popover(ispresented:attachmentanchor:arrowedge:content:).md
 
 ## Related
 

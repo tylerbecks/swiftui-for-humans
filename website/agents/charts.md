@@ -69,14 +69,7 @@ Chart(sales)
 
 ## Key APIs
 
-- `Chart(_:content:)`: Loops over your data and draws marks.
-- `BarMark(x:y:)`: A bar for each value. Swap x and y for horizontal bars.
-- `LineMark(x:y:)`: Connects values with a line, for trends over time.
-- `.value(_:_:)`: Names a value for the axis and VoiceOver.
-- `.foregroundStyle(by:)`: Splits data into colored series, with a legend.
-- `RuleMark(y:)`: A reference line, like a goal or average.
-- `.chartYScale(domain:)`: Sets the axis range, like `0...100`.
-- `.chartXSelection(value:)`: Binds the value under the finger (iOS 17).
+`Chart(_:content:)`, `BarMark(x:y:)`, `LineMark(x:y:)`, `.value(_:_:)`, `.foregroundStyle(by:)`, `RuleMark(y:)`, `.chartYScale(domain:)`, `.chartXSelection(value:)`
 
 ## Variants
 

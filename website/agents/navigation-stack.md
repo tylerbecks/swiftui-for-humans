@@ -105,27 +105,6 @@ NavigationStack(path: $path) {
 
 **Important:** Every value type you push needs a matching `.navigationDestination(for:)` inside the stack. Without one, the link does nothing.
 
-### Present a detail from a selection
-
-Use `.navigationDestination(item:)` when a button, not a link, decides where to go.
-
-```swift
-@State private var selected: String?
-
-NavigationStack {
-    VStack(spacing: 12) {
-        Button("Open Report") { selected = "Report" }
-        Button("Open Invoice") { selected = "Invoice" }
-    }
-    .buttonStyle(.bordered)
-    .navigationTitle("Documents")
-    .navigationDestination(item: $selected) { name in
-        Text(name)
-            .font(.largeTitle)
-    }
-}
-```
-
 ## On macOS
 
 Push views inside a window, with a Back button in the toolbar.
@@ -163,7 +142,7 @@ NavigationStack {
 }
 ```
 
-More variants, left out to keep this file short: Push with links and destinations (macOS), Control the stack with a path (macOS), Different kinds of values (macOS), In a split view (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/navigationstack.md
+More variants, left out to keep this file short: Present a detail from a selection, Push with links and destinations (macOS), Control the stack with a path (macOS), Different kinds of values (macOS), In a split view (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/navigationstack.md
 
 ## Related
 

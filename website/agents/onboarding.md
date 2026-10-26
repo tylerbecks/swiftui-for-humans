@@ -12,13 +12,6 @@ reviewed: October 2026
 
 A paged welcome flow with Continue and Skip buttons that ends with Get Started.
 
-## Contents
-
-- Rules
-- Pitfalls
-- On macOS
-- Related
-
 ## Rules
 
 - **Keep it short, and always let people skip.** Three or four pages is plenty. People who would rather explore on their own should get into the app in one tap.
@@ -98,43 +91,7 @@ ContentUnavailableView {
 }
 ```
 
-#### A tip beside the feature
-
-Define a `Tip`, configure TipKit once at launch, and place a `TipView` next to what it explains.
-
-```swift
-import TipKit
-
-struct PinTip: Tip {
-    var title: Text { Text("Pin important notes") }
-    var message: Text? { Text("Pinned notes stay at the top of the list.") }
-    var image: Image? { Image(systemName: "pin") }
-}
-
-@main
-struct NotesApp: App {
-    init() {
-        try? Tips.configure()
-    }
-
-    var body: some Scene {
-        WindowGroup { NotesView() }
-    }
-}
-
-struct NotesView: View {
-    var body: some View {
-        VStack {
-            TipView(PinTip(), arrowEdge: .bottom)
-            Button("Pin", systemImage: "pin") { }
-        }
-    }
-}
-```
-
-**Note:** The preview draws the tip. This catalog doesn't set up TipKit, so a real `TipView` wouldn't appear here.
-
-More variants, left out to keep this file short: Code. Apple's docs: https://developer.apple.com/documentation/swiftui/pagetabviewstyle.md
+More variants, left out to keep this file short: Code, A tip beside the feature (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/pagetabviewstyle.md
 
 ## Related
 

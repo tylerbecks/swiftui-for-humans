@@ -10,8 +10,6 @@ docs: https://developer.apple.com/documentation/swiftui/link.md
 
 A control that opens a URL, in Safari or in the app that handles it.
 
-Also called: <a>, href, anchor, hyperlink, url, open url, window.open, openURL, deep link, mailto.
-
 ## Contents
 
 - Default code
@@ -40,12 +38,7 @@ Text("Read our [Privacy Policy](https://www.apple.com/privacy/).")
 
 ## Key APIs
 
-- `Link(_:destination:)`: A text link that opens a URL.
-- `Link(destination:label:)`: Use any view, like a `Label`, as the link.
-- `Text("[title](url)")`: Markdown links inside text.
-- `@Environment(\.openURL)`: Opens a URL from your own code.
-- `prefersInApp:`: Opens a web page in a Safari sheet inside your app (iOS 26).
-- `OpenURLAction`: Intercepts every link tap below it.
+`Link(_:destination:)`, `Link(destination:label:)`, `Text("[title](url)")`, `@Environment(\.openURL)`, `prefersInApp:`, `OpenURLAction`
 
 ## Variants
 
@@ -134,8 +127,7 @@ Link("Privacy Policy", destination: URL(string: "https://www.apple.com/privacy/"
 
 ### Key APIs
 
-- `OpenURLAction { url in … }`: Handles links yourself.
-- `.environment(\.openURL, …)`: Installs your action for the views inside.
+`OpenURLAction { url in … }`, `.environment(\.openURL, …)`
 
 ### Variants
 

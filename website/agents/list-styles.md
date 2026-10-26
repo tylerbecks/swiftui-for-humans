@@ -11,8 +11,6 @@ hig: https://developer.apple.com/design/human-interface-guidelines/lists-and-tab
 
 Sidebar, inset, and bordered lists, with rows people click to select, one or many.
 
-Also called: List, listStyle, sidebar, inset, bordered, plain, NSTableView, source list, alternatingRowBackgrounds, zebra stripes.
-
 ## Contents
 
 - Use when
@@ -61,13 +59,7 @@ List(fruits, id: \.self, selection: $selection) { fruit in
 
 ## Key APIs
 
-- `List(_:selection:rowContent:)`: Rows from data, optionally selectable.
-- `.listStyle(.sidebar)`: A source list with collapsible sections.
-- `.listStyle(.inset)`: Content rows with inset selection.
-- `.listStyle(.bordered)`: A boxed list for forms and panes.
-- `.alternatingRowBackgrounds()`: Stripes every other row.
-- `.onDeleteCommand(perform:)`: Runs on the Delete key or Delete command.
-- `.contextMenu(forSelectionType:)`: A menu and double-click for selected rows.
+`List(_:selection:rowContent:)`, `.listStyle(.sidebar)`, `.listStyle(.inset)`, `.listStyle(.bordered)`, `.alternatingRowBackgrounds()`, `.onDeleteCommand(perform:)`, `.contextMenu(forSelectionType:)`
 
 ## Variants
 
@@ -135,31 +127,7 @@ struct BlockedSenders: View {
 }
 ```
 
-### Select several, and double-click to open
-
-Bind `selection:` to a `Set` for multiple selection, and `.contextMenu(forSelectionType:)` adds a menu plus a `primaryAction` for double-click.
-
-```swift
-@State private var notes = ["Groceries", "Packing list", "Book ideas"]
-@State private var selection: Set<String> = []
-@Environment(\.openWindow) private var openWindow
-
-List(notes, id: \.self, selection: $selection) { note in
-    Text(note)
-}
-.contextMenu(forSelectionType: String.self) { items in
-    Button("Open") { }
-    Button("Delete", role: .destructive) {
-        notes.removeAll { items.contains($0) }
-    }
-} primaryAction: { items in
-    for item in items {
-        openWindow(value: item)
-    }
-}
-```
-
-**Note:** On the Mac, a single click selects a row and a double click runs the primary action. Opening a window this way needs a `WindowGroup(for: String.self)` scene in your app.
+More variants, left out to keep this file short: Select several, and double-click to open. Apple's docs: https://developer.apple.com/documentation/swiftui/liststyle.md
 
 ## Related
 

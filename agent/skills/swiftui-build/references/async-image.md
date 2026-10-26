@@ -76,32 +76,6 @@ AsyncImage(url: URL(string: "https://picsum.photos/seed/avatar/200")) { image in
 .clipShape(.circle)
 ```
 
-### Photo grid
-
-Make square cells in a `LazyVGrid` with `Color.clear` and `.aspectRatio(1)`, then fill each with an image.
-
-```swift
-let columns = Array(repeating: GridItem(.flexible(), spacing: 4), count: 3)
-
-LazyVGrid(columns: columns, spacing: 4) {
-    ForEach(1...6, id: \.self) { index in
-        Color.clear
-            .aspectRatio(1, contentMode: .fit)
-            .overlay {
-                AsyncImage(url: URL(string: "https://picsum.photos/seed/grid\(index)/300")) { image in
-                    image.resizable().scaledToFill()
-                } placeholder: {
-                    Rectangle().fill(.fill.tertiary)
-                }
-            }
-            .clipped()
-    }
-}
-.clipShape(.rect(cornerRadius: 12))
-```
-
-**Important:** `AsyncImage` doesn't cache images itself. Cells that scroll away and back may download again, so large grids often use a caching library.
-
 ## On macOS
 
 ### Rules
@@ -144,7 +118,7 @@ HStack(spacing: 10) {
 }
 ```
 
-More variants, left out to keep this file short: Failure with retry, Photo grid (macOS), Failure with retry (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/asyncimage.md
+More variants, left out to keep this file short: Photo grid, Failure with retry, Photo grid (macOS), Failure with retry (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/asyncimage.md
 
 ## Related
 

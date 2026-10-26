@@ -74,14 +74,7 @@ TabView(selection:)
 
 ## Key APIs
 
-- `Tab(_:systemImage:content:)`: One tab with a label and an SF Symbol.
-- `TabView(selection:)`: Binds the current tab, so you can switch in code.
-- `.badge(_:)`: A red count on a tab.
-- `Tab(role: .search)`: A separate search tab at the trailing end.
-- `TabSection(_:content:)`: Groups tabs in the iPad sidebar.
-- `.tabViewStyle(_:)`: `.sidebarAdaptable` for iPad, or `.page` for a carousel.
-- `.tabBarMinimizeBehavior(_:)`: Shrinks the tab bar while people scroll.
-- `.tabViewBottomAccessory { }`: A bar above the tabs, like a mini player.
+`Tab(_:systemImage:content:)`, `TabView(selection:)`, `.badge(_:)`, `Tab(role: .search)`, `TabSection(_:content:)`, `.tabViewStyle(_:)`, `.tabBarMinimizeBehavior(_:)`, `.tabViewBottomAccessory { }`
 
 ## Variants
 

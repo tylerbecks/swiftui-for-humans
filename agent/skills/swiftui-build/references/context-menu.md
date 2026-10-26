@@ -113,34 +113,7 @@ FileIcon(file)
 
 `primaryAction:`, `Menu(_:)`, `Divider()`
 
-### Variants
-
-#### Menus for the selection in a list
-
-`contextMenu(forSelectionType:)` gives you the rows the menu is for: the clicked or selected ones, or none for empty space.
-
-```swift
-@State private var selection = Set<Chapter.ID>()
-
-List(chapters, selection: $selection) { chapter in
-    Text(chapter.title)
-}
-.contextMenu(forSelectionType: Chapter.ID.self) { ids in
-    if ids.isEmpty {
-        Button("New Chapter") { addChapter() }
-    } else if ids.count == 1 {
-        Button("Rename…") { rename(ids) }
-        Button("Delete", role: .destructive) { delete(ids) }
-    } else {
-        Button("Merge \(ids.count) Chapters") { merge(ids) }
-        Button("Delete \(ids.count) Chapters", role: .destructive) { delete(ids) }
-    }
-}
-```
-
-**Note:** Clicking empty space gives an empty set, even while rows are selected. Use it for commands like New that don't need an item.
-
-More variants, left out to keep this file short: Custom preview, Double-click to open a table row (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/view/contextmenu(menuitems:).md
+More variants, left out to keep this file short: Custom preview, Menus for the selection in a list (macOS), Double-click to open a table row (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/view/contextmenu(menuitems:).md
 
 ## Related
 

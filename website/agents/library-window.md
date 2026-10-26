@@ -11,15 +11,6 @@ hig: https://developer.apple.com/design/human-interface-guidelines/sidebars.md
 
 A sidebar, a sortable table, and an inspector: the classic window for browsing a library.
 
-## Contents
-
-- Built from
-- Rules
-- Pitfalls
-- Key APIs
-- Variants
-- Related
-
 ## Built from
 
 NavigationSplitView
@@ -49,109 +40,7 @@ NavigationSplitView
 
 `NavigationSplitView { } detail: { }`, `List(selection:)`, `Table(_:selection:sortOrder:)`, `TableColumn(_:value:)`, `.inspector(isPresented:)`, `.navigationSplitViewColumnWidth`, `SidebarCommands()`, `InspectorCommands()`
 
-## Variants
-
-### Sidebar, table, and inspector
-
-A `NavigationSplitView` with a sidebar `List`, a `Table` in the detail column, and an `.inspector` on the table. The drawing is live; the window is the real thing.
-
-```swift
-struct Song: Identifiable, Hashable {
-    let id = UUID()
-    var title: String
-    var artist: String
-    var album: String
-    var seconds: Int
-    var isFavorite = false
-}
-
-enum Collection: String, Hashable, CaseIterable {
-    case all = "Songs"
-    case favorites = "Favorites"
-
-    var symbol: String { self == .all ? "music.note" : "star" }
-}
-
-struct LibraryView: View {
-    @State private var songs = [
-        Song(title: "Blue Hour", artist: "The Lanterns", album: "City Lights", seconds: 214, isFavorite: true),
-        Song(title: "Northbound", artist: "Mara Quinn", album: "Open Road", seconds: 187),
-        Song(title: "Slow Tide", artist: "Okon", album: "Harbor", seconds: 305),
-    ]
-    @State private var collection: Collection? = .all
-    @State private var selection = Set<Song.ID>()
-    @State private var sortOrder = [KeyPathComparator(\Song.title)]
-    @State private var searchText = ""
-    @State private var showsInspector = true
-
-    private var visibleSongs: [Song] {
-        songs.filter { song in
-            (collection != .favorites || song.isFavorite)
-                && (searchText.isEmpty || song.title.localizedStandardContains(searchText))
-        }
-    }
-
-    var body: some View {
-        NavigationSplitView {
-            List(selection: $collection) {
-                Section("Library") {
-                    ForEach(Collection.allCases, id: \.self) { item in
-                        Label(item.rawValue, systemImage: item.symbol)
-                    }
-                }
-            }
-            .navigationSplitViewColumnWidth(min: 160, ideal: 200)
-        } detail: {
-            Table(visibleSongs, selection: $selection, sortOrder: $sortOrder) {
-                TableColumn("Title", value: \.title)
-                TableColumn("Artist", value: \.artist)
-                TableColumn("Album", value: \.album)
-                TableColumn("Time", value: \.seconds) { song in
-                    Text(Duration.seconds(song.seconds), format: .time(pattern: .minuteSecond))
-                }
-                .width(60)
-            }
-            .onChange(of: sortOrder) {
-                songs.sort(using: sortOrder)
-            }
-            .searchable(text: $searchText)
-            .navigationTitle(collection?.rawValue ?? "Library")
-            .inspector(isPresented: $showsInspector) {
-                SongInspector(songs: $songs, selection: selection)
-                    .inspectorColumnWidth(min: 220, ideal: 260)
-            }
-            .toolbar {
-                Button("Inspector", systemImage: "info.circle") {
-                    showsInspector.toggle()
-                }
-            }
-        }
-    }
-}
-
-struct SongInspector: View {
-    @Binding var songs: [Song]
-    let selection: Set<Song.ID>
-
-    var body: some View {
-        if selection.count == 1, let index = songs.firstIndex(where: { selection.contains($0.id) }) {
-            Form {
-                TextField("Title", text: $songs[index].title)
-                TextField("Artist", text: $songs[index].artist)
-                TextField("Album", text: $songs[index].album)
-                Toggle("Favorite", isOn: $songs[index].isFavorite)
-            }
-        } else {
-            ContentUnavailableView(
-                selection.isEmpty ? "No Selection" : "\(selection.count) Songs",
-                systemImage: "music.note"
-            )
-        }
-    }
-}
-```
-
-More variants, left out to keep this file short: Add it to your app. Apple's docs: https://developer.apple.com/documentation/swiftui/navigationsplitview.md
+More variants, left out to keep this file short: Sidebar, table, and inspector, Add it to your app. Apple's docs: https://developer.apple.com/documentation/swiftui/navigationsplitview.md
 
 ## Related
 

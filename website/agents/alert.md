@@ -121,30 +121,7 @@ Button("Revert…") { isConfirming = true }
 
 `.confirmationDialog(_:isPresented:)`, `.dialogSeverity(.critical)`, `.dialogSuppressionToggle(isSuppressed:)`, `.dialogIcon(_:)`
 
-### Variants
-
-#### Report a problem
-
-`.alert(_:isPresented:presenting:)` builds the alert from a value, like the error you caught, and passes it to the buttons and message.
-
-```swift
-@State private var failure: SaveFailure?
-@State private var isShowingFailure = false
-
-Button("Save") {
-    failure = SaveFailure(documentName: "Trip Notes")
-    isShowingFailure = true
-}
-.alert("Couldn't Save Your Changes", isPresented: $isShowingFailure, presenting: failure) { _ in
-    Button("OK") { }
-} message: { failure in
-    Text("“\(failure.documentName)” is on a disk that's full. Free up space and try again.")
-}
-```
-
-**Note:** OK fits here: the alert reports a problem and offers no choice, so its one button only acknowledges it.
-
-More variants, left out to keep this file short: Show an error, Rename prompt, Let people stop the question (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/view/alert(_:ispresented:actions:message:).md
+More variants, left out to keep this file short: Show an error, Rename prompt, Report a problem (macOS), Let people stop the question (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/view/alert(_:ispresented:actions:message:).md
 
 ## Related
 

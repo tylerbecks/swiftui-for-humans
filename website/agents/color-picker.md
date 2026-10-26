@@ -11,8 +11,6 @@ hig: https://developer.apple.com/design/human-interface-guidelines/color-wells.m
 
 A swatch that opens the system color picker so people can choose any color.
 
-Also called: color input, input type=color, color well, swatch, eyedropper, UIColorWell, UIColorPickerViewController, colour picker, hex.
-
 ## Contents
 
 - Default code
@@ -43,11 +41,7 @@ ColorPicker("Accent Color", selection: $accent)
 
 ## Key APIs
 
-- `ColorPicker(_:selection:)`: A labeled swatch bound to a `Color`.
-- `supportsOpacity:`: Pass `false` to hide the opacity slider.
-- `.labelsHidden()`: Shows only the swatch; VoiceOver still reads the label.
-- `Color.resolve(in:)`: Gets the red, green, blue, and opacity values.
-- `Color(_: Color.Resolved)`: Turns saved values back into a `Color`.
+`ColorPicker(_:selection:)`, `supportsOpacity:`, `.labelsHidden()`, `Color.resolve(in:)`, `Color(_: Color.Resolved)`
 
 ## Variants
 
@@ -135,8 +129,7 @@ ColorPicker("Highlight", selection: $highlight)
 
 ### Key APIs
 
-- `supportsOpacity: false`: No opacity control; colors stay solid.
-- `ColorPicker(selection:label:)`: A custom label view.
+`supportsOpacity: false`, `ColorPicker(selection:label:)`
 
 ### Variants
 

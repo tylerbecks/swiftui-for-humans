@@ -83,17 +83,7 @@ Choose File > New File, then **App Privacy** under Resource. Xcode names it `Pri
 3. If you do, pick every data type you and your third-party partners collect, then answer the questions for each.
 4. Check the **Product Page Preview**, then click **Publish**. Update the answers whenever your app's data practices change.
 
-### Before you submit
-
-- **Privacy policy linked in two places**: In App Store Connect and somewhere easy to find in the app.
-- **A purpose string for every protected resource**: Clear and complete, one sentence each.
-- **A matching entitlement for each**: Under App Sandbox in Signing & Capabilities. ([app-sandbox](app-sandbox.md))
-- **Requests happen when the feature is used**: Not all at once on first launch.
-- **The app still works after No**: With another way to finish the task where possible.
-- **Privacy manifest lists collected data**: And the SDKs you include ship their own.
-- **App Privacy answers match the app**: Covering every platform in the record.
-
-More variants, left out to keep this file short: Ask when the feature starts. Apple's docs: https://developer.apple.com/documentation/bundleresources/privacy-manifest-files.md
+More variants, left out to keep this file short: Ask when the feature starts. Guide sections left out to keep this file short: Before you submit. Apple's docs: https://developer.apple.com/documentation/bundleresources/privacy-manifest-files.md
 
 ## Related
 

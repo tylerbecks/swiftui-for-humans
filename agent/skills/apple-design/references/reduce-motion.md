@@ -12,16 +12,6 @@ reviewed: October 2026
 
 Swap big movement for fades when people ask for less motion.
 
-## Contents
-
-- Rules
-- Pitfalls
-- Guide
-- Key APIs
-- Variants
-- On macOS
-- Related
-
 ## Rules
 
 - **Replace motion with a fade, don't just delete it.** If an animation shows where something went, like an item landing in a cart, keep that meaning with a dissolve, highlight, or color change.
@@ -60,31 +50,6 @@ When the setting is on, check every custom animation:
 ## Key APIs
 
 `\.accessibilityReduceMotion`, `.transition(.opacity)`, `withAnimation(_:_:)`, `.animation(_:value:)`, `\.accessibilityPlayAnimatedImages`
-
-## Variants
-
-### Swap a slide for a fade
-
-Read `accessibilityReduceMotion` from the environment and pick the transition with it.
-
-```swift
-@Environment(\.accessibilityReduceMotion) private var reduceMotion
-@State private var showsBanner = false
-
-VStack {
-    if showsBanner {
-        Text("Saved to Favorites")
-            .padding()
-            .background(.green.opacity(0.2), in: .capsule)
-            .transition(reduceMotion ? .opacity : .move(edge: .top))
-    }
-    Button("Save") {
-        withAnimation { showsBanner.toggle() }
-    }
-}
-```
-
-**Note:** On this device, Reduce Motion is off, so the preview shows the slide.
 
 ## On macOS
 
@@ -128,7 +93,7 @@ VStack {
 
 **Note:** Reduce Motion is off on this Mac, so the preview slides.
 
-More variants, left out to keep this file short: Calm a spring, Stop autoplay, Calm a spring (macOS), Stop autoplay (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/environmentvalues/accessibilityreducemotion.md
+More variants, left out to keep this file short: Swap a slide for a fade, Calm a spring, Stop autoplay, Calm a spring (macOS), Stop autoplay (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/environmentvalues/accessibilityreducemotion.md
 
 ## Related
 

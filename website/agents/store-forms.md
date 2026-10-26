@@ -10,8 +10,6 @@ reviewed: October 2026
 
 Age rating, encryption, EU trader status, content rights, and the Xcode you need.
 
-Also called: age rating, age rating questionnaire, parental controls, Made for Kids, export compliance, encryption, ITSAppUsesNonExemptEncryption, Digital Services Act, DSA, trader status.
-
 ## Rules
 
 - **Answer the age questions honestly.** Guideline 2.3.6 warns that a wrong rating surprises customers and can draw attention from regulators.

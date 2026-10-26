@@ -10,16 +10,6 @@ reviewed: October 2026
 
 Short, specific words for buttons, alerts, errors, and empty screens.
 
-## Contents
-
-- Rules
-- Pitfalls
-- Guide
-- Key APIs
-- Variants
-- On macOS
-- Related
-
 ## Rules
 
 - **Label buttons with verbs.** Say what happens when people tap. Clever or cute labels make them stop and think.
@@ -45,28 +35,6 @@ Pick title case or sentence case for each kind of text, and stick to it. For but
 ## Key APIs
 
 `.alert(_:isPresented:actions:)`, `Button(_:role:action:)`, `ContentUnavailableView`, `TextField(_:text:prompt:)`, `Section { } footer: { }`
-
-## Variants
-
-### A clear alert
-
-Give `.alert` a specific title, a short message only if it helps, and buttons named after their action.
-
-```swift
-@State private var isConfirming = false
-
-Button("Delete Photos", role: .destructive) {
-    isConfirming = true
-}
-.alert("Delete 3 Photos?", isPresented: $isConfirming) {
-    Button("Delete", role: .destructive) { }
-    Button("Cancel", role: .cancel) { }
-} message: {
-    Text("This can't be undone.")
-}
-```
-
-**Note:** Skip alerts for things people can undo, like deleting one email. Save them for actions that can't be reversed.
 
 ## On macOS
 
@@ -109,19 +77,7 @@ Give each command a verb in title case, and end it with … when it opens a pane
 
 **Note:** Menu bar menus belong to the app, not a page, so the preview draws this one. See [Commands](commands.md) for adding them.
 
-#### A label that follows the state
-
-Switch the title with the state, so the item always says what clicking it will do.
-
-```swift
-@State private var showsMap = true
-
-Button(showsMap ? "Hide Map" : "Show Map") {
-    showsMap.toggle()
-}
-```
-
-More variants, left out to keep this file short: An error next to the field, An empty state with a way forward, A setting that explains itself, An error next to the field (macOS), A button that opens more (macOS).
+More variants, left out to keep this file short: A clear alert, An error next to the field, An empty state with a way forward, A setting that explains itself, A label that follows the state (macOS), An error next to the field (macOS), A button that opens more (macOS).
 
 ## Related
 

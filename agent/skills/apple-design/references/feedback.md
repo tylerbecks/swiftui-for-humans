@@ -12,8 +12,6 @@ reviewed: October 2026
 
 Tell people what happened, with an interruption that matches how much it matters.
 
-Also called: toast, snackbar, banner, flash message, error message, success message, validation message, status message, notification, inline error.
-
 ## Contents
 
 - Rules
@@ -43,11 +41,7 @@ Feedback tells people the status of something, whether an action worked, or that
 
 ## Key APIs
 
-- `.sensoryFeedback(_:trigger:)`: Plays a haptic when a value changes.
-- `.alert(_:isPresented:)`: Interrupts for critical, actionable news.
-- `.safeAreaInset(edge:)`: Pins a banner above or below content.
-- `ToolbarItem(placement: .status)`: Quiet status text in the toolbar.
-- `ContentUnavailableView`: A whole screen that couldn't load.
+`.sensoryFeedback(_:trigger:)`, `.alert(_:isPresented:)`, `.safeAreaInset(edge:)`, `ToolbarItem(placement: .status)`, `ContentUnavailableView`
 
 ## Variants
 
@@ -139,24 +133,7 @@ Button("Save Draft") { saveFailed = true }
 
 **Note:** Button titles say what happens, like Try Again or Delete. Use “OK” only in alerts that just inform. See Alert (`alert`, swiftui-build skill).
 
-### Status in the toolbar
-
-Put ongoing status, like the last sync time, in a `ToolbarItem(placement: .status)` where people can check it.
-
-```swift
-List(["Inbox", "Sent", "Archive"], id: \.self) { box in
-    Text(box)
-}
-.navigationTitle("Mail")
-.toolbar {
-    ToolbarItem(placement: .status) {
-        VStack {
-            Text("Updated Just Now").font(.caption)
-            Text("3 Unread").font(.caption2).foregroundStyle(.secondary)
-        }
-    }
-}
-```
+More variants, left out to keep this file short: Status in the toolbar. Apple's docs: https://developer.apple.com/documentation/swiftui/view/sensoryfeedback(_:trigger:).md
 
 ## Related
 

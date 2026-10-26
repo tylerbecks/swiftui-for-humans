@@ -668,26 +668,6 @@ Button {
 .controlSize(.large)
 ```
 
-### Icon button
-
-Use a `Label` with `.labelStyle(.iconOnly)`, so VoiceOver still reads the title.
-
-```swift
-@State private var isFavorite = false
-
-Button {
-    isFavorite.toggle()
-} label: {
-    Label("Favorite", systemImage: isFavorite ? "heart.fill" : "heart")
-        .labelStyle(.iconOnly)
-        .contentTransition(.symbolEffect(.replace))
-}
-.buttonStyle(.bordered)
-.buttonBorderShape(.circle)
-.controlSize(.large)
-.tint(.pink)
-```
-
 ## On macOS
 
 A push button that runs an action when someone clicks it.
@@ -740,22 +720,7 @@ HStack {
 
 **Note:** If more than one button has `.defaultAction`, only the first gets the tint.
 
-#### Destructive actions
-
-Give a delete button `role: .destructive` so menus and alerts can mark it in red as a dangerous action.
-
-```swift
-HStack {
-    Button("Delete Project", role: .destructive) {
-        deleteProject()
-    }
-    Button("Keep Project", role: .cancel) {
-        dismiss()
-    }
-}
-```
-
-More variants, left out to keep this file short: Loading state, Destructive with confirmation, Small buttons that act on a list (macOS), A button that looks like a link (macOS), Scope bar buttons (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/button.md
+More variants, left out to keep this file short: Icon button, Loading state, Destructive with confirmation, Destructive actions (macOS), Small buttons that act on a list (macOS), A button that looks like a link (macOS), Scope bar buttons (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/button.md
 
 ## Related
 
@@ -898,35 +863,7 @@ VStack(alignment: .leading) {
 }
 ```
 
-#### Select all, with a mixed state
-
-`Toggle(sources:isOn:)` turns a group on or off together, and shows a dash when they don't match.
-
-```swift
-struct TextStyleSetting: Identifiable {
-    let name: String
-    var isOn: Bool
-    var id: String { name }
-}
-
-@State private var styles = [
-    TextStyleSetting(name: "Bold", isOn: true),
-    TextStyleSetting(name: "Italic", isOn: false),
-    TextStyleSetting(name: "Underline", isOn: true),
-]
-
-VStack(alignment: .leading) {
-    Toggle(sources: $styles, isOn: \.isOn) {
-        Text("All styles")
-    }
-    ForEach($styles) { $style in
-        Toggle(style.name, isOn: $style.isOn)
-            .padding(.leading, 20)
-    }
-}
-```
-
-More variants, left out to keep this file short: Checkbox-style agreement, Switches in a grouped form (macOS), A toggle in the toolbar (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/toggle.md
+More variants, left out to keep this file short: Checkbox-style agreement, Select all, with a mixed state (macOS), Switches in a grouped form (macOS), A toggle in the toolbar (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/toggle.md
 
 ## Related
 
@@ -953,7 +890,6 @@ A control for choosing one value from a list of options.
 - Rules
 - Pitfalls
 - Key APIs
-- Variants
 - On macOS
 - Related
 
@@ -986,30 +922,6 @@ Picker("Size", selection: $size) {
 ## Key APIs
 
 `Picker(_:selection:content:)`, `.tag(_:)`, `.pickerStyle(_:)`, `ForEach(Enum.allCases)`, `.labelsHidden()`, `Menu { Picker }`
-
-## Variants
-
-### Segmented filter
-
-Use `.pickerStyle(.segmented)` above content to filter it, like a small tab bar inside one screen.
-
-```swift
-enum InboxFilter: String, CaseIterable, Identifiable {
-    case all = "All", unread = "Unread", flagged = "Flagged"
-    var id: Self { self }
-}
-
-@State private var filter = InboxFilter.all
-
-VStack {
-    Picker("Filter", selection: $filter) {
-        ForEach(InboxFilter.allCases) { Text($0.rawValue) }
-    }
-    .pickerStyle(.segmented)
-
-    Text(filter == .all ? "12 messages" : filter == .unread ? "3 unread" : "1 flagged")
-}
-```
 
 ## On macOS
 
@@ -1075,22 +987,7 @@ Form {
 }
 ```
 
-#### Radio buttons in a row
-
-`.horizontalRadioGroupLayout()` puts the radio buttons side by side, for short options in a narrow space.
-
-```swift
-@State private var startsWith = "Last Window"
-
-Picker("Open with:", selection: $startsWith) {
-    Text("Last Window").tag("Last Window")
-    Text("New Window").tag("New Window")
-}
-.pickerStyle(.radioGroup)
-.horizontalRadioGroupLayout()
-```
-
-More variants, left out to keep this file short: In a settings form, Sort menu with checkmarks, Color tags in a menu, A segmented control in an inspector (macOS), A Custom… option (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/picker.md
+More variants, left out to keep this file short: Segmented filter, In a settings form, Sort menu with checkmarks, Color tags in a menu, Radio buttons in a row (macOS), A segmented control in an inspector (macOS), A Custom… option (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/picker.md
 
 ## Related
 
@@ -1117,7 +1014,6 @@ A button that reveals a list of actions when tapped.
 - Rules
 - Pitfalls
 - Key APIs
-- Variants
 - On macOS
 - Related
 
@@ -1147,43 +1043,6 @@ Menu("Options", systemImage: "ellipsis.circle") {
 ## Key APIs
 
 `Menu(_:systemImage:content:)`, `Menu { } label: { }`, `primaryAction:`, `Section` / `Divider`, `role: .destructive`, `.menuOrder(_:)`
-
-## Variants
-
-### More button
-
-A `Menu` with an ellipsis label holds a screen's extra actions, at the end of a row or in a toolbar.
-
-```swift
-@State private var showsHidden = false
-@State private var layout = "Grid"
-
-HStack {
-    VStack(alignment: .leading) {
-        Text("Documents").font(.headline)
-        Text("\(layout) view\(showsHidden ? ", hidden files shown" : "")")
-            .font(.footnote)
-            .foregroundStyle(.secondary)
-    }
-    Spacer()
-    Menu {
-        Picker("View as", selection: $layout) {
-            Label("Grid", systemImage: "square.grid.2x2").tag("Grid")
-            Label("List", systemImage: "list.bullet").tag("List")
-        }
-        Toggle("Show Hidden Files", isOn: $showsHidden)
-        Divider()
-        Button("Select", systemImage: "checkmark.circle") {}
-    } label: {
-        Image(systemName: "ellipsis")
-            .padding(8)
-    }
-    .buttonStyle(.glass)
-    .buttonBorderShape(.circle)
-}
-```
-
-**Note:** The `Picker` and `Toggle` inside show checkmarks on their own. Don't draw your own checkmarks.
 
 ## On macOS
 
@@ -1257,7 +1116,7 @@ Menu("View Options", systemImage: "slider.horizontal.3") {
 }
 ```
 
-More variants, left out to keep this file short: Split button with primaryAction, Sections with titles, Items with a subtitle (macOS), A borderless menu (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/menu.md
+More variants, left out to keep this file short: More button, Split button with primaryAction, Sections with titles, Items with a subtitle (macOS), A borderless menu (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/menu.md
 
 ## Related
 
@@ -1343,27 +1202,6 @@ VStack(alignment: .leading) {
 
 **Important:** On iOS, the slider's own label isn't drawn. VoiceOver reads it, but you need to show a visible title yourself.
 
-### Brightness with icons
-
-Use `minimumValueLabel:` and `maximumValueLabel:` for icons that show what each end means.
-
-```swift
-@State private var brightness = 0.7
-
-Slider(value: $brightness) {
-    Text("Brightness")
-} minimumValueLabel: {
-    Image(systemName: "sun.min")
-} maximumValueLabel: {
-    Image(systemName: "sun.max.fill")
-}
-.tint(.yellow)
-
-RoundedRectangle(cornerRadius: 12)
-    .fill(.yellow.opacity(brightness))
-    .frame(height: 60)
-```
-
 ## On macOS
 
 A track with a thumb for picking a value between a minimum and a maximum.
@@ -1435,24 +1273,7 @@ Slider(value: $quality) {
 }
 ```
 
-#### Live preview, save at the end
-
-Update the preview on every change, and use `onEditingChanged` to save once, when the drag ends.
-
-```swift
-@State private var brightness = 0.5
-@State private var savedBrightness = 0.5
-
-Slider(value: $brightness) {
-    Text("Brightness")
-} onEditingChanged: { isEditing in
-    if !isEditing {
-        savedBrightness = brightness
-    }
-}
-```
-
-More variants, left out to keep this file short: Act when the drag ends, Tick marks, Fill from the middle, With a field and a stepper (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/slider.md
+More variants, left out to keep this file short: Brightness with icons, Act when the drag ends, Tick marks, Fill from the middle, Live preview, save at the end (macOS), With a field and a stepper (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/slider.md
 
 ## Related
 
@@ -1542,28 +1363,6 @@ Stepper(value: $hours, in: 4...12, step: 0.5) {
 }
 ```
 
-### With a text field
-
-Pair the stepper with a `TextField(value:format:)` so people can type a large number directly.
-
-```swift
-@State private var copies = 1
-
-HStack {
-    Text("Copies")
-    Spacer()
-    TextField("Copies", value: $copies, format: .number)
-        .keyboardType(.numberPad)
-        .multilineTextAlignment(.trailing)
-        .textFieldStyle(.roundedBorder)
-        .frame(width: 64)
-    Stepper("Copies", value: $copies, in: 1...999)
-        .labelsHidden()
-}
-```
-
-**Important:** The text field ignores the stepper's range. Clamp typed values yourself, for example in `.onChange(of: copies)`.
-
 ## On macOS
 
 Up and down arrows that change a number by a fixed amount.
@@ -1642,24 +1441,7 @@ Form {
 }
 ```
 
-#### Your own steps
-
-`onIncrement` and `onDecrement` run your code instead of adding a number, like cycling through the days of the week.
-
-```swift
-@State private var weekday = 0
-let weekdays = Calendar.current.weekdaySymbols
-
-Stepper {
-    Text("Starts on \(weekdays[weekday])")
-} onIncrement: {
-    weekday = (weekday + 1) % weekdays.count
-} onDecrement: {
-    weekday = (weekday + weekdays.count - 1) % weekdays.count
-}
-```
-
-More variants, left out to keep this file short: Step through a list. Apple's docs: https://developer.apple.com/documentation/swiftui/stepper.md
+More variants, left out to keep this file short: With a text field, Step through a list, Your own steps (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/stepper.md
 
 ## Related
 
@@ -1747,29 +1529,6 @@ DatePicker("Alarm", selection: $alarm, displayedComponents: .hourAndMinute)
     .labelsHidden()
 ```
 
-### Birthday (past dates only)
-
-A one-sided range like `in: ...Date.now` stops the calendar at today.
-
-```swift
-@State private var birthday = Date.now
-
-DatePicker("Birthday", selection: $birthday, in: ...Date.now, displayedComponents: .date)
-```
-
-### Several days with MultiDatePicker
-
-Use `MultiDatePicker` (iOS 16+) to pick several days, stored as a `Set<DateComponents>`.
-
-```swift
-@State private var days: Set<DateComponents> = []
-
-MultiDatePicker("Days off", selection: $days)
-Text("\(days.count) days selected")
-```
-
-**Note:** Each day is a `DateComponents`, not a `Date`. Convert one with `Calendar.current.date(from:)` when you need it.
-
 ## On macOS
 
 A date and time field, or a calendar, for picking a moment in time.
@@ -1833,19 +1592,7 @@ Pass `.hourAndMinute` to show only a time, for something like a daily reminder w
 DatePicker("Remind me at:", selection: $reminder, displayedComponents: .hourAndMinute)
 ```
 
-#### A start and an end
-
-For a range, use two pickers and limit the second to dates after the first, so the end can never come first.
-
-```swift
-@State private var tripStart = Date.now
-@State private var tripEnd = Date.now
-
-Form {
-    DatePicker("Leaving:", selection: $tripStart, displayedComponents: .date)
-    DatePicker("Returning:", selection: $tripEnd, in: tripStart..., displayedComponents: .date)
-}
-```
+More variants, left out to keep this file short: Birthday (past dates only), Several days with MultiDatePicker, A start and an end (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/datepicker.md
 
 ## Related
 
@@ -1865,8 +1612,6 @@ hig: https://developer.apple.com/design/human-interface-guidelines/color-wells.m
 # ColorPicker
 
 A swatch that opens the system color picker so people can choose any color.
-
-Also called: color input, input type=color, color well, swatch, eyedropper, UIColorWell, UIColorPickerViewController, colour picker, hex.
 
 ## Contents
 
@@ -1898,11 +1643,7 @@ ColorPicker("Accent Color", selection: $accent)
 
 ## Key APIs
 
-- `ColorPicker(_:selection:)`: A labeled swatch bound to a `Color`.
-- `supportsOpacity:`: Pass `false` to hide the opacity slider.
-- `.labelsHidden()`: Shows only the swatch; VoiceOver still reads the label.
-- `Color.resolve(in:)`: Gets the red, green, blue, and opacity values.
-- `Color(_: Color.Resolved)`: Turns saved values back into a `Color`.
+`ColorPicker(_:selection:)`, `supportsOpacity:`, `.labelsHidden()`, `Color.resolve(in:)`, `Color(_: Color.Resolved)`
 
 ## Variants
 
@@ -1990,8 +1731,7 @@ ColorPicker("Highlight", selection: $highlight)
 
 ### Key APIs
 
-- `supportsOpacity: false`: No opacity control; colors stay solid.
-- `ColorPicker(selection:label:)`: A custom label view.
+`supportsOpacity: false`, `ColorPicker(selection:label:)`
 
 ### Variants
 
@@ -2324,8 +2064,6 @@ docs: https://developer.apple.com/documentation/swiftui/link.md
 
 A control that opens a URL, in Safari or in the app that handles it.
 
-Also called: <a>, href, anchor, hyperlink, url, open url, window.open, openURL, deep link, mailto.
-
 ## Contents
 
 - Default code
@@ -2354,12 +2092,7 @@ Text("Read our [Privacy Policy](https://www.apple.com/privacy/).")
 
 ## Key APIs
 
-- `Link(_:destination:)`: A text link that opens a URL.
-- `Link(destination:label:)`: Use any view, like a `Label`, as the link.
-- `Text("[title](url)")`: Markdown links inside text.
-- `@Environment(\.openURL)`: Opens a URL from your own code.
-- `prefersInApp:`: Opens a web page in a Safari sheet inside your app (iOS 26).
-- `OpenURLAction`: Intercepts every link tap below it.
+`Link(_:destination:)`, `Link(destination:label:)`, `Text("[title](url)")`, `@Environment(\.openURL)`, `prefersInApp:`, `OpenURLAction`
 
 ## Variants
 
@@ -2448,8 +2181,7 @@ Link("Privacy Policy", destination: URL(string: "https://www.apple.com/privacy/"
 
 ### Key APIs
 
-- `OpenURLAction { url in … }`: Handles links yourself.
-- `.environment(\.openURL, …)`: Installs your action for the views inside.
+`OpenURLAction { url in … }`, `.environment(\.openURL, …)`
 
 ### Variants
 
@@ -2518,8 +2250,6 @@ hig: https://developer.apple.com/design/human-interface-guidelines/activity-view
 
 A button that opens the share sheet to send a link, text, or image.
 
-Also called: share sheet, share button, navigator.share, web share, UIActivityViewController, activity view, export, send, AirDrop.
-
 ## Contents
 
 - Default code
@@ -2556,12 +2286,7 @@ ShareLink(item: article) {
 
 ## Key APIs
 
-- `ShareLink(item:)`: A Share button for a `URL` or `String`.
-- `ShareLink(item:preview:)`: Shares any `Transferable` item, like an `Image`.
-- `SharePreview(_:image:)`: The title and thumbnail at the top of the sheet.
-- `subject:` / `message:`: Email subject and extra text, where apps support them.
-- `ShareLink(items:)`: Shares several items at once.
-- `label:`: A custom label instead of the standard Share button.
+`ShareLink(item:)`, `ShareLink(item:preview:)`, `SharePreview(_:image:)`, `subject:` / `message:`, `ShareLink(items:)`, `label:`
 
 ## Variants
 
@@ -2602,24 +2327,6 @@ VStack {
 }
 ```
 
-### Share several items
-
-Pass an array to `items:`, and build a `SharePreview` for each one in the closure.
-
-```swift
-let links = [
-    URL(string: "https://www.swift.org")!,
-    URL(string: "https://developer.apple.com")!,
-]
-
-ShareLink(items: links) { url in
-    SharePreview(url.host() ?? "Link")
-} label: {
-    Label("Share 2 Links", systemImage: "link")
-}
-.buttonStyle(.bordered)
-```
-
 ## On macOS
 
 A Share button that sends a link, text, or your own data to other apps.
@@ -2645,9 +2352,7 @@ ShareLink(item: URL(string: "https://developer.apple.com/xcode/swiftui/")!)
 
 ### Key APIs
 
-- `ShareLink(_:item:)`: The same, with your own title.
-- `subject:`, `message:`: Fill in a subject and message, like for Mail.
-- `Transferable`: Makes your own type shareable.
+`ShareLink(_:item:)`, `subject:`, `message:`, `Transferable`
 
 ### Variants
 
@@ -2692,6 +2397,8 @@ struct GardenTip: Transferable {
 
 ShareLink(item: tip, preview: SharePreview(tip.title, image: Image(systemName: "leaf")))
 ```
+
+More variants, left out to keep this file short: Share several items. Apple's docs: https://developer.apple.com/documentation/swiftui/sharelink.md
 
 ## Related
 
@@ -2822,29 +2529,7 @@ Form {
 }
 ```
 
-#### Add an item with Return
-
-Use `.onSubmit` to act when people press Return, then clear the field so they can type the next one.
-
-```swift
-@State private var newTag = ""
-@State private var tags = ["Travel", "Family"]
-
-VStack(alignment: .leading) {
-    TextField("New Tag", text: $newTag)
-        .onSubmit {
-            let tag = newTag.trimmingCharacters(in: .whitespaces)
-            guard !tag.isEmpty else { return }
-            tags.append(tag)
-            newTag = ""
-        }
-    Text(tags.joined(separator: ", "))
-        .foregroundStyle(.secondary)
-}
-.frame(width: 260)
-```
-
-More variants, left out to keep this file short: Email with validation, Numbers and currency, Search field with clear button, A price with a format (macOS), A field that grows (macOS), Suggestions as people type (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/textfield.md
+More variants, left out to keep this file short: Email with validation, Numbers and currency, Search field with clear button, Add an item with Return (macOS), A price with a format (macOS), A field that grows (macOS), Suggestions as people type (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/textfield.md
 
 ## Related
 
@@ -3111,19 +2796,6 @@ VStack(alignment: .trailing) {
 }
 ```
 
-### Rich text
-
-Bind an `AttributedString` and people can make selected text bold, italic, or underlined from the edit menu.
-
-```swift
-@State private var text = AttributedString("Select a word, then tap Format to make it bold.")
-
-TextEditor(text: $text)
-    .frame(height: 120)
-```
-
-**Note:** Rich text editing needs iOS 26 or later. With a `String` binding, the editor stays plain text.
-
 ## On macOS
 
 A scrolling area for long, multi-line text, plain or styled.
@@ -3176,7 +2848,7 @@ VStack(alignment: .leading) {
 
 **Important:** Put `.findDisabled()` or `.replaceDisabled()` closer to the editor than `.findNavigator`, or they won't apply.
 
-More variants, left out to keep this file short: Growing TextField instead, Styled text (macOS), A code editor (macOS), A limit with a counter (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/texteditor.md
+More variants, left out to keep this file short: Rich text, Growing TextField instead, Styled text (macOS), A code editor (macOS), A limit with a counter (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/texteditor.md
 
 ## Related
 
@@ -3292,14 +2964,7 @@ iOS doesn't hide the keyboard when people tap elsewhere. Give them at least one 
 
 ## Key APIs
 
-- `@FocusState`: Holds which field is focused: a `Bool` or an optional enum.
-- `.focused(_:equals:)`: Ties a field to one value of an enum focus state.
-- `.focused(_:)`: Ties a single field to a `Bool` focus state.
-- `.onSubmit { }`: Runs when people tap Return.
-- `.submitLabel(_:)`: The Return key's title: `.next`, `.done`, `.search`, and more.
-- `.keyboardType(_:)`: The keyboard layout, such as `.emailAddress` or `.numberPad`.
-- `.scrollDismissesKeyboard(_:)`: Hides the keyboard when people scroll.
-- `ToolbarItemGroup(placement: .keyboard)`: Buttons in a bar above the keyboard.
+`@FocusState`, `.focused(_:equals:)`, `.focused(_:)`, `.onSubmit { }`, `.submitLabel(_:)`, `.keyboardType(_:)`, `.scrollDismissesKeyboard(_:)`, `ToolbarItemGroup(placement: .keyboard)`
 
 ## Variants
 
@@ -3886,32 +3551,7 @@ HStack(spacing: 10) {
 }
 ```
 
-#### Photo grid
-
-Make square cells in a `LazyVGrid` with `Color.clear` and `.aspectRatio(1)`, then fill each with an image.
-
-```swift
-let columns = Array(repeating: GridItem(.flexible(), spacing: 4), count: 4)
-
-LazyVGrid(columns: columns, spacing: 4) {
-    ForEach(1...8, id: \.self) { index in
-        Color.clear
-            .aspectRatio(1, contentMode: .fit)
-            .overlay {
-                AsyncImage(url: URL(string: "https://picsum.photos/seed/grid\(index)/300")) { image in
-                    image.resizable().scaledToFill()
-                } placeholder: {
-                    Rectangle().fill(.fill.tertiary)
-                }
-            }
-            .clipped()
-    }
-}
-.clipShape(.rect(cornerRadius: 10))
-.frame(maxWidth: 420)
-```
-
-More variants, left out to keep this file short: Failure with retry, Failure with retry (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/asyncimage.md
+More variants, left out to keep this file short: Failure with retry, Photo grid (macOS), Failure with retry (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/asyncimage.md
 
 ## Related
 
@@ -4745,8 +4385,6 @@ hig: https://developer.apple.com/design/human-interface-guidelines/layout.md
 
 Give it a few versions of a view, and it shows the first one that fits.
 
-Also called: responsive, media query, container query, breakpoint, @media, adaptive layout, fallback, truncate.
-
 ## Contents
 
 - Default code
@@ -4874,37 +4512,7 @@ ViewThatFits(in: .horizontal) {
 
 **Note:** List the children in order of preference, usually widest first. `in: .horizontal` checks only the width, so a child that's taller still counts as fitting.
 
-#### Stack the columns below a width you choose
-
-`.onGeometryChange` turns the width into a `Bool`, and `AnyLayout` switches between `HStackLayout` and `VStackLayout` without losing the state of the views inside.
-
-```swift
-@State private var isNarrow = false
-
-let layout = isNarrow
-    ? AnyLayout(VStackLayout(alignment: .leading))
-    : AnyLayout(HStackLayout(alignment: .top))
-
-layout {
-    Image(systemName: "photo")
-        .font(.largeTitle)
-        .frame(width: 120, height: 80)
-        .background(.fill.tertiary, in: .rect(cornerRadius: 8))
-    VStack(alignment: .leading) {
-        Text("Lake Tahoe").font(.headline)
-        Text("Clear water and granite peaks.")
-            .foregroundStyle(.secondary)
-    }
-}
-.frame(maxWidth: .infinity, alignment: .leading)
-.onGeometryChange(for: Bool.self) { proxy in
-    proxy.size.width < 360
-} action: { narrow in
-    isNarrow = narrow
-}
-```
-
-**Note:** The transform runs often, so keep it cheap and return the smallest value you need. The action runs only when that value changes.
+More variants, left out to keep this file short: Stack the columns below a width you choose (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/viewthatfits.md
 
 ## Related
 
@@ -5476,30 +5084,7 @@ Form {
 
 `.formStyle(.columns)`, `.formStyle(.grouped)`, `LabeledContent { } label: { }`
 
-### Variants
-
-#### A classic Mac columns form
-
-`.formStyle(.columns)` right-aligns each label against its control, and by Mac convention the labels end with a colon.
-
-```swift
-@State private var startsWith = "Last session"
-@State private var fontSize = 13.0
-@State private var opensInTabs = true
-
-Form {
-    Picker("Start with:", selection: $startsWith) {
-        Text("Last session").tag("Last session")
-        Text("New document").tag("New document")
-    }
-    .pickerStyle(.radioGroup)
-    Stepper("Font size: \(Int(fontSize)) pt", value: $fontSize, in: 9...24)
-    Toggle("Open documents in tabs", isOn: $opensInTabs)
-}
-.formStyle(.columns)
-```
-
-More variants, left out to keep this file short: Inline picker, Rows that open other screens, Grouped, like System Settings (macOS), Read-only rows with LabeledContent (macOS), Several checkboxes under one label (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/form.md
+More variants, left out to keep this file short: Inline picker, Rows that open other screens, A classic Mac columns form (macOS), Grouped, like System Settings (macOS), Read-only rows with LabeledContent (macOS), Several checkboxes under one label (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/form.md
 
 ## Related
 
@@ -5614,27 +5199,6 @@ NavigationStack(path: $path) {
 
 **Important:** Every value type you push needs a matching `.navigationDestination(for:)` inside the stack. Without one, the link does nothing.
 
-### Present a detail from a selection
-
-Use `.navigationDestination(item:)` when a button, not a link, decides where to go.
-
-```swift
-@State private var selected: String?
-
-NavigationStack {
-    VStack(spacing: 12) {
-        Button("Open Report") { selected = "Report" }
-        Button("Open Invoice") { selected = "Invoice" }
-    }
-    .buttonStyle(.bordered)
-    .navigationTitle("Documents")
-    .navigationDestination(item: $selected) { name in
-        Text(name)
-            .font(.largeTitle)
-    }
-}
-```
-
 ## On macOS
 
 Push views inside a window, with a Back button in the toolbar.
@@ -5672,7 +5236,7 @@ NavigationStack {
 }
 ```
 
-More variants, left out to keep this file short: Push with links and destinations (macOS), Control the stack with a path (macOS), Different kinds of values (macOS), In a split view (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/navigationstack.md
+More variants, left out to keep this file short: Present a detail from a selection, Push with links and destinations (macOS), Control the stack with a path (macOS), Different kinds of values (macOS), In a split view (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/navigationstack.md
 
 ## Related
 
@@ -6515,45 +6079,7 @@ struct NewEventForm: View {
 
 `.presentationSizing(_:)`, `.frame(width:height:)`, `.keyboardShortcut(.defaultAction)`
 
-### Variants
-
-#### Edit an item
-
-`.sheet(item:)` shows a sheet for the item you set and clears it when the sheet closes, for “edit this one” tasks.
-
-```swift
-@State private var editing: Event?
-
-VStack {
-    ForEach(events) { event in
-        HStack {
-            Text(event.title)
-            Spacer()
-            Button("Edit…") { editing = event }
-        }
-    }
-}
-.sheet(item: $editing) { event in
-    EventEditor(event: event)
-}
-```
-
-#### A sheet people can resize
-
-`.presentationSizing(.fitted)` sizes the sheet to its content, and a minimum and maximum frame let people resize it between them.
-
-```swift
-.sheet(isPresented: $isShowingNotes) {
-    NotesEditor()
-        .frame(minWidth: 320, idealWidth: 420, maxWidth: 700,
-               minHeight: 200, idealHeight: 280, maxHeight: 600)
-        .presentationSizing(.fitted)
-}
-```
-
-**Note:** On the Mac, a `.fitted` sheet can be resized unless you fix its size with `.fixedSize()` or a fixed frame.
-
-More variants, left out to keep this file short: Cancel and Done buttons, Sheet for a tapped item, Small sheet that fits its content. Apple's docs: https://developer.apple.com/documentation/swiftui/view/sheet(ispresented:ondismiss:content:).md
+More variants, left out to keep this file short: Cancel and Done buttons, Sheet for a tapped item, Small sheet that fits its content, Edit an item (macOS), A sheet people can resize (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/view/sheet(ispresented:ondismiss:content:).md
 
 ## Related
 
@@ -6684,30 +6210,7 @@ Button("Revert…") { isConfirming = true }
 
 `.confirmationDialog(_:isPresented:)`, `.dialogSeverity(.critical)`, `.dialogSuppressionToggle(isSuppressed:)`, `.dialogIcon(_:)`
 
-### Variants
-
-#### Report a problem
-
-`.alert(_:isPresented:presenting:)` builds the alert from a value, like the error you caught, and passes it to the buttons and message.
-
-```swift
-@State private var failure: SaveFailure?
-@State private var isShowingFailure = false
-
-Button("Save") {
-    failure = SaveFailure(documentName: "Trip Notes")
-    isShowingFailure = true
-}
-.alert("Couldn't Save Your Changes", isPresented: $isShowingFailure, presenting: failure) { _ in
-    Button("OK") { }
-} message: { failure in
-    Text("“\(failure.documentName)” is on a disk that's full. Free up space and try again.")
-}
-```
-
-**Note:** OK fits here: the alert reports a problem and offers no choice, so its one button only acknowledges it.
-
-More variants, left out to keep this file short: Show an error, Rename prompt, Let people stop the question (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/view/alert(_:ispresented:actions:message:).md
+More variants, left out to keep this file short: Show an error, Rename prompt, Report a problem (macOS), Let people stop the question (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/view/alert(_:ispresented:actions:message:).md
 
 ## Related
 
@@ -6892,31 +6395,6 @@ HStack {
 }
 ```
 
-### Popover on iPad, sheet on iPhone
-
-Leave out the adaptation for bigger content: `.popover` floats on iPad and becomes a sheet on iPhone.
-
-```swift
-@State private var showSort = false
-@State private var sort = "Date"
-
-Button("Sort", systemImage: "arrow.up.arrow.down") {
-    showSort = true
-}
-.popover(isPresented: $showSort) {
-    Form {
-        Picker("Sort by", selection: $sort) {
-            ForEach(["Date", "Name", "Size"], id: \.self) { Text($0) }
-        }
-        .pickerStyle(.inline)
-    }
-    .frame(minWidth: 280, minHeight: 220)
-    .presentationDetents([.medium])
-}
-```
-
-**Note:** `.presentationDetents` only applies when the popover turns into a sheet, so it's safe to add for iPhone.
-
 ## On macOS
 
 A small panel that points at its control and closes when people click away.
@@ -6980,7 +6458,7 @@ A `.popover` suits a toolbar button with a few options, like filters, that apply
 
 **Note:** A real `.toolbar` here would land in this window's own toolbar, so the preview draws one. The button and popover are real.
 
-More variants, left out to keep this file short: Close it after a choice (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/view/popover(ispresented:attachmentanchor:arrowedge:content:).md
+More variants, left out to keep this file short: Popover on iPad, sheet on iPhone, Close it after a choice (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/view/popover(ispresented:attachmentanchor:arrowedge:content:).md
 
 ## Related
 
@@ -7103,34 +6581,7 @@ FileIcon(file)
 
 `primaryAction:`, `Menu(_:)`, `Divider()`
 
-### Variants
-
-#### Menus for the selection in a list
-
-`contextMenu(forSelectionType:)` gives you the rows the menu is for: the clicked or selected ones, or none for empty space.
-
-```swift
-@State private var selection = Set<Chapter.ID>()
-
-List(chapters, selection: $selection) { chapter in
-    Text(chapter.title)
-}
-.contextMenu(forSelectionType: Chapter.ID.self) { ids in
-    if ids.isEmpty {
-        Button("New Chapter") { addChapter() }
-    } else if ids.count == 1 {
-        Button("Rename…") { rename(ids) }
-        Button("Delete", role: .destructive) { delete(ids) }
-    } else {
-        Button("Merge \(ids.count) Chapters") { merge(ids) }
-        Button("Delete \(ids.count) Chapters", role: .destructive) { delete(ids) }
-    }
-}
-```
-
-**Note:** Clicking empty space gives an empty set, even while rows are selected. Use it for commands like New that don't need an item.
-
-More variants, left out to keep this file short: Custom preview, Double-click to open a table row (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/view/contextmenu(menuitems:).md
+More variants, left out to keep this file short: Custom preview, Menus for the selection in a list (macOS), Double-click to open a table row (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/view/contextmenu(menuitems:).md
 
 ## Related
 
@@ -8885,25 +8336,7 @@ struct ArticleInspector: View {
 }
 ```
 
-#### Read it from the environment
-
-Deep in the view tree, read the model with `@Environment(ReadingList.self)`. For bindings, wrap it in a local `@Bindable` inside `body`.
-
-```swift
-struct UnreadSettings: View {
-    @Environment(ReadingList.self) private var readingList
-
-    var body: some View {
-        @Bindable var readingList = readingList
-        Form {
-            Toggle("Show unread count", isOn: $readingList.showsUnreadCount)
-            LabeledContent("Unread", value: readingList.unreadCount, format: .number)
-        }
-    }
-}
-```
-
-More variants, left out to keep this file short: Views only watch what they read, Share a model through the environment, Leave a property out with @ObservationIgnored (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/managing-model-data-in-your-app.md
+More variants, left out to keep this file short: Views only watch what they read, Share a model through the environment, Read it from the environment (macOS), Leave a property out with @ObservationIgnored (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/managing-model-data-in-your-app.md
 
 ## Related
 
@@ -9413,13 +8846,7 @@ RoundedRectangle(cornerRadius: 12)
 
 ## Key APIs
 
-- `withAnimation(_:_:)`: Animates every view the state change affects.
-- `.animation(_:value:)`: Animates only this view, when `value` changes.
-- `.easeInOut(duration:)`: Slow start and end. Also `.easeIn`, `.easeOut`, and `.linear`.
-- `.delay(_:)`: Waits before the animation starts.
-- `.repeatForever(autoreverses:)`: Loops the animation until the view goes away.
-- `withAnimation(_:_:completion:)`: Runs code when the animation finishes (iOS 17+).
-- `\.accessibilityReduceMotion`: True when the person turned on Reduce Motion.
+`withAnimation(_:_:)`, `.animation(_:value:)`, `.easeInOut(duration:)`, `.delay(_:)`, `.repeatForever(autoreverses:)`, `withAnimation(_:_:completion:)`, `\.accessibilityReduceMotion`
 
 ## Variants
 
@@ -9825,8 +9252,6 @@ hig: https://developer.apple.com/design/human-interface-guidelines/motion.md
 
 Morph one view into another, like a sliding tab highlight or a card growing full screen.
 
-Also called: hero animation, shared element transition, FLIP, layoutId, framer motion layout, morph, zoom transition, magic move, namespace.
-
 ## Contents
 
 - Rules
@@ -9848,11 +9273,7 @@ Also called: hero animation, shared element transition, FLIP, layoutId, framer m
 
 ## Key APIs
 
-- `@Namespace`: A scope for ids, declared once in the parent view.
-- `.matchedGeometryEffect(id:in:)`: Links this view's frame to others with the same id.
-- `isSource:`: Pass `false` on copies that should follow, not lead.
-- `.matchedTransitionSource(id:in:)`: Marks the tile a new screen zooms out of (iOS 18+).
-- `.navigationTransition(.zoom(sourceID:in:))`: Zooms a pushed screen or sheet from its source.
+`@Namespace`, `.matchedGeometryEffect(id:in:)`, `isSource:`, `.matchedTransitionSource(id:in:)`, `.navigationTransition(.zoom(sourceID:in:))`
 
 ## Variants
 
@@ -9932,51 +9353,7 @@ VStack {
 
 **Important:** Each id can be on screen only once. If both versions show at the same time, give one `isSource: false`, or SwiftUI warns and the result is unpredictable.
 
-### Zoom transition
-
-Pair `.matchedTransitionSource(id:in:)` on the tile with `.navigationTransition(.zoom(sourceID:in:))` on the new screen.
-
-```swift
-struct Album: Identifiable {
-    let id: Int
-    let name: String
-    let color: Color
-}
-
-@Namespace private var zoom
-@State private var selected: Album?
-let albums = [
-    Album(id: 0, name: "Pink", color: .pink),
-    Album(id: 1, name: "Orange", color: .orange),
-    Album(id: 2, name: "Teal", color: .teal),
-    Album(id: 3, name: "Indigo", color: .indigo),
-]
-
-LazyVGrid(columns: [GridItem(), GridItem()], spacing: 12) {
-    ForEach(albums) { album in
-        Button {
-            selected = album
-        } label: {
-            RoundedRectangle(cornerRadius: 16)
-                .fill(album.color.gradient)
-                .frame(height: 100)
-        }
-        .matchedTransitionSource(id: album.id, in: zoom)
-    }
-}
-.fullScreenCover(item: $selected) { album in
-    Rectangle()
-        .fill(album.color.gradient)
-        .ignoresSafeArea()
-        .overlay {
-            Button("Close") { selected = nil }
-                .buttonStyle(.borderedProminent)
-        }
-        .navigationTransition(.zoom(sourceID: album.id, in: zoom))
-}
-```
-
-**Note:** The same two modifiers work for a `NavigationLink` push and a `.sheet`. Put `.navigationTransition` on the destination's root view.
+More variants, left out to keep this file short: Zoom transition. Apple's docs: https://developer.apple.com/documentation/swiftui/view/matchedgeometryeffect(id:in:properties:anchor:issource:).md
 
 ## Related
 
@@ -10843,27 +10220,6 @@ Text("The quick brown fox")
 
 **Note:** A bundled font also needs its file listed under `UIAppFonts` in Info.plist. Georgia ships with iOS.
 
-### Stack items at large sizes
-
-Check `isAccessibilitySize` on the `dynamicTypeSize` environment value, and switch a row to a column.
-
-```swift
-@Environment(\.dynamicTypeSize) private var typeSize
-
-let layout = typeSize.isAccessibilitySize
-    ? AnyLayout(VStackLayout(alignment: .leading))
-    : AnyLayout(HStackLayout())
-
-layout {
-    Text("Delivery")
-    Spacer(minLength: 0)
-    Text("Friday, 9–11 AM")
-        .foregroundStyle(.secondary)
-}
-```
-
-**Note:** Accessibility sizes can make text more than three times larger. Avoid fixed heights so rows can grow.
-
 ## On macOS
 
 Mac text is smaller than iPhone text: 13 points by default, and 10 at the smallest.
@@ -10915,27 +10271,7 @@ HStack {
 .frame(width: 220)
 ```
 
-#### Keep changing numbers still
-
-Add `.monospacedDigit()` to a clock or a column of numbers, so the digits don't shift as the value changes.
-
-```swift
-TimelineView(.periodic(from: .now, by: 1)) { context in
-    Text(context.date, format: .dateTime.hour().minute().second())
-        .font(.title.monospacedDigit())
-}
-```
-
-#### Monospaced text for code
-
-`Font.monospaced()` switches a text style to SF Mono, for code, file paths, and anything people compare column by column.
-
-```swift
-Text("~/Library/Containers/")
-    .font(.body.monospaced())
-```
-
-More variants, left out to keep this file short: Scale your own numbers, Numbers that don't jump, Loose leading for long passages (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/font.md
+More variants, left out to keep this file short: Stack items at large sizes, Scale your own numbers, Numbers that don't jump, Keep changing numbers still (macOS), Monospaced text for code (macOS), Loose leading for long passages (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/font.md
 
 ## Related
 
@@ -11022,18 +10358,6 @@ Image("photo")
     .clipShape(.rect(cornerRadius: 20))
 ```
 
-### Floating badge
-
-Use `.background(.thinMaterial, in: .capsule)` for counts, tags, and status that sit above content.
-
-```swift
-Label("3 new", systemImage: "bell.fill")
-    .font(.subheadline.weight(.semibold))
-    .padding(.horizontal, 14)
-    .padding(.vertical, 8)
-    .background(.thinMaterial, in: .capsule)
-```
-
 ## On macOS
 
 Liquid Glass for controls that float above content, standard materials within it.
@@ -11080,28 +10404,7 @@ ZStack(alignment: .bottom) {
 .clipped()
 ```
 
-#### Clear glass with a dimming layer
-
-Use `.glassEffect(.clear)` over bright media, with a dark layer behind it so the label stays readable.
-
-```swift
-ZStack {
-    Image("photo")
-        .resizable()
-        .scaledToFill()
-    Color.black.opacity(0.35)
-    Label("Lisbon", systemImage: "mappin")
-        .font(.title3)
-        .foregroundStyle(.white)
-        .padding(.horizontal, 16)
-        .padding(.vertical, 10)
-        .glassEffect(.clear)
-}
-.frame(width: 360, height: 200)
-.clipped()
-```
-
-More variants, left out to keep this file short: Progress overlay, A material in the content (macOS), Respect Reduce Transparency (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/material.md
+More variants, left out to keep this file short: Floating badge, Progress overlay, Clear glass with a dimming layer (macOS), A material in the content (macOS), Respect Reduce Transparency (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/material.md
 
 ## Related
 
@@ -11443,22 +10746,6 @@ VStack(alignment: .leading, spacing: 12) {
 
 **Note:** An `Image` inside `Text` flows and wraps like a word, which suits ratings and inline hints.
 
-### Variants
-
-`.symbolVariant` switches every symbol inside a view to its filled, circled, or slashed version.
-
-```swift
-HStack(spacing: 24) {
-    Image(systemName: "bell")
-    Image(systemName: "bell").symbolVariant(.fill)
-    Image(systemName: "bell").symbolVariant(.circle)
-    Image(systemName: "bell").symbolVariant(.slash)
-}
-.font(.largeTitle)
-```
-
-**Note:** Tab bars apply `.fill` for you, so give a `Tab` the outline name and iOS picks the right one.
-
 ## On macOS
 
 Icons drawn to match the system font, for toolbars, sidebars, and menus.
@@ -11509,7 +10796,7 @@ HStack(spacing: 24) {
 }
 ```
 
-More variants, left out to keep this file short: Add depth with a rendering mode (macOS), Show a level with variable color (macOS), Confirm an action with an animation (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/image/init(systemname:).md
+More variants, left out to keep this file short: Variants, Add depth with a rendering mode (macOS), Show a level with variable color (macOS), Confirm an action with an animation (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/image/init(systemname:).md
 
 ## Related
 
@@ -11765,14 +11052,7 @@ Map(position: $position)
 
 ## Key APIs
 
-- `Map(position:selection:)`: A map with a camera binding and optional selection.
-- `MapCameraPosition`: What the map shows: `.automatic`, `.region`, `.camera`, or `.item`.
-- `Marker(_:systemImage:coordinate:)`: The standard balloon pin.
-- `Annotation(_:coordinate:)`: Any SwiftUI view, pinned to a spot.
-- `MapPolyline(coordinates:)`: A line through coordinates, like a route.
-- `.mapStyle(_:)`: `.standard`, `.imagery` (satellite), or `.hybrid`.
-- `.mapControls { }`: Compass, scale, and location buttons.
-- `UserAnnotation()`: The person's location, once they allow it.
+`Map(position:selection:)`, `MapCameraPosition`, `Marker(_:systemImage:coordinate:)`, `Annotation(_:coordinate:)`, `MapPolyline(coordinates:)`, `.mapStyle(_:)`, `.mapControls { }`, `UserAnnotation()`
 
 ## Variants
 
@@ -12126,13 +11406,6 @@ reviewed: October 2026
 
 A paged welcome flow with Continue and Skip buttons that ends with Get Started.
 
-## Contents
-
-- Rules
-- Pitfalls
-- On macOS
-- Related
-
 ## Rules
 
 - **Keep it short, and always let people skip.** Three or four pages is plenty. People who would rather explore on their own should get into the app in one tap.
@@ -12212,43 +11485,7 @@ ContentUnavailableView {
 }
 ```
 
-#### A tip beside the feature
-
-Define a `Tip`, configure TipKit once at launch, and place a `TipView` next to what it explains.
-
-```swift
-import TipKit
-
-struct PinTip: Tip {
-    var title: Text { Text("Pin important notes") }
-    var message: Text? { Text("Pinned notes stay at the top of the list.") }
-    var image: Image? { Image(systemName: "pin") }
-}
-
-@main
-struct NotesApp: App {
-    init() {
-        try? Tips.configure()
-    }
-
-    var body: some Scene {
-        WindowGroup { NotesView() }
-    }
-}
-
-struct NotesView: View {
-    var body: some View {
-        VStack {
-            TipView(PinTip(), arrowEdge: .bottom)
-            Button("Pin", systemImage: "pin") { }
-        }
-    }
-}
-```
-
-**Note:** The preview draws the tip. This catalog doesn't set up TipKit, so a real `TipView` wouldn't appear here.
-
-More variants, left out to keep this file short: Code. Apple's docs: https://developer.apple.com/documentation/swiftui/pagetabviewstyle.md
+More variants, left out to keep this file short: Code, A tip beside the feature (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/pagetabviewstyle.md
 
 ## Related
 
@@ -12406,22 +11643,6 @@ HStack(spacing: 12) {
             in: .rect(cornerRadius: 12))
 ```
 
-### Add your own color with a dark variant
-
-Add a Color Set to your asset catalog with a light and a dark value, then use it by name.
-
-```swift
-// Brand: a Color Set with a Dark variant
-Text("Pro")
-    .font(.caption.bold())
-    .padding(.horizontal, 10)
-    .padding(.vertical, 4)
-    .foregroundStyle(.white)
-    .background(Color("Brand"), in: .capsule)
-```
-
-**Note:** The color switches on its own: no `if` in your view. Pick a brighter dark value so it still stands out on a dark background.
-
 ## On macOS
 
 Build from colors that adapt, so your app looks right in light, dark, and Auto.
@@ -12461,23 +11682,7 @@ HStack(spacing: 10) {
 .background(.fill.tertiary, in: .rect(cornerRadius: 8))
 ```
 
-#### Your own color, with a dark variant
-
-Add a Color Set to the asset catalog with an Any and a Dark value, then use it by name.
-
-```swift
-// Brand: a Color Set with a Dark Appearance variant
-Text("Pro")
-    .font(.caption.bold())
-    .padding(.horizontal, 10)
-    .padding(.vertical, 4)
-    .foregroundStyle(.white)
-    .background(Color("Brand"), in: .capsule)
-```
-
-**Note:** The color switches on its own: no `if` in your view. Pick a brighter dark value so it still stands out on a dark window.
-
-More variants, left out to keep this file short: Adjust an image for dark mode, Keep a media screen dark, Keep a media window dark (macOS). Apple's docs: https://developer.apple.com/documentation/uikit/supporting-dark-mode-in-your-interface.md
+More variants, left out to keep this file short: Add your own color with a dark variant, Adjust an image for dark mode, Keep a media screen dark, Your own color, with a dark variant (macOS), Keep a media window dark (macOS). Apple's docs: https://developer.apple.com/documentation/uikit/supporting-dark-mode-in-your-interface.md
 
 ## Related
 
@@ -12498,8 +11703,6 @@ reviewed: October 2026
 # Layout & Adaptivity
 
 Build layouts that fit any screen, window size, orientation, and text size.
-
-Also called: responsive, responsive design, media query, breakpoint, @media, container query, size class, horizontalSizeClass, compact, regular.
 
 ## Contents
 
@@ -12535,12 +11738,7 @@ iOS sums up the space in each direction as one of two **size classes**: `compact
 
 ## Key APIs
 
-- `\.horizontalSizeClass`: `.compact` when narrow, `.regular` when wide.
-- `ViewThatFits`: Shows the first child that fits.
-- `AnyLayout`: Switches stack direction without losing state.
-- `GridItem(.adaptive)`: As many columns as fit.
-- `.containerRelativeFrame(_:)`: Sizes a view relative to its container.
-- `.onGeometryChange(for:)`: Reacts to a view's real size.
+`\.horizontalSizeClass`, `ViewThatFits`, `AnyLayout`, `GridItem(.adaptive)`, `.containerRelativeFrame(_:)`, `.onGeometryChange(for:)`
 
 ## Variants
 
@@ -12699,29 +11897,6 @@ VStack(alignment: .leading) {
 }
 ```
 
-### Offer a fade when Reduce Motion is on
-
-Read `accessibilityReduceMotion` and swap movement for a cross-fade.
-
-```swift
-@Environment(\.accessibilityReduceMotion) private var reduceMotion
-@State private var isShowing = false
-
-VStack {
-    Button("Toggle Banner") {
-        withAnimation { isShowing.toggle() }
-    }
-    if isShowing {
-        Text("Back online")
-            .padding()
-            .background(.green.opacity(0.2), in: .capsule)
-            .transition(reduceMotion ? .opacity : .move(edge: .bottom))
-    }
-}
-```
-
-**Note:** Reduce Motion doesn't mean no animation. Fades and color changes are fine; big moves, zooms, and spins are what to drop.
-
 ## On macOS
 
 Animate to explain a change, keep it brief, and tone it down for Reduce Motion.
@@ -12763,28 +11938,7 @@ VStack(alignment: .leading) {
 }
 ```
 
-#### Fade instead of slide for Reduce Motion
-
-Read `accessibilityReduceMotion` and pick an `.opacity` transition when it's on.
-
-```swift
-@Environment(\.accessibilityReduceMotion) private var reduceMotion
-@State private var showsBanner = false
-
-VStack {
-    Button(showsBanner ? "Hide Banner" : "Show Banner") {
-        withAnimation { showsBanner.toggle() }
-    }
-    if showsBanner {
-        Text("Your trip is saved.")
-            .padding(10)
-            .background(.fill.tertiary, in: .rect(cornerRadius: 8))
-            .transition(reduceMotion ? .opacity : .move(edge: .top).combined(with: .opacity))
-    }
-}
-```
-
-More variants, left out to keep this file short: Confirm with a symbol and a haptic, Let numbers roll (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/animation.md
+More variants, left out to keep this file short: Offer a fade when Reduce Motion is on, Confirm with a symbol and a haptic, Fade instead of slide for Reduce Motion (macOS), Let numbers roll (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/animation.md
 
 ## Related
 
@@ -12947,22 +12101,6 @@ Button("Delete Photos", role: .destructive) {
 
 **Note:** Skip alerts for things people can undo, like deleting one email. Save them for actions that can't be reversed.
 
-### An error next to the field
-
-Show the format in the `prompt`, and put any error right under the field with what to do next.
-
-```swift
-@State private var email = "maya@"
-
-VStack(alignment: .leading, spacing: 6) {
-    TextField("Email", text: $email, prompt: Text("name@example.com"))
-        .textFieldStyle(.roundedBorder)
-    Label("Enter the full address, like name@example.com.", systemImage: "exclamationmark.circle")
-        .font(.footnote)
-        .foregroundStyle(.red)
-}
-```
-
 ## On macOS
 
 Menu and button names people recognize: verbs, title case, and an ellipsis when more is needed.
@@ -13004,19 +12142,7 @@ Give each command a verb in title case, and end it with … when it opens a pane
 
 **Note:** Menu bar menus belong to the app, not a page, so the preview draws this one. See Commands (`commands`) for adding them.
 
-#### A label that follows the state
-
-Switch the title with the state, so the item always says what clicking it will do.
-
-```swift
-@State private var showsMap = true
-
-Button(showsMap ? "Hide Map" : "Show Map") {
-    showsMap.toggle()
-}
-```
-
-More variants, left out to keep this file short: An empty state with a way forward, A setting that explains itself, An error next to the field (macOS), A button that opens more (macOS).
+More variants, left out to keep this file short: An error next to the field, An empty state with a way forward, A setting that explains itself, A label that follows the state (macOS), An error next to the field (macOS), A button that opens more (macOS).
 
 ## Related
 
@@ -13131,16 +12257,6 @@ reviewed: October 2026
 
 Labels, traits, and grouping that tell the screen reader what each view is.
 
-## Contents
-
-- Rules
-- Pitfalls
-- Guide
-- Key APIs
-- Variants
-- On macOS
-- Related
-
 ## Rules
 
 - **Label every icon-only button.** Without a label, VoiceOver has nothing useful to say, and people can't tell what the button does.
@@ -13193,25 +12309,6 @@ Button {
 
 **Note:** For a plain `Image` label, add `.accessibilityLabel("Share")` to the button instead.
 
-### Read a row as one stop
-
-`.accessibilityElement(children: .combine)` merges the texts inside, so people hear the whole row in one swipe.
-
-```swift
-HStack {
-    Image(systemName: "fork.knife")
-        .accessibilityHidden(true)
-    VStack(alignment: .leading) {
-        Text("Lemon Pasta")
-        Text("25 min")
-            .foregroundStyle(.secondary)
-    }
-}
-.accessibilityElement(children: .combine)
-```
-
-**Important:** Don't combine a row that holds several buttons. Each one needs its own stop, or a named action.
-
 ## On macOS
 
 Labels, grouping, and rotors that let the screen reader describe your windows.
@@ -13233,24 +12330,7 @@ Labels, grouping, and rotors that let the screen reader describe your windows.
 
 `.accessibilityAddTraits(.isHeader)`, `.accessibilityRotor(_:entries:entryLabel:)`
 
-### Variants
-
-#### Label an icon-only button
-
-Use a `Label` with `.labelStyle(.iconOnly)`: the icon shows, and the title becomes what VoiceOver reads.
-
-```swift
-Button {
-    // Share the note
-} label: {
-    Label("Share", systemImage: "square.and.arrow.up")
-        .labelStyle(.iconOnly)
-}
-```
-
-**Note:** With a plain `Image` as the label, add `.accessibilityLabel("Share")` to the button instead.
-
-More variants, left out to keep this file short: Describe a custom control, Name your gestures, Mark section headings, Read a row as one element (macOS), Offer hover-only buttons as actions (macOS), Add a rotor for what people look for (macOS), Announce a change (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/view-accessibility.md
+More variants, left out to keep this file short: Read a row as one stop, Describe a custom control, Name your gestures, Mark section headings, Label an icon-only button (macOS), Read a row as one element (macOS), Offer hover-only buttons as actions (macOS), Add a rotor for what people look for (macOS), Announce a change (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/view-accessibility.md
 
 ## Related
 
@@ -13323,13 +12403,7 @@ Text("Are we still on for lunch tomorrow?")
 
 ## Key APIs
 
-- `.font(.body)`: A text style. All of them scale.
-- `@ScaledMetric`: Scales your own numbers, like an icon size.
-- `\.dynamicTypeSize`: The current size, to adapt a layout.
-- `.isAccessibilitySize`: True for the five largest sizes.
-- `ViewThatFits`: Picks the first layout that fits.
-- `.dynamicTypeSize(_:)`: Sets or limits the size for a view.
-- `.accessibilityShowsLargeContentViewer()`: A big popup for items that must stay small.
+`.font(.body)`, `@ScaledMetric`, `\.dynamicTypeSize`, `.isAccessibilitySize`, `ViewThatFits`, `.dynamicTypeSize(_:)`, `.accessibilityShowsLargeContentViewer()`
 
 ## Variants
 
@@ -13437,16 +12511,6 @@ reviewed: October 2026
 
 Swap big movement for fades when people ask for less motion.
 
-## Contents
-
-- Rules
-- Pitfalls
-- Guide
-- Key APIs
-- Variants
-- On macOS
-- Related
-
 ## Rules
 
 - **Replace motion with a fade, don't just delete it.** If an animation shows where something went, like an item landing in a cart, keep that meaning with a dissolve, highlight, or color change.
@@ -13485,31 +12549,6 @@ When the setting is on, check every custom animation:
 ## Key APIs
 
 `\.accessibilityReduceMotion`, `.transition(.opacity)`, `withAnimation(_:_:)`, `.animation(_:value:)`, `\.accessibilityPlayAnimatedImages`
-
-## Variants
-
-### Swap a slide for a fade
-
-Read `accessibilityReduceMotion` from the environment and pick the transition with it.
-
-```swift
-@Environment(\.accessibilityReduceMotion) private var reduceMotion
-@State private var showsBanner = false
-
-VStack {
-    if showsBanner {
-        Text("Saved to Favorites")
-            .padding()
-            .background(.green.opacity(0.2), in: .capsule)
-            .transition(reduceMotion ? .opacity : .move(edge: .top))
-    }
-    Button("Save") {
-        withAnimation { showsBanner.toggle() }
-    }
-}
-```
-
-**Note:** On this device, Reduce Motion is off, so the preview shows the slide.
 
 ## On macOS
 
@@ -13553,25 +12592,7 @@ VStack {
 
 **Note:** Reduce Motion is off on this Mac, so the preview slides.
 
-#### Calm a spring
-
-Pass a smooth curve to `withAnimation` instead of a bouncy spring, so things settle without overshooting.
-
-```swift
-@Environment(\.accessibilityReduceMotion) private var reduceMotion
-@State private var isExpanded = false
-
-RoundedRectangle(cornerRadius: 12)
-    .fill(.blue.gradient)
-    .frame(width: isExpanded ? 220 : 110, height: 60)
-    .onTapGesture {
-        withAnimation(reduceMotion ? .easeInOut : .bouncy(extraBounce: 0.3)) {
-            isExpanded.toggle()
-        }
-    }
-```
-
-More variants, left out to keep this file short: Calm a spring, Stop autoplay, Stop autoplay (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/environmentvalues/accessibilityreducemotion.md
+More variants, left out to keep this file short: Swap a slide for a fade, Calm a spring, Stop autoplay, Calm a spring (macOS), Stop autoplay (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/environmentvalues/accessibilityreducemotion.md
 
 ## Related
 
@@ -13941,13 +12962,7 @@ struct OrdersView: View {
 
 ## Key APIs
 
-- `.task { }`: Runs async work as the view appears.
-- `.task(id:) { }`: Cancels and restarts the work when `id` changes.
-- `.redacted(reason: .placeholder)`: Draws views as gray placeholders.
-- `ProgressView(value:total:)`: A bar that fills as work completes.
-- `ProgressView()`: A spinner, for work of unknown length.
-- `ContentUnavailableView`: Empty and error states with an action.
-- `.refreshable { }`: Adds pull to refresh to a `List`.
+`.task { }`, `.task(id:) { }`, `.redacted(reason: .placeholder)`, `ProgressView(value:total:)`, `ProgressView()`, `ContentUnavailableView`, `.refreshable { }`
 
 ## Variants
 
@@ -14010,8 +13025,6 @@ reviewed: October 2026
 
 Tell people what happened, with an interruption that matches how much it matters.
 
-Also called: toast, snackbar, banner, flash message, error message, success message, validation message, status message, notification, inline error.
-
 ## Contents
 
 - Rules
@@ -14041,11 +13054,7 @@ Feedback tells people the status of something, whether an action worked, or that
 
 ## Key APIs
 
-- `.sensoryFeedback(_:trigger:)`: Plays a haptic when a value changes.
-- `.alert(_:isPresented:)`: Interrupts for critical, actionable news.
-- `.safeAreaInset(edge:)`: Pins a banner above or below content.
-- `ToolbarItem(placement: .status)`: Quiet status text in the toolbar.
-- `ContentUnavailableView`: A whole screen that couldn't load.
+`.sensoryFeedback(_:trigger:)`, `.alert(_:isPresented:)`, `.safeAreaInset(edge:)`, `ToolbarItem(placement: .status)`, `ContentUnavailableView`
 
 ## Variants
 
@@ -14137,24 +13146,7 @@ Button("Save Draft") { saveFailed = true }
 
 **Note:** Button titles say what happens, like Try Again or Delete. Use “OK” only in alerts that just inform. See Alert (`alert`).
 
-### Status in the toolbar
-
-Put ongoing status, like the last sync time, in a `ToolbarItem(placement: .status)` where people can check it.
-
-```swift
-List(["Inbox", "Sent", "Archive"], id: \.self) { box in
-    Text(box)
-}
-.navigationTitle("Mail")
-.toolbar {
-    ToolbarItem(placement: .status) {
-        VStack {
-            Text("Updated Just Now").font(.caption)
-            Text("3 Unread").font(.caption2).foregroundStyle(.secondary)
-        }
-    }
-}
-```
+More variants, left out to keep this file short: Status in the toolbar. Apple's docs: https://developer.apple.com/documentation/swiftui/view/sensoryfeedback(_:trigger:).md
 
 ## Related
 
@@ -14206,13 +13198,7 @@ Typing on a phone is slow and easy to get wrong. Ask only for what you can't get
 
 ## Key APIs
 
-- `.keyboardType(.emailAddress)`: Picks the keys: email, numbers, phone.
-- `.textContentType(_:)`: Says what the field is, for AutoFill.
-- `.textInputAutocapitalization`: `.never` turns off the automatic shift key.
-- `.autocorrectionDisabled()`: Stops autocorrect on names and codes.
-- `.submitLabel(.next)`: Changes the Return key's title.
-- `.onSubmit { }`: Runs when people tap Return.
-- `TextField(_:value:format:)`: Edits a number, date, or currency.
+`.keyboardType(.emailAddress)`, `.textContentType(_:)`, `.textInputAutocapitalization`, `.autocorrectionDisabled()`, `.submitLabel(.next)`, `.onSubmit { }`, `TextField(_:value:format:)`
 
 ## Variants
 
@@ -14439,50 +13425,7 @@ struct NoteSheet: View {
 }
 ```
 
-### Full-screen cover
-
-Use `.fullScreenCover` for immersive content. It can't be swiped away, so add a clear close button.
-
-```swift
-@State private var isViewing = false
-
-Button("View Photo") { isViewing = true }
-    .fullScreenCover(isPresented: $isViewing) {
-        NavigationStack {
-            Image(systemName: "photo")
-                .font(.system(size: 120))
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .toolbar {
-                    Button("Close", systemImage: "xmark", role: .close) {
-                        isViewing = false
-                    }
-                }
-        }
-    }
-```
-
-### Popover that adapts
-
-A `.popover` points at its button on iPad and turns into a sheet on iPhone, so one modifier fits both.
-
-```swift
-@State private var showsFilters = false
-
-Button("Filters", systemImage: "line.3.horizontal.decrease") {
-    showsFilters = true
-}
-.popover(isPresented: $showsFilters) {
-    VStack(alignment: .leading) {
-        Toggle("Unread Only", isOn: .constant(true))
-        Toggle("With Attachments", isOn: .constant(false))
-    }
-    .padding()
-    .frame(minWidth: 260)
-    .presentationDetents([.medium])
-}
-```
-
-**Note:** Adding `.presentationCompactAdaptation` with `.popover` keeps a real popover on iPhone, but small screens are usually better served by the sheet.
+More variants, left out to keep this file short: Full-screen cover, Popover that adapts. Apple's docs: https://developer.apple.com/documentation/swiftui/view/fullscreencover(ispresented:ondismiss:content:).md
 
 ## Related
 
@@ -14503,15 +13446,6 @@ reviewed: October 2026
 # Undo and Redo
 
 Let people take back what they did, instead of asking “Are you sure?” first.
-
-## Contents
-
-- Rules
-- Pitfalls
-- Guide
-- Key APIs
-- On macOS
-- Related
 
 ## Rules
 
@@ -14582,27 +13516,7 @@ struct GroceryList: View {
 
 `@Environment(\.undoManager)`, `registerUndo(withTarget:handler:)`, `setActionName(_:)`, `undo()` and `redo()`, `canUndo` and `canRedo`, `beginUndoGrouping()`, `removeAllActions(withTarget:)`
 
-## On macOS
-
-Let people take back any change with ⌘Z, and tell them what they're undoing.
-
-### Rules
-
-- **Keep Undo and Redo at the top of the Edit menu.** Mac users look for them there, and press ⌘Z and ⇧⌘Z without looking.
-- **Don't limit undo without reason.** People expect to undo everything since they opened or saved the document.
-- **Undo a burst of small changes as one.** Dragging a slider makes many tiny changes. Record one undo for the whole drag, so one ⌘Z puts it back.
-- **Add undo buttons only when you must.** The Edit menu and ⌘Z are where people go. If your app needs buttons too, put them in the toolbar with the standard symbols.
-
-### Pitfalls
-
-- **The window brings the undo manager.** Read `\.undoManager` from the environment. It's `nil` where undo isn't supported, so skip registering then.
-- **Undo registers redo for you.** When an undo runs code that registers its own undo, that becomes the redo. Write each change as a method that registers its opposite.
-
-### Key APIs
-
-`undoMenuItemTitle`, `canUndo` / `canRedo`
-
-More variants, left out to keep this file short: One undo for a whole drag (macOS), Undo and redo buttons, when you need them (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/environmentvalues/undomanager.md
+The On macOS section was left out to keep this file short. Apple's docs: https://developer.apple.com/documentation/swiftui/environmentvalues/undomanager.md
 
 ## Related
 
@@ -14623,17 +13537,6 @@ reviewed: October 2026
 # Requesting Permission
 
 Ask for access when a feature needs it, say why, and handle “no” gracefully.
-
-Also called: permission prompt, permissions, authorization, purpose string, usage description, Info.plist, NSCameraUsageDescription, camera permission, location permission, pre-permission.
-
-## Contents
-
-- Rules
-- Pitfalls
-- Guide
-- Key APIs
-- Variants
-- Related
 
 ## Rules
 
@@ -14711,43 +13614,7 @@ Add the usage description key for each resource to Info.plist. The system shows 
 
 **Note:** In Xcode you can also add it in the target's Info tab, or as the `INFOPLIST_KEY_NSCameraUsageDescription` build setting. Localize it like any other text.
 
-### An explanation screen, if you need one
-
-When the context doesn't explain itself, show one screen with a single Continue button that opens the prompt.
-
-```swift
-VStack(spacing: 16) {
-    Image(systemName: "doc.viewfinder")
-        .font(.system(size: 56))
-        .foregroundStyle(.tint)
-    Text("Scan Receipts")
-        .font(.title2.bold())
-    Text("Point your camera at a receipt and Expenses fills in the amount and date for you.")
-        .multilineTextAlignment(.center)
-        .foregroundStyle(.secondary)
-    Button("Continue") {
-        Task { await AVCaptureDevice.requestAccess(for: .video) }
-    }
-    .buttonStyle(.borderedProminent)
-}
-.padding()
-```
-
-**Important:** Don't add Not Now, Close, or Cancel, and don't title the button Allow. As of 2026, the HIG says either one can feel manipulative, and App Review rejects misleading pre-prompt screens for tracking.
-
-### Send people to Settings
-
-When access is off, explain what it's for and open your app's Settings page with `openSettingsURLString`.
-
-```swift
-@Environment(\.openURL) private var openURL
-
-Button("Open Settings") {
-    if let url = URL(string: UIApplication.openSettingsURLString) {
-        openURL(url)
-    }
-}
-```
+More variants, left out to keep this file short: An explanation screen, if you need one, Send people to Settings. Apple's docs: https://developer.apple.com/documentation/uikit/requesting-access-to-protected-resources.md
 
 ## Related
 
@@ -15532,15 +14399,6 @@ reviewed: October 2026
 
 If people can create an account in your app, they must be able to delete it there too.
 
-Also called: Guideline 5.1.1(v), 5.1.1(v), account deletion, delete my account, remove account, close account, deactivate account, right to be forgotten, GDPR, CCPA.
-
-## Contents
-
-- Rules
-- Guide
-- Variants
-- Related
-
 ## Rules
 
 - **Put it where people look: account settings.** Apple asks for a deletion option that's easy to find, typically in your account settings. Don't bury it in the privacy policy or terms.
@@ -15610,49 +14468,7 @@ Form {
 .navigationTitle("Account")
 ```
 
-### The deletion screen
-
-Say what gets deleted, handle subscriptions, then confirm once with `.confirmationDialog`.
-
-```swift
-import StoreKit
-
-struct DeleteAccountView: View {
-    @State private var isConfirming = false
-    @State private var showsSubscriptions = false
-
-    var body: some View {
-        Form {
-            Section {
-                Text("This permanently deletes your account, recipes, and comments.")
-            }
-            Section {
-                Button("Manage Subscription") {
-                    showsSubscriptions = true
-                }
-            } footer: {
-                Text("Billing for Pro continues through Apple until you cancel it.")
-            }
-            Section {
-                Button("Delete Account", role: .destructive) {
-                    isConfirming = true
-                }
-                .confirmationDialog("Delete your account?", isPresented: $isConfirming, titleVisibility: .visible) {
-                    Button("Delete Account", role: .destructive) {
-                        Task { await deleteAccount() }
-                    }
-                } message: {
-                    Text("This can't be undone.")
-                }
-            }
-        }
-        .navigationTitle("Delete Account")
-        .manageSubscriptionsSheet(isPresented: $showsSubscriptions)
-    }
-}
-```
-
-**Important:** Deleting the account doesn't cancel an App Store subscription. Apple asks you to tell people that billing continues through Apple and to have them cancel first; `manageSubscriptionsSheet` opens the system screen for that.
+More variants, left out to keep this file short: The deletion screen.
 
 ## Related
 
@@ -15769,48 +14585,7 @@ ProductView(id: "com.example.recipes.lifetime") {
 .productViewStyle(.compact)
 ```
 
-### A small store
-
-`StoreView(ids:)` lists several products, such as tips or packs, and adds columns when there's room.
-
-```swift
-StoreView(ids: [
-    "com.example.recipes.tip.small",
-    "com.example.recipes.tip.large",
-])
-.storeButton(.visible, for: .restorePurchases)
-```
-
-### Your own Restore button
-
-In a custom paywall, call `AppStore.sync()` from a Restore Purchases button.
-
-```swift
-Button("Restore Purchases") {
-    Task {
-        try? await AppStore.sync()
-    }
-}
-```
-
-**Important:** Call `sync()` only when someone taps the button: it asks them to sign in to the App Store. StoreKit already keeps purchases up to date on its own, including after a reinstall.
-
-### Unlock Pro when subscribed
-
-`.subscriptionStatusTask(for:)` runs whenever the subscription status changes, so the app unlocks or locks right away.
-
-```swift
-@State private var isPro = false
-
-Text(isPro ? "Pro" : "Free")
-    .subscriptionStatusTask(for: "21482041") { taskState in
-        if let statuses = taskState.value {
-            isPro = statuses.contains { $0.state == .subscribed }
-        }
-    }
-```
-
-**Note:** For a one-time purchase, use `.currentEntitlementTask(for:)` with the product ID instead.
+More variants, left out to keep this file short: A small store, Your own Restore button, Unlock Pro when subscribed. Apple's docs: https://developer.apple.com/documentation/storekit/subscriptionstoreview.md
 
 ## Related
 
@@ -16035,17 +14810,6 @@ reviewed: October 2026
 
 Tell Apple what data your app collects, and why it uses certain APIs.
 
-Also called: privacy nutrition label, privacy label, app privacy, data collection, privacy manifest, PrivacyInfo.xcprivacy, xcprivacy, required reason API, NSPrivacyAccessedAPITypes, UserDefaults.
-
-## Contents
-
-- Rules
-- Pitfalls
-- Guide
-- Key APIs
-- Variants
-- Related
-
 ## Rules
 
 - **Make the privacy policy easy to find.** Guideline 5.1.1(i) wants a link in App Store Connect and inside the app. A row in Settings is the usual place.
@@ -16121,32 +14885,11 @@ Each SDK reports its own data use and required reason APIs in its own manifest; 
 
 **Note:** Apple keeps a list of commonly used SDKs, such as Firebase modules, Alamofire, and SDWebImage. A new app, or an update that adds one, must include that SDK's manifest, and a signature if you add it as a binary.
 
-### Before you submit
-
-- **Privacy policy URL in App Store Connect**: It's required for every app.
-- **Privacy policy link in the app**: Somewhere easy to find, like Settings. (`settings-screen`)
-- **App Privacy answers published**: Include data your SDKs collect.
-- **Privacy manifest in your target**: `PrivacyInfo.xcprivacy`, with a reason for each required reason API.
-- **SDK manifests included**: Update SDKs on Apple's list to versions that ship one.
-- **A clear purpose string for each permission**: Say what you use the data for. (`requesting-permission`)
-
 ## Key APIs
 
 `PrivacyInfo.xcprivacy`, `NSPrivacyAccessedAPITypes`, `NSPrivacyCollectedDataTypes`, `NSPrivacyTracking`, `Link`
 
-## Variants
-
-### Privacy policy row
-
-Use `Link` in your settings screen; it opens the policy in Safari.
-
-```swift
-Form {
-    Section("About") {
-        Link("Privacy Policy", destination: URL(string: "https://example.com/privacy")!)
-    }
-}
-```
+More variants, left out to keep this file short: Privacy policy row. Guide sections left out to keep this file short: Before you submit. Apple's docs: https://developer.apple.com/documentation/bundleresources/privacy-manifest-files.md
 
 ## Related
 
@@ -17689,8 +16432,6 @@ hig: https://developer.apple.com/design/human-interface-guidelines/lists-and-tab
 
 Sidebar, inset, and bordered lists, with rows people click to select, one or many.
 
-Also called: List, listStyle, sidebar, inset, bordered, plain, NSTableView, source list, alternatingRowBackgrounds, zebra stripes.
-
 ## Contents
 
 - Use when
@@ -17739,13 +16480,7 @@ List(fruits, id: \.self, selection: $selection) { fruit in
 
 ## Key APIs
 
-- `List(_:selection:rowContent:)`: Rows from data, optionally selectable.
-- `.listStyle(.sidebar)`: A source list with collapsible sections.
-- `.listStyle(.inset)`: Content rows with inset selection.
-- `.listStyle(.bordered)`: A boxed list for forms and panes.
-- `.alternatingRowBackgrounds()`: Stripes every other row.
-- `.onDeleteCommand(perform:)`: Runs on the Delete key or Delete command.
-- `.contextMenu(forSelectionType:)`: A menu and double-click for selected rows.
+`List(_:selection:rowContent:)`, `.listStyle(.sidebar)`, `.listStyle(.inset)`, `.listStyle(.bordered)`, `.alternatingRowBackgrounds()`, `.onDeleteCommand(perform:)`, `.contextMenu(forSelectionType:)`
 
 ## Variants
 
@@ -17813,31 +16548,7 @@ struct BlockedSenders: View {
 }
 ```
 
-### Select several, and double-click to open
-
-Bind `selection:` to a `Set` for multiple selection, and `.contextMenu(forSelectionType:)` adds a menu plus a `primaryAction` for double-click.
-
-```swift
-@State private var notes = ["Groceries", "Packing list", "Book ideas"]
-@State private var selection: Set<String> = []
-@Environment(\.openWindow) private var openWindow
-
-List(notes, id: \.self, selection: $selection) { note in
-    Text(note)
-}
-.contextMenu(forSelectionType: String.self) { items in
-    Button("Open") { }
-    Button("Delete", role: .destructive) {
-        notes.removeAll { items.contains($0) }
-    }
-} primaryAction: { items in
-    for item in items {
-        openWindow(value: item)
-    }
-}
-```
-
-**Note:** On the Mac, a single click selects a row and a double click runs the primary action. Opening a window this way needs a `WindowGroup(for: String.self)` scene in your app.
+More variants, left out to keep this file short: Select several, and double-click to open. Apple's docs: https://developer.apple.com/documentation/swiftui/liststyle.md
 
 ## Related
 
@@ -17929,14 +16640,7 @@ Table(files, selection:, sortOrder:)
 
 ## Key APIs
 
-- `Table(_:selection:sortOrder:)`: Rows from data, selectable and sortable.
-- `TableColumn(_:value:)`: A column that shows and sorts by a key path.
-- `KeyPathComparator(_:)`: Describes one sort: a key path and order.
-- `.width(min:ideal:max:)`: Limits how wide a column can get.
-- `.contextMenu(forSelectionType:)`: A menu and double-click for selected rows.
-- `.customizationID(_:)`: Lets people hide and reorder a column.
-- `.tableStyle(_:)`: `.inset` or `.bordered`.
-- `.alternatingRowBackgrounds()`: Stripes every other row.
+`Table(_:selection:sortOrder:)`, `TableColumn(_:value:)`, `KeyPathComparator(_:)`, `.width(min:ideal:max:)`, `.contextMenu(forSelectionType:)`, `.customizationID(_:)`, `.tableStyle(_:)`, `.alternatingRowBackgrounds()`
 
 ## Variants
 
@@ -18026,8 +16730,6 @@ hig: https://developer.apple.com/design/human-interface-guidelines/outline-views
 
 Folders inside folders: rows with disclosure triangles that open to show their children.
 
-Also called: OutlineGroup, outline view, NSOutlineView, tree, tree view, hierarchy, nested list, children, List children, disclosure triangle.
-
 ## Contents
 
 - Use when
@@ -18067,11 +16769,7 @@ List(files, children: \.children)
 
 ## Key APIs
 
-- `List(_:children:rowContent:)`: A whole list built from a tree.
-- `OutlineGroup(_:children:)`: A tree inside a list or section.
-- `Table(_:children:columns:)`: An outline with columns, like Finder.
-- `DisclosureGroup(isExpanded:)`: One branch whose state you control.
-- `DisclosureTableRow`: A table row that opens to more rows.
+`List(_:children:rowContent:)`, `OutlineGroup(_:children:)`, `Table(_:children:columns:)`, `DisclosureGroup(isExpanded:)`, `DisclosureTableRow`
 
 ## Variants
 
@@ -18153,40 +16851,7 @@ Table(FileNode.samples, children: \.children, selection: $selection) {
 .frame(width: 420, height: 220)
 ```
 
-### Expansion you keep track of
-
-Build the tree from `DisclosureGroup(isExpanded:)` rows and keep the open ids in a `Set` you can save, to reopen the outline as people left it.
-
-```swift
-struct FileTree: View {
-    let nodes: [FileNode]
-    @Binding var expanded: Set<FileNode.ID>
-
-    var body: some View {
-        ForEach(nodes) { node in
-            if let children = node.children {
-                DisclosureGroup(isExpanded: Binding {
-                    expanded.contains(node.id)
-                } set: { isOpen in
-                    if isOpen { expanded.insert(node.id) } else { expanded.remove(node.id) }
-                }) {
-                    FileTree(nodes: children, expanded: $expanded)
-                } label: {
-                    Label(node.name, systemImage: node.symbol)
-                }
-            } else {
-                Label(node.name, systemImage: node.symbol)
-            }
-        }
-    }
-}
-
-@State private var expanded: Set<FileNode.ID> = ["Documents"]
-
-List {
-    FileTree(nodes: FileNode.samples, expanded: $expanded)
-}
-```
+More variants, left out to keep this file short: Expansion you keep track of. Apple's docs: https://developer.apple.com/documentation/swiftui/outlinegroup.md
 
 ## Related
 
@@ -18206,8 +16871,6 @@ hig: https://developer.apple.com/design/human-interface-guidelines/panels.md
 # Inspector
 
 A trailing column that shows and edits the details of whatever is selected.
-
-Also called: inspectorColumnWidth, InspectorCommands, info panel, properties panel, attributes inspector, right sidebar, trailing sidebar, details pane, NSSplitViewItem, Show Inspector.
 
 ## Contents
 
@@ -18248,11 +16911,7 @@ NavigationStack
 
 ## Key APIs
 
-- `.inspector(isPresented:content:)`: Adds a trailing inspector column.
-- `.inspectorColumnWidth(min:ideal:max:)`: A width people can drag within.
-- `.inspectorColumnWidth(_:)`: A fixed width.
-- `InspectorCommands()`: A menu command with ⌃⌘I.
-- `.interactiveDismissDisabled()`: Keeps people from dragging it shut.
+`.inspector(isPresented:content:)`, `.inspectorColumnWidth(min:ideal:max:)`, `.inspectorColumnWidth(_:)`, `InspectorCommands()`, `.interactiveDismissDisabled()`
 
 ## Variants
 
@@ -19193,14 +17852,7 @@ Also called: windowStyle, hiddenTitleBar, title bar, titlebar, transparent title
 
 ## Key APIs
 
-- `.defaultSize(width:height:)`: The size a new window opens at.
-- `.windowResizability(.contentSize)`: Sizes the window from its content's frame.
-- `.defaultPosition(.topTrailing)`: Where the first window appears on screen.
-- `.windowStyle(.hiddenTitleBar)`: Hides the title and the title bar's backing.
-- `.windowToolbarStyle(.unified)`: How the toolbar and title bar combine.
-- `.containerBackground(_:for:)`: With `.window`, the window's background.
-- `WindowDragGesture()`: Lets people drag the window by a view.
-- `.windowResizeBehavior(.disabled)`: Turns off resizing from inside the window.
+`.defaultSize(width:height:)`, `.windowResizability(.contentSize)`, `.defaultPosition(.topTrailing)`, `.windowStyle(.hiddenTitleBar)`, `.windowToolbarStyle(.unified)`, `.containerBackground(_:for:)`, `WindowDragGesture()`, `.windowResizeBehavior(.disabled)`
 
 ## Variants
 
@@ -19489,8 +18141,6 @@ hig: https://developer.apple.com/design/human-interface-guidelines/search-fields
 
 A search field in the toolbar or sidebar, with suggestions and tokens.
 
-Also called: searchable, search field, search bar, NSSearchField, filter, find, Command-F, ⌘F, searchSuggestions, searchCompletion.
-
 ## Contents
 
 - Use when
@@ -19615,47 +18265,7 @@ NavigationStack {
 }
 ```
 
-### Focus the field with a shortcut
-
-`.searchFocused` binds the field's focus to a `@FocusState`. Publish an action that sets it, and call it from a Find command.
-
-```swift
-struct FindAction {
-    let perform: @MainActor () -> Void
-}
-
-extension FocusedValues {
-    @Entry var findAction: FindAction?
-}
-
-struct FindCommands: Commands {
-    @FocusedValue(\.findAction) private var findAction
-
-    var body: some Commands {
-        CommandGroup(after: .textEditing) {
-            Button("Find…") { findAction?.perform() }
-                .keyboardShortcut("f")
-                .disabled(findAction == nil)
-        }
-    }
-}
-
-struct LibraryView: View {
-    @State private var query = ""
-    @FocusState private var isSearchFocused: Bool
-
-    var body: some View {
-        NavigationStack {
-            List { Text("Results") }
-                .searchable(text: $query)
-                .searchFocused($isSearchFocused)
-        }
-        .focusedSceneValue(\.findAction, FindAction { isSearchFocused = true })
-    }
-}
-```
-
-**Note:** The Mac's standard shortcuts list ⌘F for Find and ⌥⌘F for jumping to the search field. The Library window uses ⌥⌘F, because this app's own Go > Search already takes ⌘F.
+More variants, left out to keep this file short: Focus the field with a shortcut. Apple's docs: https://developer.apple.com/documentation/swiftui/adding-a-search-interface-to-your-app.md
 
 ## Related
 
@@ -19722,14 +18332,7 @@ WindowGroup
 
 ## Key APIs
 
-- `.commands { }`: Adds menus and items to a scene.
-- `CommandMenu(_:)`: A new menu, after View.
-- `CommandGroup(after:)`: Adds items to a standard menu.
-- `CommandGroup(replacing:)`: Swaps out a standard group of items.
-- `@FocusedValue`: Reads a value from the focused window or view.
-- `.focusedSceneValue(_:_:)`: Publishes a value for the whole window.
-- `.focusedValue(_:_:)`: Publishes a value while a view has focus.
-- `SidebarCommands()`: Adds Show or Hide Sidebar to the View menu.
+`.commands { }`, `CommandMenu(_:)`, `CommandGroup(after:)`, `CommandGroup(replacing:)`, `@FocusedValue`, `.focusedSceneValue(_:_:)`, `.focusedValue(_:_:)`, `SidebarCommands()`
 
 ## Variants
 
@@ -20160,18 +18763,6 @@ hig: https://developer.apple.com/design/human-interface-guidelines/drag-and-drop
 
 Let people drag content within a window, between windows, and to other apps.
 
-Also called: drag, drop, draggable, dropDestination, onDrag, onDrop, Transferable, NSDraggingSource, NSDraggingDestination, dataTransfer.
-
-## Contents
-
-- Use when
-- Rules
-- Pitfalls
-- Guide
-- Key APIs
-- Variants
-- Related
-
 ## Use when
 
 - `.draggable` turns a view into something people can drag, and `.dropDestination` makes a view accept drops.
@@ -20252,51 +18843,7 @@ Text(basket.isEmpty ? "Drop here" : basket.joined(separator: ", "))
 
 **Note:** Text from other apps works too: select a word in Notes or TextEdit and drag it into the box. Or open a second window above and drag between the two.
 
-### Drag your own type
-
-Make your type `Transferable`, so a card moves between columns as itself and lands in other apps as its title.
-
-```swift
-struct TodoCard: Identifiable, Codable, Transferable {
-    var id = UUID()
-    var title: String
-
-    static var transferRepresentation: some TransferRepresentation {
-        CodableRepresentation(contentType: .json)
-        ProxyRepresentation(exporting: \.title)
-    }
-}
-
-@State private var todo = [TodoCard(title: "Water the ferns")]
-@State private var done: [TodoCard] = []
-
-HStack {
-    CardColumn("To Do", cards: todo)
-        .dropDestination(for: TodoCard.self) { cards, _ in
-            move(cards, to: \.todo)
-        }
-    CardColumn("Done", cards: done)
-        .dropDestination(for: TodoCard.self) { cards, _ in
-            move(cards, to: \.done)
-        }
-}
-```
-
-**Important:** A type only your app understands should use its own content type, declared with `UTType(exportedAs:)` and listed in your Info.plist. This example uses `.json` so it runs without that setup.
-
-### Accept files from the Finder
-
-Ask for `URL` to accept files and folders dragged from the Finder or another app.
-
-```swift
-@State private var files: [URL] = []
-
-Label("Drop files here", systemImage: "tray.and.arrow.down")
-    .frame(width: 300, height: 120)
-    .dropDestination(for: URL.self) { urls, _ in
-        files.append(contentsOf: urls)
-    }
-```
+More variants, left out to keep this file short: Drag your own type, Accept files from the Finder. Apple's docs: https://developer.apple.com/documentation/swiftui/drag-and-drop.md
 
 ## Related
 
@@ -20370,12 +18917,7 @@ List(plants, id: \.self, selection: $selection) { plant in
 
 ## Key APIs
 
-- `.copyable(_:)`: The items Edit > Copy puts on the Clipboard.
-- `.cuttable(for:action:)`: Removes items and returns them for Cut.
-- `.pasteDestination(for:action:)`: Accepts items from Edit > Paste.
-- `.onDeleteCommand(perform:)`: Edit > Delete and the Delete key.
-- `PasteButton(payloadType:)`: A Paste button for the Clipboard.
-- `.textSelection(.enabled)`: Lets people select and copy a `Text`.
+`.copyable(_:)`, `.cuttable(for:action:)`, `.pasteDestination(for:action:)`, `.onDeleteCommand(perform:)`, `PasteButton(payloadType:)`, `.textSelection(.enabled)`
 
 ## Variants
 
@@ -20711,8 +19253,6 @@ docs: https://developer.apple.com/documentation/swiftui/state.md
 
 @State keeps a value a view owns, and @Binding lets another view change it.
 
-Also called: @State, @Binding, state, binding, useState, props, two-way binding, v-model, source of truth, $.
-
 ## Contents
 
 - Pitfalls
@@ -20744,12 +19284,7 @@ The window owns `isPlaying`. The play button in its toolbar only has a binding, 
 
 ## Key APIs
 
-- `@State private var`: A value this view owns and SwiftUI stores.
-- `@Binding var`: Reads and writes a value another view owns.
-- `$value`: The binding to a `@State` value, to pass along.
-- `$draft.title`: A binding to one property of a struct.
-- `ForEach($items) { $item in }`: A binding to each element of an array.
-- `.constant(_:)`: A binding that never changes, for previews.
+`@State private var`, `@Binding var`, `$value`, `$draft.title`, `ForEach($items) { $item in }`, `.constant(_:)`
 
 ## Variants
 
@@ -20847,37 +19382,7 @@ VStack(alignment: .leading) {
 }
 ```
 
-### Write your own control with @Binding
-
-A reusable control declares `@Binding` and never owns the value. Pass `.constant(_:)` when you only need to show it, as in a preview.
-
-```swift
-struct RatingControl: View {
-    @Binding var rating: Int
-
-    var body: some View {
-        HStack(spacing: 2) {
-            ForEach(1...5, id: \.self) { star in
-                Button("\(star) stars", systemImage: star <= rating ? "star.fill" : "star") {
-                    rating = star
-                }
-                .labelStyle(.iconOnly)
-                .buttonStyle(.borderless)
-            }
-        }
-    }
-}
-
-@State private var rating = 3
-
-VStack {
-    RatingControl(rating: $rating)
-    RatingControl(rating: .constant(5))
-        .disabled(true)
-}
-```
-
-**Important:** Don't add `@State` inside the control to copy the value. The copy stops following the owner, and the two disagree.
+More variants, left out to keep this file short: Write your own control with @Binding. Apple's docs: https://developer.apple.com/documentation/swiftui/state.md
 
 ## Related
 
@@ -20943,14 +19448,7 @@ VStack {
 
 ## Key APIs
 
-- `withAnimation(.snappy) { }`: Animates the views a state change affects.
-- `.animation(_:value:)`: Animates one view whenever `value` changes.
-- `.spring(duration:bounce:)`: A spring you tune with two numbers.
-- `.smooth`, `.snappy`, `.bouncy`: Ready-made springs, from calm to lively.
-- `.transition(_:)`: How a view enters and leaves.
-- `.onHover { }`: Runs when the pointer enters or leaves.
-- `.contentTransition(_:)`: Animates text and symbols that change in place.
-- `\.accessibilityReduceMotion`: True when people turn on Reduce Motion.
+`withAnimation(.snappy) { }`, `.animation(_:value:)`, `.spring(duration:bounce:)`, `.smooth`, `.snappy`, `.bouncy`, `.transition(_:)`, `.onHover { }`, `.contentTransition(_:)`, `\.accessibilityReduceMotion`
 
 ## Variants
 
@@ -21239,15 +19737,6 @@ hig: https://developer.apple.com/design/human-interface-guidelines/sidebars.md
 
 A sidebar, a sortable table, and an inspector: the classic window for browsing a library.
 
-## Contents
-
-- Built from
-- Rules
-- Pitfalls
-- Key APIs
-- Variants
-- Related
-
 ## Built from
 
 NavigationSplitView
@@ -21277,124 +19766,7 @@ NavigationSplitView
 
 `NavigationSplitView { } detail: { }`, `List(selection:)`, `Table(_:selection:sortOrder:)`, `TableColumn(_:value:)`, `.inspector(isPresented:)`, `.navigationSplitViewColumnWidth`, `SidebarCommands()`, `InspectorCommands()`
 
-## Variants
-
-### Sidebar, table, and inspector
-
-A `NavigationSplitView` with a sidebar `List`, a `Table` in the detail column, and an `.inspector` on the table. The drawing is live; the window is the real thing.
-
-```swift
-struct Song: Identifiable, Hashable {
-    let id = UUID()
-    var title: String
-    var artist: String
-    var album: String
-    var seconds: Int
-    var isFavorite = false
-}
-
-enum Collection: String, Hashable, CaseIterable {
-    case all = "Songs"
-    case favorites = "Favorites"
-
-    var symbol: String { self == .all ? "music.note" : "star" }
-}
-
-struct LibraryView: View {
-    @State private var songs = [
-        Song(title: "Blue Hour", artist: "The Lanterns", album: "City Lights", seconds: 214, isFavorite: true),
-        Song(title: "Northbound", artist: "Mara Quinn", album: "Open Road", seconds: 187),
-        Song(title: "Slow Tide", artist: "Okon", album: "Harbor", seconds: 305),
-    ]
-    @State private var collection: Collection? = .all
-    @State private var selection = Set<Song.ID>()
-    @State private var sortOrder = [KeyPathComparator(\Song.title)]
-    @State private var searchText = ""
-    @State private var showsInspector = true
-
-    private var visibleSongs: [Song] {
-        songs.filter { song in
-            (collection != .favorites || song.isFavorite)
-                && (searchText.isEmpty || song.title.localizedStandardContains(searchText))
-        }
-    }
-
-    var body: some View {
-        NavigationSplitView {
-            List(selection: $collection) {
-                Section("Library") {
-                    ForEach(Collection.allCases, id: \.self) { item in
-                        Label(item.rawValue, systemImage: item.symbol)
-                    }
-                }
-            }
-            .navigationSplitViewColumnWidth(min: 160, ideal: 200)
-        } detail: {
-            Table(visibleSongs, selection: $selection, sortOrder: $sortOrder) {
-                TableColumn("Title", value: \.title)
-                TableColumn("Artist", value: \.artist)
-                TableColumn("Album", value: \.album)
-                TableColumn("Time", value: \.seconds) { song in
-                    Text(Duration.seconds(song.seconds), format: .time(pattern: .minuteSecond))
-                }
-                .width(60)
-            }
-            .onChange(of: sortOrder) {
-                songs.sort(using: sortOrder)
-            }
-            .searchable(text: $searchText)
-            .navigationTitle(collection?.rawValue ?? "Library")
-            .inspector(isPresented: $showsInspector) {
-                SongInspector(songs: $songs, selection: selection)
-                    .inspectorColumnWidth(min: 220, ideal: 260)
-            }
-            .toolbar {
-                Button("Inspector", systemImage: "info.circle") {
-                    showsInspector.toggle()
-                }
-            }
-        }
-    }
-}
-
-struct SongInspector: View {
-    @Binding var songs: [Song]
-    let selection: Set<Song.ID>
-
-    var body: some View {
-        if selection.count == 1, let index = songs.firstIndex(where: { selection.contains($0.id) }) {
-            Form {
-                TextField("Title", text: $songs[index].title)
-                TextField("Artist", text: $songs[index].artist)
-                TextField("Album", text: $songs[index].album)
-                Toggle("Favorite", isOn: $songs[index].isFavorite)
-            }
-        } else {
-            ContentUnavailableView(
-                selection.isEmpty ? "No Selection" : "\(selection.count) Songs",
-                systemImage: "music.note"
-            )
-        }
-    }
-}
-```
-
-### Add it to your app
-
-```swift
-@main
-struct MusicApp: App {
-    var body: some Scene {
-        WindowGroup {
-            LibraryView()
-        }
-        .commands {
-            SidebarCommands()
-            InspectorCommands()
-        }
-    }
-}
-```
+More variants, left out to keep this file short: Sidebar, table, and inspector, Add it to your app. Apple's docs: https://developer.apple.com/documentation/swiftui/navigationsplitview.md
 
 ## Related
 
@@ -21414,17 +19786,6 @@ hig: https://developer.apple.com/design/human-interface-guidelines/settings.md
 # Settings window
 
 A Settings window with a toolbar of panes, ready to copy into your app.
-
-Also called: preferences, preferences window, settings panes, settings tabs, ⌘,, command comma, AppStorage, UserDefaults, options, NSPreferencePane.
-
-## Contents
-
-- Built from
-- Rules
-- Pitfalls
-- Key APIs
-- Variants
-- Related
 
 ## Built from
 
@@ -21453,143 +19814,9 @@ Settings
 
 ## Key APIs
 
-- `Settings { }`: The scene behind Settings… and ⌘,.
-- `TabView(selection:)`: In `Settings`, the toolbar of panes.
-- `Tab(_:systemImage:value:)`: One pane, with its icon and title.
-- `@AppStorage`: Saves a setting in `UserDefaults`.
-- `.formStyle(.grouped)`: Rows in rounded groups, like System Settings.
-- `SettingsLink`: A button that opens the Settings window.
+`Settings { }`, `TabView(selection:)`, `Tab(_:systemImage:value:)`, `@AppStorage`, `.formStyle(.grouped)`, `SettingsLink`
 
-## Variants
-
-### General, Accounts, and Advanced
-
-Add `Settings { SettingsView() }` to your `App`. The `TabView` inside becomes the toolbar of panes.
-
-```swift
-@main
-struct ReaderApp: App {
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-        }
-        Settings {
-            SettingsView()
-        }
-    }
-}
-
-enum SettingsPane: String {
-    case general, accounts, advanced
-}
-
-struct SettingsView: View {
-    @AppStorage("settingsPane") private var pane = SettingsPane.general
-
-    var body: some View {
-        TabView(selection: $pane) {
-            Tab("General", systemImage: "gearshape", value: .general) {
-                GeneralSettingsView()
-            }
-            Tab("Accounts", systemImage: "at", value: .accounts) {
-                AccountsSettingsView()
-            }
-            Tab("Advanced", systemImage: "gearshape.2", value: .advanced) {
-                AdvancedSettingsView()
-            }
-        }
-        .frame(width: 460)
-    }
-}
-
-enum RefreshInterval: String, CaseIterable, Identifiable {
-    case hourly = "Every hour"
-    case daily = "Every day"
-    case manually = "Manually"
-
-    var id: Self { self }
-}
-
-struct GeneralSettingsView: View {
-    @AppStorage("refreshInterval") private var refreshInterval = RefreshInterval.hourly
-    @AppStorage("opensLinksInBackground") private var opensLinksInBackground = false
-    @AppStorage("fontSize") private var fontSize = 14.0
-
-    var body: some View {
-        Form {
-            Picker("Check for new articles", selection: $refreshInterval) {
-                ForEach(RefreshInterval.allCases) { interval in
-                    Text(interval.rawValue).tag(interval)
-                }
-            }
-            Toggle("Open links in the background", isOn: $opensLinksInBackground)
-            Slider(value: $fontSize, in: 10...24) {
-                Text("Font size")
-            }
-        }
-        .formStyle(.grouped)
-    }
-}
-
-struct AccountsSettingsView: View {
-    @State private var accounts = ["sam@example.com", "work@example.com"]
-    @State private var selection: String?
-
-    var body: some View {
-        Form {
-            Section {
-                List(accounts, id: \.self, selection: $selection) { account in
-                    Label(account, systemImage: "person.crop.circle")
-                }
-                .frame(height: 120)
-            } footer: {
-                HStack {
-                    Button("Add Account", systemImage: "plus") {
-                        accounts.append("new@example.com")
-                    }
-                    Button("Remove Account", systemImage: "minus") {
-                        accounts.removeAll { $0 == selection }
-                    }
-                    .disabled(selection == nil)
-                }
-                .labelStyle(.iconOnly)
-                .buttonStyle(.borderless)
-            }
-        }
-        .formStyle(.grouped)
-    }
-}
-
-struct AdvancedSettingsView: View {
-    @AppStorage("showsDebugMenu") private var showsDebugMenu = false
-
-    var body: some View {
-        Form {
-            Toggle("Show Debug menu", isOn: $showsDebugMenu)
-            LabeledContent("Cache") {
-                Button("Clear Cache") { }
-            }
-        }
-        .formStyle(.grouped)
-    }
-}
-```
-
-### Open a pane from elsewhere
-
-```swift
-struct AddAccountButton: View {
-    @AppStorage("settingsPane") private var pane = SettingsPane.general
-    @Environment(\.openSettings) private var openSettings
-
-    var body: some View {
-        Button("Add an Account…") {
-            pane = .accounts
-            openSettings()
-        }
-    }
-}
-```
+More variants, left out to keep this file short: General, Accounts, and Advanced, Open a pane from elsewhere. Apple's docs: https://developer.apple.com/documentation/swiftui/settings.md
 
 ## Related
 
@@ -21609,8 +19836,6 @@ hig: https://developer.apple.com/design/human-interface-guidelines/the-menu-bar.
 # Menu bar utility
 
 A small app that lives in the menu bar and opens a panel when clicked.
-
-Also called: MenuBarExtra, status item, status bar app, menu bar app, tray icon, NSStatusItem, agent app, LSUIElement, no Dock icon, popover from menu bar.
 
 ## Contents
 
@@ -21645,12 +19870,7 @@ MenuBarExtra("Focus", systemImage:)
 
 ## Key APIs
 
-- `MenuBarExtra(_:systemImage:)`: A scene that lives in the menu bar.
-- `.menuBarExtraStyle(.window)`: Opens a panel of your own views.
-- `.menuBarExtraStyle(.menu)`: Pulls down a regular menu.
-- `MenuBarExtra(…isInserted:)`: Lets a setting show or hide the extra.
-- `LSUIElement`: Info.plist key that hides the Dock icon.
-- `SettingsLink`: Opens your Settings window from the panel.
+`MenuBarExtra(_:systemImage:)`, `.menuBarExtraStyle(.window)`, `.menuBarExtraStyle(.menu)`, `MenuBarExtra(…isInserted:)`, `LSUIElement`, `SettingsLink`
 
 ## Variants
 
@@ -21945,17 +20165,6 @@ hig: https://developer.apple.com/design/human-interface-guidelines/launching.md
 
 The window a document app shows at launch, with New, Open, and recent files.
 
-Also called: welcome screen, start window, launcher, splash, recent documents, open recent, Xcode welcome, hiddenTitleBar, defaultLaunchBehavior, restorationBehavior.
-
-## Contents
-
-- Built from
-- Rules
-- Pitfalls
-- Key APIs
-- Variants
-- Related
-
 ## Built from
 
 Window("Welcome to Notes", id:)
@@ -21981,120 +20190,7 @@ Window("Welcome to Notes", id:)
 
 `Window(_:id:)`, `.defaultLaunchBehavior(.presented)`, `.restorationBehavior(.disabled)`, `.windowStyle(.hiddenTitleBar)`, `.windowBackgroundDragBehavior`, `\.newDocument`, `\.openDocument`, `\.dismissWindow`
 
-## Variants
-
-### Icon, actions, and recent files
-
-A `Window` with a hidden title bar and a material background. `newDocument` and `openDocument` from the environment do the work.
-
-```swift
-@main
-struct NotesApp: App {
-    var body: some Scene {
-        DocumentGroup(newDocument: TextDocument()) { file in
-            TextEditor(text: file.$document.text)
-        }
-
-        Window("Welcome to Notes", id: "welcome") {
-            WelcomeView()
-                .toolbar(removing: .title)
-                .containerBackground(.thickMaterial, for: .window)
-        }
-        .windowStyle(.hiddenTitleBar)
-        .windowResizability(.contentSize)
-        .windowBackgroundDragBehavior(.enabled)
-        .defaultLaunchBehavior(.presented)
-        .restorationBehavior(.disabled)
-    }
-}
-
-struct WelcomeView: View {
-    @Environment(\.newDocument) private var newDocument
-    @Environment(\.openDocument) private var openDocument
-    @Environment(\.dismissWindow) private var dismissWindow
-    @State private var isImporting = false
-    @State private var openError: String?
-
-    // SwiftUI has no list of recent documents; AppKit keeps it.
-    private let recents = NSDocumentController.shared.recentDocumentURLs
-
-    var body: some View {
-        HStack(spacing: 0) {
-            VStack(spacing: 10) {
-                Image(systemName: "note.text")
-                    .font(.system(size: 64))
-                    .foregroundStyle(.tint)
-                Text("Notes")
-                    .font(.largeTitle.bold())
-                Text("Version 2.0")
-                    .foregroundStyle(.secondary)
-                VStack(alignment: .leading, spacing: 8) {
-                    Button("Create New Document", systemImage: "plus") {
-                        newDocument(TextDocument())
-                        dismissWindow(id: "welcome")
-                    }
-                    Button("Open Existing Document…", systemImage: "folder") {
-                        isImporting = true
-                    }
-                }
-                .buttonStyle(.borderless)
-                .padding(.top, 16)
-            }
-            .frame(width: 300)
-            .padding(32)
-
-            List(recents, id: \.self) { url in
-                Button {
-                    open(url)
-                } label: {
-                    Label {
-                        VStack(alignment: .leading) {
-                            Text(url.deletingPathExtension().lastPathComponent)
-                            Text(url.deletingLastPathComponent().path(percentEncoded: false))
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                    } icon: {
-                        Image(systemName: "doc.text")
-                    }
-                }
-                .buttonStyle(.plain)
-            }
-            .frame(width: 280)
-        }
-        .frame(height: 400)
-        .fileImporter(isPresented: $isImporting, allowedContentTypes: [.plainText]) { result in
-            if case .success(let url) = result {
-                open(url)
-            }
-        }
-        .alert("Couldn't Open the Document", isPresented: Binding {
-            openError != nil
-        } set: { isShown in
-            if !isShown { openError = nil }
-        }) {
-            Button("OK") {}
-        } message: {
-            Text(openError ?? "")
-        }
-    }
-
-    // Close the welcome window only once the document is open. A recent
-    // file may have moved; keep the window so people can pick another.
-    private func open(_ url: URL) {
-        Task {
-            do {
-                try await openDocument(at: url)
-                dismissWindow(id: "welcome")
-            } catch {
-                openError = error.localizedDescription
-            }
-        }
-    }
-}
-```
-
-**Note:** The block uses the `TextDocument` from Document editor (`document-editor`).
+More variants, left out to keep this file short: Icon, actions, and recent files. Apple's docs: https://developer.apple.com/documentation/swiftui/scene/defaultlaunchbehavior(_:).md
 
 ## Related
 
@@ -22275,8 +20371,6 @@ reviewed: October 2026
 
 Lay out windows that people move, resize, and stack beside other apps.
 
-Also called: window size, resize, resizing, margins, padding, layout, minimum size, default size, key window, main window.
-
 ## Contents
 
 - Rules
@@ -22389,23 +20483,7 @@ ViewThatFits(in: .horizontal) {
 
 **Note:** Keep the same features at every size. Only how many show at once should change, not what the window can do.
 
-### Tone down custom accents in inactive windows
-
-Read `appearsActive` in a custom view, and drop accent colors while the window isn't key, the way system controls do.
-
-```swift
-struct StatusPill: View {
-    @Environment(\.appearsActive) private var appearsActive
-
-    var body: some View {
-        Text("Booked")
-            .padding(.horizontal, 8)
-            .padding(.vertical, 2)
-            .foregroundStyle(appearsActive ? .white : .secondary)
-            .background(appearsActive ? AnyShapeStyle(.tint) : AnyShapeStyle(.fill.tertiary), in: .capsule)
-    }
-}
-```
+More variants, left out to keep this file short: Tone down custom accents in inactive windows. Apple's docs: https://developer.apple.com/documentation/swiftui/windows.md
 
 ## Related
 
@@ -22556,8 +20634,6 @@ reviewed: October 2026
 
 Let people reach every control and command without touching the pointer.
 
-Also called: Full Keyboard Access, keyboard navigation, tab order, focus order, focus ring, tabindex, FocusState, focusable, focusSection, onKeyPress.
-
 ## Contents
 
 - Rules
@@ -22600,13 +20676,7 @@ These come from the HIG's list of standard shortcuts. Test your window with them
 
 ## Key APIs
 
-- `.focusable(_:interactions:)`: Lets a custom view take keyboard focus.
-- `@FocusState`: Reads and moves focus from your code.
-- `.focused(_:equals:)`: Ties a view to a `@FocusState` value.
-- `.defaultFocus(_:_:)`: Picks what has focus when the window opens.
-- `.focusSection()`: Visits a group's views before moving on.
-- `.onKeyPress(_:action:)`: Handles a key while the view has focus.
-- `.keyboardShortcut(_:modifiers:)`: Gives a button or menu item a shortcut.
+`.focusable(_:interactions:)`, `@FocusState`, `.focused(_:equals:)`, `.defaultFocus(_:_:)`, `.focusSection()`, `.onKeyPress(_:action:)`, `.keyboardShortcut(_:modifiers:)`
 
 ## Variants
 
@@ -23996,17 +22066,7 @@ Choose File > New File, then **App Privacy** under Resource. Xcode names it `Pri
 3. If you do, pick every data type you and your third-party partners collect, then answer the questions for each.
 4. Check the **Product Page Preview**, then click **Publish**. Update the answers whenever your app's data practices change.
 
-### Before you submit
-
-- **Privacy policy linked in two places**: In App Store Connect and somewhere easy to find in the app.
-- **A purpose string for every protected resource**: Clear and complete, one sentence each.
-- **A matching entitlement for each**: Under App Sandbox in Signing & Capabilities. (`app-sandbox`)
-- **Requests happen when the feature is used**: Not all at once on first launch.
-- **The app still works after No**: With another way to finish the task where possible.
-- **Privacy manifest lists collected data**: And the SDKs you include ship their own.
-- **App Privacy answers match the app**: Covering every platform in the record.
-
-More variants, left out to keep this file short: Ask when the feature starts. Apple's docs: https://developer.apple.com/documentation/bundleresources/privacy-manifest-files.md
+More variants, left out to keep this file short: Ask when the feature starts. Guide sections left out to keep this file short: Before you submit. Apple's docs: https://developer.apple.com/documentation/bundleresources/privacy-manifest-files.md
 
 ## Related
 
@@ -24025,16 +22085,6 @@ reviewed: October 2026
 # Mac App Review
 
 Guideline 2.4.5's extra Mac App Store rules, and the issues that most often stall review.
-
-Also called: App Review, rejection, rejected, Mac App Store rules, license key, serial number, launch at login, login item, SMAppService, auto-update.
-
-## Contents
-
-- Rules
-- Pitfalls
-- Guide
-- Variants
-- Related
 
 ## Rules
 
@@ -24090,37 +22140,7 @@ Apple lists the most common reasons submissions get stuck. None are Mac-only, an
 - **Tested on the current macOS**: No deprecated or optionally installed technologies.
 - **App Review Information is complete**: Demo account, notes, and a contact who answers.
 
-## Variants
-
-### An Open at Login setting
-
-`SMAppService.mainApp` registers your app as a login item, so tie it to a toggle that's off until people turn it on.
-
-```swift
-import ServiceManagement
-import SwiftUI
-
-struct LoginItemToggle: View {
-    @State private var opensAtLogin = SMAppService.mainApp.status == .enabled
-
-    var body: some View {
-        Toggle("Open at login", isOn: $opensAtLogin)
-            .onChange(of: opensAtLogin) { _, isOn in
-                do {
-                    if isOn {
-                        try SMAppService.mainApp.register()
-                    } else {
-                        try SMAppService.mainApp.unregister()
-                    }
-                } catch {
-                    opensAtLogin = SMAppService.mainApp.status == .enabled
-                }
-            }
-    }
-}
-```
-
-**Note:** The preview's toggle doesn't change your login items. People can also review login items in System Settings, and `SMAppService.openSystemSettingsLoginItems()` opens that pane.
+More variants, left out to keep this file short: An Open at Login setting. Apple's docs: https://developer.apple.com/distribute/app-review/
 
 ## Related
 

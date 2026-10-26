@@ -12,8 +12,6 @@ reviewed: October 2026
 
 Build layouts that fit any screen, window size, orientation, and text size.
 
-Also called: responsive, responsive design, media query, breakpoint, @media, container query, size class, horizontalSizeClass, compact, regular.
-
 ## Contents
 
 - Rules
@@ -48,12 +46,7 @@ iOS sums up the space in each direction as one of two **size classes**: `compact
 
 ## Key APIs
 
-- `\.horizontalSizeClass`: `.compact` when narrow, `.regular` when wide.
-- `ViewThatFits`: Shows the first child that fits.
-- `AnyLayout`: Switches stack direction without losing state.
-- `GridItem(.adaptive)`: As many columns as fit.
-- `.containerRelativeFrame(_:)`: Sizes a view relative to its container.
-- `.onGeometryChange(for:)`: Reacts to a view's real size.
+`\.horizontalSizeClass`, `ViewThatFits`, `AnyLayout`, `GridItem(.adaptive)`, `.containerRelativeFrame(_:)`, `.onGeometryChange(for:)`
 
 ## Variants
 
@@ -115,25 +108,7 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 70))]) {
 }
 ```
 
-### Size cards to the screen
-
-Use `.containerRelativeFrame` to make each card a share of the scroll view's width, on any screen.
-
-```swift
-ScrollView(.horizontal) {
-    HStack(spacing: 12) {
-        ForEach(0..<5) { index in
-            RoundedRectangle(cornerRadius: 12)
-                .fill(.orange.gradient)
-                .frame(height: 90)
-                .containerRelativeFrame(.horizontal, count: 2, spacing: 12)
-        }
-    }
-}
-.contentMargins(.horizontal, 16)
-```
-
-**Note:** With `count: 2`, two cards fill the width on iPhone and on a wide iPad window alike. Raise the count for regular widths if you want more.
+More variants, left out to keep this file short: Size cards to the screen. Apple's docs: https://developer.apple.com/documentation/swiftui/environmentvalues/horizontalsizeclass.md
 
 ## Related
 

@@ -56,14 +56,7 @@ VStack {
 
 ## Key APIs
 
-- `withAnimation(.snappy) { }`: Animates the views a state change affects.
-- `.animation(_:value:)`: Animates one view whenever `value` changes.
-- `.spring(duration:bounce:)`: A spring you tune with two numbers.
-- `.smooth`, `.snappy`, `.bouncy`: Ready-made springs, from calm to lively.
-- `.transition(_:)`: How a view enters and leaves.
-- `.onHover { }`: Runs when the pointer enters or leaves.
-- `.contentTransition(_:)`: Animates text and symbols that change in place.
-- `\.accessibilityReduceMotion`: True when people turn on Reduce Motion.
+`withAnimation(.snappy) { }`, `.animation(_:value:)`, `.spring(duration:bounce:)`, `.smooth`, `.snappy`, `.bouncy`, `.transition(_:)`, `.onHover { }`, `.contentTransition(_:)`, `\.accessibilityReduceMotion`
 
 ## Variants
 

@@ -64,12 +64,7 @@ List(plants, id: \.self, selection: $selection) { plant in
 
 ## Key APIs
 
-- `.copyable(_:)`: The items Edit > Copy puts on the Clipboard.
-- `.cuttable(for:action:)`: Removes items and returns them for Cut.
-- `.pasteDestination(for:action:)`: Accepts items from Edit > Paste.
-- `.onDeleteCommand(perform:)`: Edit > Delete and the Delete key.
-- `PasteButton(payloadType:)`: A Paste button for the Clipboard.
-- `.textSelection(.enabled)`: Lets people select and copy a `Text`.
+`.copyable(_:)`, `.cuttable(for:action:)`, `.pasteDestination(for:action:)`, `.onDeleteCommand(perform:)`, `PasteButton(payloadType:)`, `.textSelection(.enabled)`
 
 ## Variants
 

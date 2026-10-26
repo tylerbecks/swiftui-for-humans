@@ -80,28 +80,6 @@ Stepper(value: $hours, in: 4...12, step: 0.5) {
 }
 ```
 
-### With a text field
-
-Pair the stepper with a `TextField(value:format:)` so people can type a large number directly.
-
-```swift
-@State private var copies = 1
-
-HStack {
-    Text("Copies")
-    Spacer()
-    TextField("Copies", value: $copies, format: .number)
-        .keyboardType(.numberPad)
-        .multilineTextAlignment(.trailing)
-        .textFieldStyle(.roundedBorder)
-        .frame(width: 64)
-    Stepper("Copies", value: $copies, in: 1...999)
-        .labelsHidden()
-}
-```
-
-**Important:** The text field ignores the stepper's range. Clamp typed values yourself, for example in `.onChange(of: copies)`.
-
 ## On macOS
 
 Up and down arrows that change a number by a fixed amount.
@@ -180,24 +158,7 @@ Form {
 }
 ```
 
-#### Your own steps
-
-`onIncrement` and `onDecrement` run your code instead of adding a number, like cycling through the days of the week.
-
-```swift
-@State private var weekday = 0
-let weekdays = Calendar.current.weekdaySymbols
-
-Stepper {
-    Text("Starts on \(weekdays[weekday])")
-} onIncrement: {
-    weekday = (weekday + 1) % weekdays.count
-} onDecrement: {
-    weekday = (weekday + weekdays.count - 1) % weekdays.count
-}
-```
-
-More variants, left out to keep this file short: Step through a list. Apple's docs: https://developer.apple.com/documentation/swiftui/stepper.md
+More variants, left out to keep this file short: With a text field, Step through a list, Your own steps (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/stepper.md
 
 ## Related
 

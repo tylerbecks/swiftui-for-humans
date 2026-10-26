@@ -11,8 +11,6 @@ hig: https://developer.apple.com/design/human-interface-guidelines/color-wells.m
 
 A swatch that opens the system color picker so people can choose any color.
 
-Also called: color input, input type=color, color well, swatch, eyedropper, UIColorWell, UIColorPickerViewController, colour picker, hex.
-
 ## Contents
 
 - Default code
@@ -43,11 +41,7 @@ ColorPicker("Accent Color", selection: $accent)
 
 ## Key APIs
 
-- `ColorPicker(_:selection:)`: A labeled swatch bound to a `Color`.
-- `supportsOpacity:`: Pass `false` to hide the opacity slider.
-- `.labelsHidden()`: Shows only the swatch; VoiceOver still reads the label.
-- `Color.resolve(in:)`: Gets the red, green, blue, and opacity values.
-- `Color(_: Color.Resolved)`: Turns saved values back into a `Color`.
+`ColorPicker(_:selection:)`, `supportsOpacity:`, `.labelsHidden()`, `Color.resolve(in:)`, `Color(_: Color.Resolved)`
 
 ## Variants
 
@@ -93,28 +87,6 @@ HStack {
 
 **Note:** Give it a real label anyway, like “Highlight color”. VoiceOver reads it so people know what the swatch changes.
 
-### Read the components
-
-Call `resolve(in:)` to get a color's red, green, and blue values, for example to show a hex code.
-
-```swift
-@State private var highlight = Color.yellow
-@Environment(\.self) private var environment
-
-let resolved = highlight.resolve(in: environment)
-HStack {
-    ColorPicker("Color", selection: $highlight)
-        .labelsHidden()
-    Text(String(format: "#%02X%02X%02X",
-                Int(min(max(resolved.red, 0), 1) * 255),
-                Int(min(max(resolved.green, 0), 1) * 255),
-                Int(min(max(resolved.blue, 0), 1) * 255)))
-        .monospaced()
-}
-```
-
-**Important:** Picked colors can be wide-gamut, with values below 0 or above 1. Clamp them before converting to hex.
-
 ## On macOS
 
 A color well that opens the system color panel to pick a color.
@@ -135,8 +107,7 @@ ColorPicker("Highlight", selection: $highlight)
 
 ### Key APIs
 
-- `supportsOpacity: false`: No opacity control; colors stay solid.
-- `ColorPicker(selection:label:)`: A custom label view.
+`supportsOpacity: false`, `ColorPicker(selection:label:)`
 
 ### Variants
 
@@ -183,6 +154,8 @@ ColorPicker("Tag color", selection: $tagColor)
         }
     }
 ```
+
+More variants, left out to keep this file short: Read the components. Apple's docs: https://developer.apple.com/documentation/swiftui/colorpicker.md
 
 ## Related
 

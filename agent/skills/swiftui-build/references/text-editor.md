@@ -93,19 +93,6 @@ VStack(alignment: .trailing) {
 }
 ```
 
-### Rich text
-
-Bind an `AttributedString` and people can make selected text bold, italic, or underlined from the edit menu.
-
-```swift
-@State private var text = AttributedString("Select a word, then tap Format to make it bold.")
-
-TextEditor(text: $text)
-    .frame(height: 120)
-```
-
-**Note:** Rich text editing needs iOS 26 or later. With a `String` binding, the editor stays plain text.
-
 ## On macOS
 
 A scrolling area for long, multi-line text, plain or styled.
@@ -158,7 +145,7 @@ VStack(alignment: .leading) {
 
 **Important:** Put `.findDisabled()` or `.replaceDisabled()` closer to the editor than `.findNavigator`, or they won't apply.
 
-More variants, left out to keep this file short: Growing TextField instead, Styled text (macOS), A code editor (macOS), A limit with a counter (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/texteditor.md
+More variants, left out to keep this file short: Rich text, Growing TextField instead, Styled text (macOS), A code editor (macOS), A limit with a counter (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/texteditor.md
 
 ## Related
 

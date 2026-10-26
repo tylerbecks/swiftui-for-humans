@@ -10,8 +10,6 @@ docs: https://developer.apple.com/documentation/swiftui/state.md
 
 @State keeps a value a view owns, and @Binding lets another view change it.
 
-Also called: @State, @Binding, state, binding, useState, props, two-way binding, v-model, source of truth, $.
-
 ## Contents
 
 - Pitfalls
@@ -43,12 +41,7 @@ The window owns `isPlaying`. The play button in its toolbar only has a binding, 
 
 ## Key APIs
 
-- `@State private var`: A value this view owns and SwiftUI stores.
-- `@Binding var`: Reads and writes a value another view owns.
-- `$value`: The binding to a `@State` value, to pass along.
-- `$draft.title`: A binding to one property of a struct.
-- `ForEach($items) { $item in }`: A binding to each element of an array.
-- `.constant(_:)`: A binding that never changes, for previews.
+`@State private var`, `@Binding var`, `$value`, `$draft.title`, `ForEach($items) { $item in }`, `.constant(_:)`
 
 ## Variants
 
@@ -146,37 +139,7 @@ VStack(alignment: .leading) {
 }
 ```
 
-### Write your own control with @Binding
-
-A reusable control declares `@Binding` and never owns the value. Pass `.constant(_:)` when you only need to show it, as in a preview.
-
-```swift
-struct RatingControl: View {
-    @Binding var rating: Int
-
-    var body: some View {
-        HStack(spacing: 2) {
-            ForEach(1...5, id: \.self) { star in
-                Button("\(star) stars", systemImage: star <= rating ? "star.fill" : "star") {
-                    rating = star
-                }
-                .labelStyle(.iconOnly)
-                .buttonStyle(.borderless)
-            }
-        }
-    }
-}
-
-@State private var rating = 3
-
-VStack {
-    RatingControl(rating: $rating)
-    RatingControl(rating: .constant(5))
-        .disabled(true)
-}
-```
-
-**Important:** Don't add `@State` inside the control to copy the value. The copy stops following the owner, and the two disagree.
+More variants, left out to keep this file short: Write your own control with @Binding. Apple's docs: https://developer.apple.com/documentation/swiftui/state.md
 
 ## Related
 
