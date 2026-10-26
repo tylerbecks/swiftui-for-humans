@@ -22,9 +22,18 @@ if [[ ${1:-} != stop ]]; then
     exit 2
 fi
 
+# Unquoted paths, so non-ASCII names still match the patterns below.
+git() { command git -c core.quotePath=false "$@" }
+
+# The last failures, for the loop guard at the end.
+last=$(git rev-parse --git-path agent-hook-stop)
+
 # Uncommitted paths, including deleted and untracked ones.
 changed=(${(f)"$(git diff HEAD --name-only; git ls-files --others --exclude-standard)"})
-(( ${#changed} )) || exit 0
+if (( ! ${#changed} )); then
+    rm -f "$last"
+    exit 0
+fi
 
 failures=()
 fail() { failures+=("## $1"$'\n'"$2") }
@@ -34,7 +43,8 @@ for f in $snippets; do
     [[ -e $f ]] && fail "leftover snippet check" "Delete $f: it breaks the unique-file-name rule."
 done
 
-if (( ${changed[(Ie)project.yml]} )) && ! (( ${changed[(Ie)SwiftUIForHumans.xcodeproj/project.pbxproj]} )); then
+# Some project.yml edits only change a scheme, so any regenerated file counts.
+if (( ${changed[(Ie)project.yml]} )) && ! (( ${changed[(I)SwiftUIForHumans.xcodeproj/*]} )); then
     fail "xcodegen" "project.yml changed but SwiftUIForHumans.xcodeproj didn't: run xcodegen generate."
 fi
 
@@ -64,10 +74,13 @@ done
 editions=(${(u)editions})
 
 # Skip the build when the sources haven't changed since the last one passed,
-# so a turn that only talks doesn't rebuild.
+# so a turn that only talks doesn't rebuild. HEAD and the new files' paths
+# are part of it: the same diff on another commit, or a new file moved to
+# another edition, needs a build.
 built_marker=$(git rev-parse --git-path agent-hook-built)
-fingerprint=$( { git diff HEAD --binary -- SwiftUIForHumans project.yml
-                 git ls-files --others --exclude-standard -z -- SwiftUIForHumans | xargs -0 cat 2>/dev/null
+fingerprint=$( { git rev-parse HEAD
+                 git diff HEAD --binary -- SwiftUIForHumans project.yml
+                 git ls-files --others --exclude-standard -z -- SwiftUIForHumans | xargs -0 shasum 2>/dev/null
                } | shasum | cut -d' ' -f1)
 if (( ${#editions} )) && [[ $(cat "$built_marker" 2>/dev/null) != "$fingerprint" ]]; then
     build_ok=1
@@ -84,7 +97,6 @@ fi
 # Loop guard (Claude's stop_hook_active would also skip the re-check after a
 # real fix, and Codex may not send it): block again only while the failures
 # change; the same ones twice end the turn.
-last=$(git rev-parse --git-path agent-hook-stop)
 now=${(F)failures}
 if (( ${#failures} )) && [[ ! -f $last || $(<$last) != "$now" ]]; then
     print -r -- "$now" > "$last"

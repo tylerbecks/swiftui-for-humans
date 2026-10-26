@@ -126,7 +126,7 @@ func cuts() -> [Cut] {
     for (index, line) in text.split(separator: "\n", omittingEmptySubsequences: false).enumerated() {
         guard !line.trimmingCharacters(in: .whitespaces).isEmpty else { continue }
         guard let entry = try? JSONDecoder().decode(Entry.self, from: Data(line.utf8)) else {
-            FileHandle.standardError.write(Data(".papercuts.jsonl:\(index + 1): not JSON, skipped\n".utf8))
+            FileHandle.standardError.write(Data("\(file.lastPathComponent):\(index + 1): not JSON, skipped\n".utf8))
             continue
         }
         if entry.kind == "cut" {
