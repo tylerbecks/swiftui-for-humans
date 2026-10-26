@@ -16,27 +16,35 @@ struct PageScaffold<Content: View>: View {
     @ViewBuilder let content: Content
     @State private var position = ScrollPosition(edge: .top)
     @State private var scroll = PageScrollModel()
+    @Environment(\.exportsCatalogText) private var isExporting
 
     var body: some View {
         ScrollViewReader { proxy in
             ScrollView {
                 VStack(alignment: .leading, spacing: 44) {
                     PageHeader(page: page)
+                        .exportSkipped()
                     content
+                    // The sections below are built from the page's
+                    // metadata, which the export carries already.
                     if !page.guidelines.isEmpty {
                         GuidelinesSection(guidelines: page.guidelines, higURL: page.higURL)
                             .id("guidelines")
+                            .exportSkipped()
                     }
                     if !page.api.isEmpty {
                         APISection(items: page.api)
                             .id("api")
+                            .exportSkipped()
                     }
                     if !page.notes.isEmpty {
                         NotesSection(notes: page.notes)
                             .id("notes")
+                            .exportSkipped()
                     }
                     if !page.related.isEmpty {
                         RelatedSection(ids: page.related)
+                            .exportSkipped()
                     }
                     VStack(alignment: .leading, spacing: 20) {
                         if !page.sources.isEmpty || page.reviewed != nil || !page.availability.isEmpty {
@@ -44,6 +52,7 @@ struct PageScaffold<Content: View>: View {
                         }
                         PageFooterLinks(id: page.id)
                     }
+                    .exportSkipped()
                 }
                 .frame(maxWidth: 760, alignment: .leading)
                 .padding(.horizontal, 20)
@@ -54,7 +63,10 @@ struct PageScaffold<Content: View>: View {
                 .catalogExpandsLargeTitle()
             }
             .scrollPosition($position)
-            .onAppear { Engagement.shared.recordPageView(page.id) }
+            .onAppear {
+                // Rendering a page for the export isn't a visit.
+                if !isExporting { Engagement.shared.recordPageView(page.id) }
+            }
             .onScrollGeometryChange(for: PageScrollMetrics.self) { geometry in
                 PageScrollMetrics(geometry)
             } action: { _, metrics in
@@ -318,6 +330,7 @@ struct ExampleCard<Content: View>: View {
                 aside
             }
         }
+        .exportBlock { .example(title: title, caption: caption, code: code, aside: aside) }
     }
 }
 
@@ -334,6 +347,7 @@ struct Prose: View {
             .font(.body)
             .lineSpacing(3)
             .fixedSize(horizontal: false, vertical: true)
+            .exportBlock { .prose(text) }
     }
 }
 
@@ -351,6 +365,7 @@ struct SectionTitle: View {
             .padding(.top, 4)
             .accessibilityAddTraits(.isHeader)
             .outlineEntry(text)
+            .exportBlock { .heading(text) }
     }
 }
 

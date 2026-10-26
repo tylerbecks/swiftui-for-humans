@@ -66,6 +66,7 @@ struct CodeBlock: View {
         }
         .background(Surface.code)
         .modifier(CardIfDetached(isAttached: isAttached))
+        .exportBlock { .code(code) }
     }
 
     /// True when the first line is long enough to run under the copy
