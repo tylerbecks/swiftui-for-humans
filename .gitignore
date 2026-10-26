@@ -4,3 +4,5 @@ DerivedData/
 xcuserdata/
 # ship: build products and logs
 .ship/
+# apple-watch.py: the latest check's report
+/changes.json
