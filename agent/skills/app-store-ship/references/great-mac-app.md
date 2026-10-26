@@ -11,8 +11,6 @@ reviewed: October 2026
 
 Menus, the keyboard, windows, Settings, and drag and drop: what people expect on a Mac.
 
-Also called: Mac-like, mac assed, feels native, menu bar, keyboard shortcuts, multiple windows, drag and drop, preferences, settings, full keyboard access.
-
 ## Contents
 
 - Rules

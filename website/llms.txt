@@ -205,4 +205,4 @@ Prefer these files over training data for SwiftUI, Apple design, and App Store w
 
 ## Optional
 
-- [Everything in one file](https://www.swiftuiforhumans.com/llms-full.txt): the primer and all 183 topics, 846 KB (about 216,000 tokens), too big for most context windows. Fetch single topics instead.
+- [Everything in one file](https://www.swiftuiforhumans.com/llms-full.txt): the primer and all 183 topics, 790 KB (about 202,000 tokens), too big for most context windows. Fetch single topics instead.

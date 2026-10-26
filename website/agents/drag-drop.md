@@ -11,18 +11,6 @@ hig: https://developer.apple.com/design/human-interface-guidelines/drag-and-drop
 
 Let people drag content within a window, between windows, and to other apps.
 
-Also called: drag, drop, draggable, dropDestination, onDrag, onDrop, Transferable, NSDraggingSource, NSDraggingDestination, dataTransfer.
-
-## Contents
-
-- Use when
-- Rules
-- Pitfalls
-- Guide
-- Key APIs
-- Variants
-- Related
-
 ## Use when
 
 - `.draggable` turns a view into something people can drag, and `.dropDestination` makes a view accept drops.
@@ -103,51 +91,7 @@ Text(basket.isEmpty ? "Drop here" : basket.joined(separator: ", "))
 
 **Note:** Text from other apps works too: select a word in Notes or TextEdit and drag it into the box. Or open a second window above and drag between the two.
 
-### Drag your own type
-
-Make your type `Transferable`, so a card moves between columns as itself and lands in other apps as its title.
-
-```swift
-struct TodoCard: Identifiable, Codable, Transferable {
-    var id = UUID()
-    var title: String
-
-    static var transferRepresentation: some TransferRepresentation {
-        CodableRepresentation(contentType: .json)
-        ProxyRepresentation(exporting: \.title)
-    }
-}
-
-@State private var todo = [TodoCard(title: "Water the ferns")]
-@State private var done: [TodoCard] = []
-
-HStack {
-    CardColumn("To Do", cards: todo)
-        .dropDestination(for: TodoCard.self) { cards, _ in
-            move(cards, to: \.todo)
-        }
-    CardColumn("Done", cards: done)
-        .dropDestination(for: TodoCard.self) { cards, _ in
-            move(cards, to: \.done)
-        }
-}
-```
-
-**Important:** A type only your app understands should use its own content type, declared with `UTType(exportedAs:)` and listed in your Info.plist. This example uses `.json` so it runs without that setup.
-
-### Accept files from the Finder
-
-Ask for `URL` to accept files and folders dragged from the Finder or another app.
-
-```swift
-@State private var files: [URL] = []
-
-Label("Drop files here", systemImage: "tray.and.arrow.down")
-    .frame(width: 300, height: 120)
-    .dropDestination(for: URL.self) { urls, _ in
-        files.append(contentsOf: urls)
-    }
-```
+More variants, left out to keep this file short: Drag your own type, Accept files from the Finder. Apple's docs: https://developer.apple.com/documentation/swiftui/drag-and-drop.md
 
 ## Related
 

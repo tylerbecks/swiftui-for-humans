@@ -77,22 +77,6 @@ HStack(spacing: 12) {
             in: .rect(cornerRadius: 12))
 ```
 
-### Add your own color with a dark variant
-
-Add a Color Set to your asset catalog with a light and a dark value, then use it by name.
-
-```swift
-// Brand: a Color Set with a Dark variant
-Text("Pro")
-    .font(.caption.bold())
-    .padding(.horizontal, 10)
-    .padding(.vertical, 4)
-    .foregroundStyle(.white)
-    .background(Color("Brand"), in: .capsule)
-```
-
-**Note:** The color switches on its own: no `if` in your view. Pick a brighter dark value so it still stands out on a dark background.
-
 ## On macOS
 
 Build from colors that adapt, so your app looks right in light, dark, and Auto.
@@ -132,23 +116,7 @@ HStack(spacing: 10) {
 .background(.fill.tertiary, in: .rect(cornerRadius: 8))
 ```
 
-#### Your own color, with a dark variant
-
-Add a Color Set to the asset catalog with an Any and a Dark value, then use it by name.
-
-```swift
-// Brand: a Color Set with a Dark Appearance variant
-Text("Pro")
-    .font(.caption.bold())
-    .padding(.horizontal, 10)
-    .padding(.vertical, 4)
-    .foregroundStyle(.white)
-    .background(Color("Brand"), in: .capsule)
-```
-
-**Note:** The color switches on its own: no `if` in your view. Pick a brighter dark value so it still stands out on a dark window.
-
-More variants, left out to keep this file short: Adjust an image for dark mode, Keep a media screen dark, Keep a media window dark (macOS). Apple's docs: https://developer.apple.com/documentation/uikit/supporting-dark-mode-in-your-interface.md
+More variants, left out to keep this file short: Add your own color with a dark variant, Adjust an image for dark mode, Keep a media screen dark, Your own color, with a dark variant (macOS), Keep a media window dark (macOS). Apple's docs: https://developer.apple.com/documentation/uikit/supporting-dark-mode-in-your-interface.md
 
 ## Related
 

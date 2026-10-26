@@ -17,7 +17,6 @@ A control for choosing one value from a list of options.
 - Rules
 - Pitfalls
 - Key APIs
-- Variants
 - On macOS
 - Related
 
@@ -50,30 +49,6 @@ Picker("Size", selection: $size) {
 ## Key APIs
 
 `Picker(_:selection:content:)`, `.tag(_:)`, `.pickerStyle(_:)`, `ForEach(Enum.allCases)`, `.labelsHidden()`, `Menu { Picker }`
-
-## Variants
-
-### Segmented filter
-
-Use `.pickerStyle(.segmented)` above content to filter it, like a small tab bar inside one screen.
-
-```swift
-enum InboxFilter: String, CaseIterable, Identifiable {
-    case all = "All", unread = "Unread", flagged = "Flagged"
-    var id: Self { self }
-}
-
-@State private var filter = InboxFilter.all
-
-VStack {
-    Picker("Filter", selection: $filter) {
-        ForEach(InboxFilter.allCases) { Text($0.rawValue) }
-    }
-    .pickerStyle(.segmented)
-
-    Text(filter == .all ? "12 messages" : filter == .unread ? "3 unread" : "1 flagged")
-}
-```
 
 ## On macOS
 
@@ -139,22 +114,7 @@ Form {
 }
 ```
 
-#### Radio buttons in a row
-
-`.horizontalRadioGroupLayout()` puts the radio buttons side by side, for short options in a narrow space.
-
-```swift
-@State private var startsWith = "Last Window"
-
-Picker("Open with:", selection: $startsWith) {
-    Text("Last Window").tag("Last Window")
-    Text("New Window").tag("New Window")
-}
-.pickerStyle(.radioGroup)
-.horizontalRadioGroupLayout()
-```
-
-More variants, left out to keep this file short: In a settings form, Sort menu with checkmarks, Color tags in a menu, A segmented control in an inspector (macOS), A Custom… option (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/picker.md
+More variants, left out to keep this file short: Segmented filter, In a settings form, Sort menu with checkmarks, Color tags in a menu, Radio buttons in a row (macOS), A segmented control in an inspector (macOS), A Custom… option (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/picker.md
 
 ## Related
 

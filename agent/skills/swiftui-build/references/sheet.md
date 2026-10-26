@@ -125,45 +125,7 @@ struct NewEventForm: View {
 
 `.presentationSizing(_:)`, `.frame(width:height:)`, `.keyboardShortcut(.defaultAction)`
 
-### Variants
-
-#### Edit an item
-
-`.sheet(item:)` shows a sheet for the item you set and clears it when the sheet closes, for “edit this one” tasks.
-
-```swift
-@State private var editing: Event?
-
-VStack {
-    ForEach(events) { event in
-        HStack {
-            Text(event.title)
-            Spacer()
-            Button("Edit…") { editing = event }
-        }
-    }
-}
-.sheet(item: $editing) { event in
-    EventEditor(event: event)
-}
-```
-
-#### A sheet people can resize
-
-`.presentationSizing(.fitted)` sizes the sheet to its content, and a minimum and maximum frame let people resize it between them.
-
-```swift
-.sheet(isPresented: $isShowingNotes) {
-    NotesEditor()
-        .frame(minWidth: 320, idealWidth: 420, maxWidth: 700,
-               minHeight: 200, idealHeight: 280, maxHeight: 600)
-        .presentationSizing(.fitted)
-}
-```
-
-**Note:** On the Mac, a `.fitted` sheet can be resized unless you fix its size with `.fixedSize()` or a fixed frame.
-
-More variants, left out to keep this file short: Cancel and Done buttons, Sheet for a tapped item, Small sheet that fits its content. Apple's docs: https://developer.apple.com/documentation/swiftui/view/sheet(ispresented:ondismiss:content:).md
+More variants, left out to keep this file short: Cancel and Done buttons, Sheet for a tapped item, Small sheet that fits its content, Edit an item (macOS), A sheet people can resize (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/view/sheet(ispresented:ondismiss:content:).md
 
 ## Related
 

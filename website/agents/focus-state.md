@@ -106,14 +106,7 @@ iOS doesn't hide the keyboard when people tap elsewhere. Give them at least one 
 
 ## Key APIs
 
-- `@FocusState`: Holds which field is focused: a `Bool` or an optional enum.
-- `.focused(_:equals:)`: Ties a field to one value of an enum focus state.
-- `.focused(_:)`: Ties a single field to a `Bool` focus state.
-- `.onSubmit { }`: Runs when people tap Return.
-- `.submitLabel(_:)`: The Return key's title: `.next`, `.done`, `.search`, and more.
-- `.keyboardType(_:)`: The keyboard layout, such as `.emailAddress` or `.numberPad`.
-- `.scrollDismissesKeyboard(_:)`: Hides the keyboard when people scroll.
-- `ToolbarItemGroup(placement: .keyboard)`: Buttons in a bar above the keyboard.
+`@FocusState`, `.focused(_:equals:)`, `.focused(_:)`, `.onSubmit { }`, `.submitLabel(_:)`, `.keyboardType(_:)`, `.scrollDismissesKeyboard(_:)`, `ToolbarItemGroup(placement: .keyboard)`
 
 ## Variants
 

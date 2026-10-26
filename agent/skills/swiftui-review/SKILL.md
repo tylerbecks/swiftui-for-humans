@@ -43,8 +43,10 @@ A review pass for SwiftUI changes: a deterministic linter first, then a checklis
 
 ## Index
 
+Each id is a file, `references/<id>.md`.
+
 ### Start here
 
-- `references/deprecated-apis.md`: Every outdated SwiftUI API models still write, with its replacement and minimum OS.
-- `references/hig-decisions.md`: The design calls agents most often get wrong, as 36 rules with reasons.
-- `references/review-checklist.md`: The review pass: linter, availability, accessibility, Dynamic Type, previews, and HIG checks.
+- `deprecated-apis` — Every outdated SwiftUI API models still write
+- `hig-decisions` — The design calls agents most often get wrong
+- `review-checklist` — The review pass

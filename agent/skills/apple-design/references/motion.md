@@ -110,28 +110,7 @@ VStack(alignment: .leading) {
 }
 ```
 
-#### Fade instead of slide for Reduce Motion
-
-Read `accessibilityReduceMotion` and pick an `.opacity` transition when it's on.
-
-```swift
-@Environment(\.accessibilityReduceMotion) private var reduceMotion
-@State private var showsBanner = false
-
-VStack {
-    Button(showsBanner ? "Hide Banner" : "Show Banner") {
-        withAnimation { showsBanner.toggle() }
-    }
-    if showsBanner {
-        Text("Your trip is saved.")
-            .padding(10)
-            .background(.fill.tertiary, in: .rect(cornerRadius: 8))
-            .transition(reduceMotion ? .opacity : .move(edge: .top).combined(with: .opacity))
-    }
-}
-```
-
-More variants, left out to keep this file short: Offer a fade when Reduce Motion is on, Confirm with a symbol and a haptic, Let numbers roll (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/animation.md
+More variants, left out to keep this file short: Offer a fade when Reduce Motion is on, Confirm with a symbol and a haptic, Fade instead of slide for Reduce Motion (macOS), Let numbers roll (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/animation.md
 
 ## Related
 

@@ -11,8 +11,6 @@ hig: https://developer.apple.com/design/human-interface-guidelines/panels.md
 
 A trailing column that shows and edits the details of whatever is selected.
 
-Also called: inspectorColumnWidth, InspectorCommands, info panel, properties panel, attributes inspector, right sidebar, trailing sidebar, details pane, NSSplitViewItem, Show Inspector.
-
 ## Contents
 
 - Use when
@@ -52,11 +50,7 @@ NavigationStack
 
 ## Key APIs
 
-- `.inspector(isPresented:content:)`: Adds a trailing inspector column.
-- `.inspectorColumnWidth(min:ideal:max:)`: A width people can drag within.
-- `.inspectorColumnWidth(_:)`: A fixed width.
-- `InspectorCommands()`: A menu command with ⌃⌘I.
-- `.interactiveDismissDisabled()`: Keeps people from dragging it shut.
+`.inspector(isPresented:content:)`, `.inspectorColumnWidth(min:ideal:max:)`, `.inspectorColumnWidth(_:)`, `InspectorCommands()`, `.interactiveDismissDisabled()`
 
 ## Variants
 

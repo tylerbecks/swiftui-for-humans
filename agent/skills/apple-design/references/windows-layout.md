@@ -11,8 +11,6 @@ reviewed: October 2026
 
 Lay out windows that people move, resize, and stack beside other apps.
 
-Also called: window size, resize, resizing, margins, padding, layout, minimum size, default size, key window, main window.
-
 ## Contents
 
 - Rules
@@ -106,42 +104,7 @@ VStack(alignment: .leading, spacing: 8) {
 .scenePadding()
 ```
 
-### Rearrange when the window narrows
-
-`ViewThatFits` tries each layout in order and keeps the first one that fits, so a narrow window stacks what a wide one shows side by side.
-
-```swift
-ViewThatFits(in: .horizontal) {
-    HStack(alignment: .top, spacing: 20) {
-        TripSummary()
-        TripStops()
-    }
-    VStack(alignment: .leading, spacing: 16) {
-        TripSummary()
-        TripStops()
-    }
-}
-```
-
-**Note:** Keep the same features at every size. Only how many show at once should change, not what the window can do.
-
-### Tone down custom accents in inactive windows
-
-Read `appearsActive` in a custom view, and drop accent colors while the window isn't key, the way system controls do.
-
-```swift
-struct StatusPill: View {
-    @Environment(\.appearsActive) private var appearsActive
-
-    var body: some View {
-        Text("Booked")
-            .padding(.horizontal, 8)
-            .padding(.vertical, 2)
-            .foregroundStyle(appearsActive ? .white : .secondary)
-            .background(appearsActive ? AnyShapeStyle(.tint) : AnyShapeStyle(.fill.tertiary), in: .capsule)
-    }
-}
-```
+More variants, left out to keep this file short: Rearrange when the window narrows, Tone down custom accents in inactive windows. Apple's docs: https://developer.apple.com/documentation/swiftui/windows.md
 
 ## Related
 

@@ -12,8 +12,6 @@ reviewed: October 2026
 
 Let people reach every control and command without touching the pointer.
 
-Also called: Full Keyboard Access, keyboard navigation, tab order, focus order, focus ring, tabindex, FocusState, focusable, focusSection, onKeyPress.
-
 ## Contents
 
 - Rules
@@ -56,13 +54,7 @@ These come from the HIG's list of standard shortcuts. Test your window with them
 
 ## Key APIs
 
-- `.focusable(_:interactions:)`: Lets a custom view take keyboard focus.
-- `@FocusState`: Reads and moves focus from your code.
-- `.focused(_:equals:)`: Ties a view to a `@FocusState` value.
-- `.defaultFocus(_:_:)`: Picks what has focus when the window opens.
-- `.focusSection()`: Visits a group's views before moving on.
-- `.onKeyPress(_:action:)`: Handles a key while the view has focus.
-- `.keyboardShortcut(_:modifiers:)`: Gives a button or menu item a shortcut.
+`.focusable(_:interactions:)`, `@FocusState`, `.focused(_:equals:)`, `.defaultFocus(_:_:)`, `.focusSection()`, `.onKeyPress(_:action:)`, `.keyboardShortcut(_:modifiers:)`
 
 ## Variants
 

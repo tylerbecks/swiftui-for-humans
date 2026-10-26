@@ -12,17 +12,6 @@ reviewed: October 2026
 
 Ask for access when a feature needs it, say why, and handle “no” gracefully.
 
-Also called: permission prompt, permissions, authorization, purpose string, usage description, Info.plist, NSCameraUsageDescription, camera permission, location permission, pre-permission.
-
-## Contents
-
-- Rules
-- Pitfalls
-- Guide
-- Key APIs
-- Variants
-- Related
-
 ## Rules
 
 - **Ask when people use the feature, not at launch.** A prompt makes sense right after someone taps Scan Receipt. On first launch it's a mystery, unless the app can't work at all without it.
@@ -99,43 +88,7 @@ Add the usage description key for each resource to Info.plist. The system shows 
 
 **Note:** In Xcode you can also add it in the target's Info tab, or as the `INFOPLIST_KEY_NSCameraUsageDescription` build setting. Localize it like any other text.
 
-### An explanation screen, if you need one
-
-When the context doesn't explain itself, show one screen with a single Continue button that opens the prompt.
-
-```swift
-VStack(spacing: 16) {
-    Image(systemName: "doc.viewfinder")
-        .font(.system(size: 56))
-        .foregroundStyle(.tint)
-    Text("Scan Receipts")
-        .font(.title2.bold())
-    Text("Point your camera at a receipt and Expenses fills in the amount and date for you.")
-        .multilineTextAlignment(.center)
-        .foregroundStyle(.secondary)
-    Button("Continue") {
-        Task { await AVCaptureDevice.requestAccess(for: .video) }
-    }
-    .buttonStyle(.borderedProminent)
-}
-.padding()
-```
-
-**Important:** Don't add Not Now, Close, or Cancel, and don't title the button Allow. As of 2026, the HIG says either one can feel manipulative, and App Review rejects misleading pre-prompt screens for tracking.
-
-### Send people to Settings
-
-When access is off, explain what it's for and open your app's Settings page with `openSettingsURLString`.
-
-```swift
-@Environment(\.openURL) private var openURL
-
-Button("Open Settings") {
-    if let url = URL(string: UIApplication.openSettingsURLString) {
-        openURL(url)
-    }
-}
-```
+More variants, left out to keep this file short: An explanation screen, if you need one, Send people to Settings. Apple's docs: https://developer.apple.com/documentation/uikit/requesting-access-to-protected-resources.md
 
 ## Related
 

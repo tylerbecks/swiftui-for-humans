@@ -6,6 +6,9 @@
                                          and mcp/data/corpus.json
     scripts/agent-build.py --check       exit 1 if anything is stale, a budget is over, or an id doesn't resolve
     scripts/agent-build.py --check-urls  also HEAD every docs and HIG link (slow, needs the network)
+    scripts/agent-build.py --calibrate-tokens
+                                         count a sample's tokens with Anthropic's API (needs ANTHROPIC_API_KEY)
+                                         and say whether the budget's characters-per-token estimate holds
 
 Inputs:
     agent/build/ios.json, agent/build/macos.json   scripts/export-catalog.sh (gitignored)
@@ -24,6 +27,8 @@ from __future__ import annotations
 import argparse
 import html
 import json
+import math
+import os
 import re
 import sys
 import time
@@ -53,10 +58,12 @@ GUIDE_KINDS = {"Concept", "Reference"}
 # Headings that only introduce something the agent copy drops or moves.
 SKIP_HEADINGS = {"Examples", "Try it", "Try the settings", "Try every size"}
 
-# Budgets (plan: "Token budgets"). Tokens are estimated as characters / 4.
+# Budgets (plan: "Token budgets"). Token counts here are estimates; see tokens() and budget_tokens().
 PRIMER_MAX_BYTES = 8 * 1024
 DESCRIPTION_MAX_CHARS = 1024
 SKILL_BODY_MAX_LINES = 300
+SKILL_BODY_MAX_BYTES = 12_000  # about 3k tokens, the plan's budget for a SKILL.md body
+INDEX_SUMMARY_WORDS = 8  # each SKILL.md index line: `id` plus a summary of at most this many words
 TOPIC_MAX_TOKENS = 1500
 TOPIC_TOC_LINES = 100
 MAX_ALIASES = 10  # "Also called" names, for matching web and UIKit terms
@@ -70,8 +77,29 @@ CATALOG_LINK = re.compile(r"\[([^\]]+)\]\(catalog://([\w-]+)\)")
 SIBLING_LINK = re.compile(r"(?<![\w/.-])`?([a-z0-9][a-z0-9-]*)\.md\b`?")
 
 
+# There's no Claude tokenizer in the standard library, so token counts are estimates from
+# the character count. Two divisors:
+#   CHARS_PER_TOKEN         the usual rule of thumb, for sizes people read (llms.txt, the
+#                           install page, the report). An estimate, not a measurement.
+#   BUDGET_CHARS_PER_TOKEN  conservative, for every budget check and for fitting topics to
+#                           their budget. Markdown full of Swift code and backticks runs
+#                           denser than prose, so assuming fewer characters per token keeps
+#                           a file under budget even when the real count is higher.
+# `--calibrate-tokens` measures the real ratio with Anthropic's count_tokens API (it needs
+# ANTHROPIC_API_KEY) and prints it; update BUDGET_CHARS_PER_TOKEN by hand if it says to.
+# The build never calls the API itself, so the output stays deterministic.
+CHARS_PER_TOKEN = 4
+BUDGET_CHARS_PER_TOKEN = 3.5
+
+
 def tokens(text: str) -> int:
-    return (len(text) + 3) // 4
+    """Estimated tokens (characters / 4), for display."""
+    return (len(text) + CHARS_PER_TOKEN - 1) // CHARS_PER_TOKEN
+
+
+def budget_tokens(text: str) -> int:
+    """Conservative token estimate (characters / 3.5), for budget checks."""
+    return math.ceil(len(text) / BUDGET_CHARS_PER_TOKEN)
 
 
 # --------------------------------------------------------------------------- inputs
@@ -362,6 +390,9 @@ class Fit:
     mac_guide: bool = True
     api_details: bool = True
     aliases: bool = True
+    guide_sections: int = 99  # concept and reference pages: `###` sections of the Guide to keep
+    related: bool = True
+    mac_section: bool = True
 
 
 def guide(page: dict, link: Linker, level: str = "###") -> list[str]:
@@ -399,6 +430,23 @@ def guide(page: dict, link: Linker, level: str = "###") -> list[str]:
     return out[1:]
 
 
+def guide_parts(lines: list[str], level: str = "###") -> tuple[list[str], list[tuple[str, list[str]]]]:
+    """Split guide() output into its lead and its `###` sections, as (title, lines)."""
+    lead: list[str] = []
+    parts: list[tuple[str, list[str]]] = []
+    fenced = False
+    for line in lines:
+        if line.startswith("```"):
+            fenced = not fenced
+        if not fenced and line.startswith(level + " "):
+            parts.append((line[len(level) + 1:], [line]))
+        elif parts:
+            parts[-1][1].append(line)
+        else:
+            lead.append(line)
+    return lead, parts
+
+
 def when_sections(page: dict, overlay: dict, link: Linker) -> tuple[list[str], list[str]]:
     """`about` sentences that send people to another page become "Don't use when"."""
     use, instead = [], []
@@ -429,14 +477,18 @@ def availability(topic: Topic) -> str | None:
 
 def render_page(topic: Topic, skill: str, corpus, overlay: dict) -> str:
     """Render the whole topic, then, while it's over budget, drop in this order: the Mac
-    guide prose, Key API details, then the last variant of whichever platform has more
-    variant text. Dropped variants are named at the end, so the agent knows they exist."""
+    guide prose, Key API details, aliases, the last variant of whichever platform has
+    more variant text, the Guide's last section (concept and reference pages), the On
+    macOS section, and Related. What's dropped is named at the end, so the agent knows
+    it exists."""
     fit = Fit()
     text = render_page_with(topic, skill, corpus, overlay, fit)
     link = Linker(corpus, skill, in_references=True)
     ios_all, mac_all = variant_sets(topic, link)
+    page = topic.ios or topic.mac
+    guide_count = len(guide_parts(guide(page, link))[1]) if page["kind"] in GUIDE_KINDS else 0
     steps = 0
-    while tokens(text) > TOPIC_MAX_TOKENS and steps < 200:
+    while budget_tokens(text) > TOPIC_MAX_TOKENS and steps < 200:
         steps += 1
         if fit.mac_guide and topic.mac and topic.ios and topic.mac["kind"] in GUIDE_KINDS:
             fit.mac_guide = False
@@ -448,7 +500,17 @@ def render_page(topic: Topic, skill: str, corpus, overlay: dict) -> str:
             ios_kept = ios_all[:min(fit.ios_variants, len(ios_all))]
             mac_kept = mac_all[:min(fit.mac_variants, len(mac_all))]
             if not ios_kept and not mac_kept:
-                break
+                kept = min(fit.guide_sections, guide_count)
+                if kept:
+                    fit.guide_sections = kept - 1
+                elif fit.mac_section and topic.ios and topic.mac:
+                    fit.mac_section = False
+                elif fit.related:
+                    fit.related = False
+                else:
+                    break
+                text = render_page_with(topic, skill, corpus, overlay, fit)
+                continue
             ios_size = sum(len("\n".join(lines)) for _, lines in ios_kept)
             mac_size = sum(len("\n".join(lines)) for _, lines in mac_kept)
             if mac_kept and mac_size >= ios_size:
@@ -501,27 +563,40 @@ def render_page_with(topic: Topic, skill: str, corpus, overlay: dict, fit: Fit) 
     out += section("Rules", rules(page, link) + overlay.get("Rules", []))
     out += section("Pitfalls", pitfalls(page, link) + overlay.get("Pitfalls", [])
                    + ([""] + guide(page, link) if page["kind"] not in GUIDE_KINDS and guide(page, link) else []))
+    guide_dropped: list[str] = []
     if page["kind"] in GUIDE_KINDS:
-        out += section("Guide", guide(page, link))
+        lead, parts = guide_parts(guide(page, link))
+        guide_dropped = [title for title, _ in parts[fit.guide_sections:]]
+        out += section("Guide", lead + [line for _, lines in parts[:fit.guide_sections] for line in lines])
     out += section("Key APIs", key_apis(page, link, fit.api_details))
     out += section("Variants", joined(ios_all[:fit.ios_variants]))
 
-    if mac:
+    if mac and fit.mac_section:
         out += render_mac(page, mac, link, fit, mac_all)
 
     for name, lines in overlay.items():
         if name not in {"Use when", "Don't use when", "Rules", "Pitfalls", "Related"}:
             out += section(name, lines)
 
-    dropped = [t for t, _ in ios_all[fit.ios_variants:]] + [f"{t} (macOS)" for t, _ in mac_all[fit.mac_variants:]]
-    if dropped:
+    # With the whole Mac section gone, its note covers the Mac variants too.
+    mac_dropped = mac_all[fit.mac_variants:] if fit.mac_section else []
+    dropped = [t for t, _ in ios_all[fit.ios_variants:]] + [f"{t} (macOS)" for t, _ in mac_dropped]
+    if dropped or guide_dropped or not fit.related or (mac and not fit.mac_section):
         docs = md_url(page.get("docsURL")) or md_url((mac or {}).get("docsURL"))
-        out += ["", f"More variants, left out to keep this file short: {', '.join(dropped)}."
-                + (f" Apple's docs: {docs}" if docs else "")]
+        notes = []
+        if dropped:
+            notes.append(f"More variants, left out to keep this file short: {', '.join(dropped)}.")
+        if guide_dropped:
+            notes.append(f"Guide sections left out to keep this file short: {', '.join(guide_dropped)}.")
+        if mac and not fit.mac_section:
+            notes.append("The On macOS section was left out to keep this file short.")
+        if not fit.related:
+            notes.append("Related topics were left out to keep this file short.")
+        out += ["", " ".join(notes) + (f" Apple's docs: {docs}" if docs else "")]
 
     related = list(dict.fromkeys(page.get("related", []) + (mac or {}).get("related", [])))
     links = [link.ref(r) for r in related if r in corpus] + overlay.get("Related", [])
-    if links:
+    if links and fit.related:
         out += ["", "## Related", "", ", ".join(links)]
     return finish(out)
 
@@ -581,19 +656,43 @@ def correction_lines(entries: list[dict], limit: int) -> list[str]:
     return [f"- {e['brief']}" for e in picked[:limit]]
 
 
+# Words that read badly at the end of a cut-short summary.
+DANGLING = {"a", "about", "an", "and", "are", "as", "at", "behind", "between", "but", "by", "can", "for", "from",
+            "how", "if", "in", "into", "is", "its", "of", "on", "or", "over", "so", "such", "than", "that", "the",
+            "their", "to", "when", "where", "which", "while", "who", "with", "without", "your"}
+
+
+def brief(summary: str, max_words: int = INDEX_SUMMARY_WORDS) -> str:
+    """A summary cut to its first sentence and at most `max_words` words, for the SKILL.md index."""
+    text = re.split(r"(?<=[\w)`])(?:[.;:]\s| — )", plain(summary), maxsplit=1)[0].rstrip(".")
+    words = text.split()
+    if len(words) > max_words:
+        words = words[:max_words]
+        # Cut back to the last comma when that keeps a few words: "a date, a time" → "a date".
+        commas = [i for i, w in enumerate(words[:-1]) if w.endswith(",")]
+        if commas and commas[-1] >= 2:
+            words = words[:commas[-1] + 1]
+        while len(words) > 1 and words[-1].lower().strip(",") in DANGLING:
+            words.pop()
+    return " ".join(words).rstrip(",;:")
+
+
 def render_index(corpus: dict[str, Topic], skill: str) -> list[str]:
+    """One line per topic, `id` — short summary, under category headings, so the index
+    stays inside the SKILL.md byte budget. Each reference file opens with its full summary."""
     groups: dict[str, list[Topic]] = {}
     for t in corpus.values():
         if skill in t.skills:
             groups.setdefault(t.category, []).append(t)
-    out = []
+    any_mac = any(t.mac_only for ts in groups.values() for t in ts)
+    out = ["", "Each id is a file, `references/<id>.md`." + (" (macOS) marks Mac-only topics." if any_mac else "")]
     for name in ["Start here"] + [g for g in groups if g != "Start here"]:
         if name not in groups:
             continue
         out += ["", f"### {name}", ""]
         for t in groups[name]:
-            mark = " (macOS only)" if t.mac_only else ""
-            out.append(f"- `references/{t.id}.md`{mark}: {plain(t.summary)}")
+            mark = " (macOS)" if t.mac_only else ""
+            out.append(f"- `{t.id}`{mark} — {brief(t.summary)}")
     return out[1:]
 
 
@@ -773,13 +872,13 @@ def concise(text: str, tid: str) -> str:
     pieces = {name: chunks(named[name]) for name in order}
     kept: dict[str, set[int]] = {name: set() for name in order}
     budget = MCP_CONCISE_MAX_TOKENS - 30  # room for the footer to name what was cut
-    used = tokens("\n".join(out + tail + footer([], left_out)))
+    used = budget_tokens("\n".join(out + tail + footer([], left_out)))
     for first_only in (True, False):
         for name in order:
             for i, c in enumerate(pieces[name]):
                 if i in kept[name]:
                     continue
-                cost = tokens("\n".join([""] + c)) + (0 if kept[name] else tokens(f"\n\n## {name}\n"))
+                cost = budget_tokens("\n".join([""] + c)) + (0 if kept[name] else budget_tokens(f"\n\n## {name}\n"))
                 if used + cost <= budget:
                     kept[name].add(i)
                     used += cost
@@ -961,7 +1060,7 @@ def generate_web_and_mcp(corpus, overlays, entries, primer: str, editions) -> tu
             views["full"][key] = text
             views["concise"][key] = concise(text, t.id)
             for label in ("concise", "full"):
-                n = tokens(views[label][key])
+                n = budget_tokens(views[label][key])
                 worst[label] = max(worst[label], (n, f"{t.id}/{key}"))
                 if n > limits[label]:
                     errors.append(f"MCP {label} view of {t.id} ({key}) is ~{n} tokens, over {limits[label]}")
@@ -990,8 +1089,8 @@ def generate_web_and_mcp(corpus, overlays, entries, primer: str, editions) -> tu
     else:
         for p in ("all", "ios", "macos"):
             checklist[p] = checklist_for(id_texts["review-checklist"], p, entries)
-            if tokens(checklist[p]) > MCP_FULL_MAX_TOKENS:
-                errors.append(f"MCP review checklist ({p}) is ~{tokens(checklist[p])} tokens, over {MCP_FULL_MAX_TOKENS}")
+            if budget_tokens(checklist[p]) > MCP_FULL_MAX_TOKENS:
+                errors.append(f"MCP review checklist ({p}) is ~{budget_tokens(checklist[p])} tokens, over {MCP_FULL_MAX_TOKENS}")
     data = {
         "name": "SwiftUI for Humans",
         "site": SITE,
@@ -1072,7 +1171,7 @@ def budgets(files, corpus) -> tuple[list[str], list[str]]:
     report, errors = [], []
     primer = files[PRIMER_OUT / "AGENTS.snippet.md"][0]
     size = len(primer.encode("utf-8"))
-    report.append(f"primer           {size:>6} bytes  ~{tokens(primer):>5} tokens  (max {PRIMER_MAX_BYTES} bytes)")
+    report.append(f"primer           {size:>6} bytes  ~{budget_tokens(primer):>5} tokens  (max {PRIMER_MAX_BYTES} bytes)")
     if size > PRIMER_MAX_BYTES:
         errors.append(f"primer is {size} bytes, over {PRIMER_MAX_BYTES}")
     for skill in SKILLS:
@@ -1080,7 +1179,12 @@ def budgets(files, corpus) -> tuple[list[str], list[str]]:
         meta, body = read_frontmatter(text)
         desc = meta["description"]
         lines = body.strip("\n").count("\n") + 1
-        report.append(f"{skill:<16} description {len(desc):>4} chars, body {lines:>3} lines ~{tokens(body):>5} tokens")
+        body_bytes = len(body.encode("utf-8"))
+        report.append(f"{skill:<16} SKILL.md {len(text.encode('utf-8')):>6} bytes; description {len(desc):>4} chars, "
+                      f"body {lines:>3} lines {body_bytes:>6} bytes ~{budget_tokens(body):>5} tokens "
+                      f"(max {SKILL_BODY_MAX_BYTES} bytes)")
+        if body_bytes > SKILL_BODY_MAX_BYTES:
+            errors.append(f"{skill}: SKILL.md body is {body_bytes} bytes, over {SKILL_BODY_MAX_BYTES}")
         if len(desc) > DESCRIPTION_MAX_CHARS:
             errors.append(f"{skill}: description is {len(desc)} chars, over {DESCRIPTION_MAX_CHARS}")
         if re.search(r": | #|^[\[\]{}>|*&!%@`'\"]", desc):
@@ -1090,13 +1194,15 @@ def budgets(files, corpus) -> tuple[list[str], list[str]]:
     sizes = []
     for t in corpus.values():
         for skill, text in t.files.items():
-            sizes.append((tokens(text), f"{skill}/references/{t.id}.md"))
-            if tokens(text) > TOPIC_MAX_TOKENS:
-                errors.append(f"{skill}/references/{t.id}.md is ~{tokens(text)} tokens, over {TOPIC_MAX_TOKENS}")
+            sizes.append((budget_tokens(text), f"{skill}/references/{t.id}.md"))
+            if budget_tokens(text) > TOPIC_MAX_TOKENS:
+                errors.append(f"{skill}/references/{t.id}.md is ~{budget_tokens(text)} tokens, over {TOPIC_MAX_TOKENS}")
     sizes.sort()
     total = sum(s for s, _ in sizes)
     report.append(f"topics           {len(sizes)} files, ~{total} tokens in all; smallest ~{sizes[0][0]} ({sizes[0][1]}), "
-                  f"largest ~{sizes[-1][0]} ({sizes[-1][1]}), median ~{sizes[len(sizes) // 2][0]}")
+                  f"largest ~{sizes[-1][0]} ({sizes[-1][1]}, max {TOPIC_MAX_TOKENS}), median ~{sizes[len(sizes) // 2][0]}")
+    report.append(f"                 (budget tokens are characters / {BUDGET_CHARS_PER_TOKEN}, a conservative estimate; "
+                  f"other figures are characters / {CHARS_PER_TOKEN})")
     for skill in SKILLS:
         n = sum(1 for t in corpus.values() if skill in t.skills)
         report.append(f"  {skill:<16} {n} topics")
@@ -1133,13 +1239,59 @@ def check_urls(corpus) -> list[str]:
     return bad
 
 
+CALIBRATION_MODEL = "claude-opus-5-5"
+CALIBRATION_SAMPLE = [  # a mix of prose, rules, and Swift code, as generated
+    SKILLS_OUT / "swiftui-build" / "SKILL.md",
+    SKILLS_OUT / "swiftui-build" / "references" / "button.md",
+    SKILLS_OUT / "swiftui-build" / "references" / "navigation-stack.md",
+    SKILLS_OUT / "swiftui-build" / "references" / "liquid-glass.md",
+    SKILLS_OUT / "swiftui-build" / "references" / "deprecated-apis.md",
+    PRIMER_OUT / "AGENTS.snippet.md",
+]
+
+
+def calibrate_tokens(files) -> int:
+    """One count_tokens call on a sample of the generated pack; prints the measured
+    characters per token and whether BUDGET_CHARS_PER_TOKEN is still conservative."""
+    key = os.environ.get("ANTHROPIC_API_KEY")
+    if not key:
+        print("--calibrate-tokens needs ANTHROPIC_API_KEY. Without it, budgets keep the "
+              f"uncalibrated estimate of {BUDGET_CHARS_PER_TOKEN} characters per token.")
+        return 1
+    sample = "\n\n".join(files[p][0] for p in CALIBRATION_SAMPLE if p in files)
+    body = json.dumps({"model": CALIBRATION_MODEL, "messages": [{"role": "user", "content": sample}]}).encode("utf-8")
+    req = urllib.request.Request("https://api.anthropic.com/v1/messages/count_tokens", data=body, method="POST",
+                                 headers={"x-api-key": key, "anthropic-version": "2023-06-01",
+                                          "content-type": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            counted = json.loads(resp.read())["input_tokens"]
+    except (urllib.error.URLError, KeyError, ValueError) as e:
+        print(f"count_tokens failed: {e}")
+        return 1
+    ratio = len(sample) / counted
+    # Round down to a quarter so the budget divisor errs on the side of more tokens.
+    suggested = math.floor(ratio * 4) / 4
+    print(f"sample: {len(sample)} characters = {counted} tokens ({CALIBRATION_MODEL}), {ratio:.2f} characters per token")
+    if ratio >= BUDGET_CHARS_PER_TOKEN:
+        print(f"BUDGET_CHARS_PER_TOKEN = {BUDGET_CHARS_PER_TOKEN} is conservative (real files have fewer tokens "
+              f"than the budget assumes). It could go up to {suggested}.")
+    else:
+        print(f"BUDGET_CHARS_PER_TOKEN = {BUDGET_CHARS_PER_TOKEN} undercounts. Set it to {suggested} and regenerate.")
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--check", action="store_true", help="don't write; exit 1 if output is stale or invalid")
     ap.add_argument("--check-urls", action="store_true", help="also HEAD every Apple link")
+    ap.add_argument("--calibrate-tokens", action="store_true",
+                    help="measure characters per token with the count_tokens API (needs ANTHROPIC_API_KEY); writes nothing")
     args = ap.parse_args()
 
     files, errors, stats = generate()
+    if args.calibrate_tokens:
+        return calibrate_tokens(files)
     report, budget_errors = budgets(files, stats["corpus"])
     errors += budget_errors
     if args.check_urls:

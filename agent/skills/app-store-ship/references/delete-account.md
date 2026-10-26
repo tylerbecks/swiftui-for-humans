@@ -10,15 +10,6 @@ reviewed: October 2026
 
 If people can create an account in your app, they must be able to delete it there too.
 
-Also called: Guideline 5.1.1(v), 5.1.1(v), account deletion, delete my account, remove account, close account, deactivate account, right to be forgotten, GDPR, CCPA.
-
-## Contents
-
-- Rules
-- Guide
-- Variants
-- Related
-
 ## Rules
 
 - **Put it where people look: account settings.** Apple asks for a deletion option that's easy to find, typically in your account settings. Don't bury it in the privacy policy or terms.
@@ -88,49 +79,7 @@ Form {
 .navigationTitle("Account")
 ```
 
-### The deletion screen
-
-Say what gets deleted, handle subscriptions, then confirm once with `.confirmationDialog`.
-
-```swift
-import StoreKit
-
-struct DeleteAccountView: View {
-    @State private var isConfirming = false
-    @State private var showsSubscriptions = false
-
-    var body: some View {
-        Form {
-            Section {
-                Text("This permanently deletes your account, recipes, and comments.")
-            }
-            Section {
-                Button("Manage Subscription") {
-                    showsSubscriptions = true
-                }
-            } footer: {
-                Text("Billing for Pro continues through Apple until you cancel it.")
-            }
-            Section {
-                Button("Delete Account", role: .destructive) {
-                    isConfirming = true
-                }
-                .confirmationDialog("Delete your account?", isPresented: $isConfirming, titleVisibility: .visible) {
-                    Button("Delete Account", role: .destructive) {
-                        Task { await deleteAccount() }
-                    }
-                } message: {
-                    Text("This can't be undone.")
-                }
-            }
-        }
-        .navigationTitle("Delete Account")
-        .manageSubscriptionsSheet(isPresented: $showsSubscriptions)
-    }
-}
-```
-
-**Important:** Deleting the account doesn't cancel an App Store subscription. Apple asks you to tell people that billing continues through Apple and to have them cancel first; `manageSubscriptionsSheet` opens the system screen for that.
+More variants, left out to keep this file short: The deletion screen.
 
 ## Related
 

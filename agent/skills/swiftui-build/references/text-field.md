@@ -121,29 +121,7 @@ Form {
 }
 ```
 
-#### Add an item with Return
-
-Use `.onSubmit` to act when people press Return, then clear the field so they can type the next one.
-
-```swift
-@State private var newTag = ""
-@State private var tags = ["Travel", "Family"]
-
-VStack(alignment: .leading) {
-    TextField("New Tag", text: $newTag)
-        .onSubmit {
-            let tag = newTag.trimmingCharacters(in: .whitespaces)
-            guard !tag.isEmpty else { return }
-            tags.append(tag)
-            newTag = ""
-        }
-    Text(tags.joined(separator: ", "))
-        .foregroundStyle(.secondary)
-}
-.frame(width: 260)
-```
-
-More variants, left out to keep this file short: Email with validation, Numbers and currency, Search field with clear button, A price with a format (macOS), A field that grows (macOS), Suggestions as people type (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/textfield.md
+More variants, left out to keep this file short: Email with validation, Numbers and currency, Search field with clear button, Add an item with Return (macOS), A price with a format (macOS), A field that grows (macOS), Suggestions as people type (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/textfield.md
 
 ## Related
 

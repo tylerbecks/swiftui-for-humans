@@ -3,6 +3,7 @@
 what they write. Standard library only.
 
     python3 agent/evals/evals.py list
+    python3 agent/evals/evals.py self-test
     python3 agent/evals/evals.py run --setup claude-baseline --task previews
     python3 agent/evals/evals.py report [RUN_ID]
     python3 agent/evals/evals.py score RUN_ID [--judge]
@@ -33,6 +34,11 @@ TEMPLATE = HERE / "template"
 TASKS_DIR = HERE / "tasks"
 RESULTS = HERE / "results"
 JUDGE_PROMPT = HERE / "judge-prompt.md"
+# Deprecated-API hits come from the linter the skills ship, so the evals and the
+# skills agree on what counts. Its rules are agent/src/corrections.yaml.
+LINTER = REPO / "agent" / "src" / "check-swift.sh"
+LINT_MIN_SEVERITY = "warning"  # corrections at warning or error; info rules are judgment calls
+HIG_PREFIX = "hig-"  # the linter's HIG smells, which aren't deprecated APIs
 LOCK = Path("/tmp/swiftui-for-humans-build.lock")  # shared with scripts/build.sh
 
 PLATFORMS = {
@@ -45,12 +51,13 @@ CATEGORIES = {"deprecated-api", "liquid-glass", "hig", "mac", "app-review"}
 # allowlist covers the shell commands it needs, and anything else that would
 # ask for permission is denied. User settings, plugins, MCP servers, and
 # ~/.claude/CLAUDE.md are left out so every setup starts from the same place.
-CLAUDE_TOOLS = "Bash,Edit,Read,Write,Skill,WebFetch,Task"
+# Searching goes through Glob and Grep rather than shell `find` (whose -exec and
+# -delete run anything) or `rg` (whose --pre runs a command per file).
+CLAUDE_TOOLS = "Bash,Edit,Read,Write,Glob,Grep,Skill,WebFetch,Task"
 CLAUDE_ALLOWED = [
-    "Read", "Edit", "Write", "Skill",
+    "Read", "Edit", "Write", "Glob", "Grep", "Skill",
     "Bash(./build.sh *)", "Bash(xcodegen *)",
-    "Bash(ls *)", "Bash(cat *)", "Bash(head *)", "Bash(find *)",
-    "Bash(grep *)", "Bash(rg *)", "Bash(mkdir *)",
+    "Bash(ls *)", "Bash(cat *)", "Bash(head *)", "Bash(grep *)", "Bash(mkdir *)",
     "Bash(git status *)", "Bash(git diff *)",
     "WebFetch(domain:developer.apple.com)",
 ]
@@ -135,11 +142,16 @@ def load_setups():
     return setups
 
 
-def load_deprecated():
-    data = minyaml.load(HERE / "deprecated.yaml") or {}
-    out = []
-    for p in data.get("patterns") or []:
-        out.append({"id": p["id"], "use": p.get("use", ""), "re": re.compile(p["pattern"])})
+def lint_targets():
+    """The template's deployment targets, as check-swift.sh --target values, per platform.
+    The linter skips a correction whose replacement needs a newer OS than the target."""
+    text = (TEMPLATE / "project.yml").read_text()
+    out = {}
+    for platform, (key, name) in {"ios": ("iOS", "iOS"), "macos": ("macOS", "macOS")}.items():
+        m = re.search(rf'^\s*{key}:\s*"?(\d+(?:\.\d+)?)"?\s*$', text, re.MULTILINE)
+        if not m:
+            die(f"template/project.yml: no {key} deployment target")
+        out[platform] = f"{name} {m.group(1)}"
     return out
 
 
@@ -248,17 +260,23 @@ def run_quiet(cmd, cwd):
 # ---------------------------------------------------------------- agents
 
 def agent_command(setup, prompt, project):
+    """The agent's command line. A setup's extra_args go after the harness's own
+    options: before Codex's `--` (everything after it is the prompt), and before
+    Claude's variadic --allowedTools list, which would swallow values placed after it."""
     model = setup.get("model")
+    extra = [str(a) for a in setup.get("extra_args") or []]
     if setup["agent"] == "claude":
         cmd = [
             "claude", "-p", prompt, "--output-format", "stream-json", "--verbose",
             "--permission-mode", "acceptEdits", "--permission-prompts", "none",
-            "--tools", CLAUDE_TOOLS, "--allowedTools", *CLAUDE_ALLOWED,
+            "--tools", CLAUDE_TOOLS,
             "--setting-sources", "project", "--strict-mcp-config",
             "--no-session-persistence",
         ]
         if model:
             cmd += ["--model", model]
+        cmd += extra
+        cmd += ["--allowedTools", *CLAUDE_ALLOWED]
     else:
         cmd = [
             "codex", "exec", "--json", "--sandbox", "workspace-write",
@@ -267,8 +285,8 @@ def agent_command(setup, prompt, project):
         ]
         if model:
             cmd += ["--model", model]
+        cmd += extra
         cmd += ["--", prompt]
-    cmd += [str(a) for a in setup.get("extra_args") or []]
     return cmd
 
 
@@ -459,13 +477,30 @@ def find_all(regex, files):
     return hits
 
 
-def score_sources(project, task, deprecated):
-    files = [(name, strip_comments(text)) for name, text in swift_files(project)]
+def deprecated_hits(project, names, target):
+    """Runs `check-swift.sh --json` on the agent's Swift files and returns
+    {id: ["file:line", ...]} for its corrections (not its HIG checks)."""
+    if not names:
+        return {}
+    cmd = ["sh", str(LINTER), "--json", "--min-severity", LINT_MIN_SEVERITY, "--target", target, "--", *names]
+    r = subprocess.run(cmd, cwd=project, capture_output=True, text=True)
+    if r.returncode not in (0, 1):  # 1 means it found something
+        die(f"{' '.join(cmd)} failed (exit {r.returncode}):\n{r.stderr}")
+    try:
+        findings = json.loads(r.stdout or "[]")
+    except json.JSONDecodeError:
+        die(f"check-swift.sh --json printed something that isn't JSON:\n{r.stdout[:500]}")
     by_id = {}
-    for p in deprecated:
-        hits = find_all(p["re"], files)
-        if hits:
-            by_id[p["id"]] = hits
+    for f in findings:
+        if not f["id"].startswith(HIG_PREFIX):
+            by_id.setdefault(f["id"], []).append(f"{f['path']}:{f['line']}")
+    return by_id
+
+
+def score_sources(project, task, targets):
+    sources = swift_files(project)
+    files = [(name, strip_comments(text)) for name, text in sources]
+    by_id = deprecated_hits(project, [name for name, _ in sources], targets[task["platform"]])
     items = []
     checks = task["checks"]
     for c in checks.get("require") or []:
@@ -550,7 +585,7 @@ def snapshot(project, dest):
                                                                  "skills"))
 
 
-def score_project(project, task, out_dir, deprecated, judge_model, diff, keep_build=False):
+def score_project(project, task, out_dir, targets, judge_model, diff, keep_build=False):
     derived = Path(tempfile.mkdtemp(prefix="sfh-eval-dd-"))
     try:
         build = build_project(project, task["platform"], derived, out_dir / "build.log")
@@ -558,7 +593,7 @@ def score_project(project, task, out_dir, deprecated, judge_model, diff, keep_bu
         if not keep_build:
             shutil.rmtree(derived, ignore_errors=True)
     result = {"build": build}
-    result.update(score_sources(project, task, deprecated))
+    result.update(score_sources(project, task, targets))
     if judge_model:
         log("    judging…")
         result["judge"] = run_judge(task, diff, judge_model)
@@ -570,7 +605,7 @@ def score_project(project, task, out_dir, deprecated, judge_model, diff, keep_bu
 
 def cmd_list(args):
     tasks, setups = load_tasks(), load_setups()
-    deprecated = load_deprecated()
+    targets = lint_targets()
     print(f"{len(tasks)} tasks:")
     for t in tasks.values():
         checks = sum(len(t["checks"].get(k) or []) for k in ("require", "forbid", "max"))
@@ -581,7 +616,8 @@ def cmd_list(args):
         ready = all(s.get(k) is None or resolve(s[k]).exists() for k in ("skills_dir", "primer"))
         print(f"  {name:<22} {s['agent']:<7} skills={s.get('skills_dir')} primer={s.get('primer')}"
               f"{'' if ready else '  (missing files)'}")
-    print(f"\n{len(deprecated)} deprecated-API patterns")
+    print(f"\nDeprecated-API hits: {LINTER.relative_to(REPO)} --json --min-severity {LINT_MIN_SEVERITY} "
+          f"--target {targets['ios']!r} (iOS tasks) or {targets['macos']!r} (macOS tasks)")
 
 
 def pick_tasks(tasks, args):
@@ -602,7 +638,7 @@ def pick_tasks(tasks, args):
 
 def cmd_run(args):
     tasks, setups = load_tasks(), load_setups()
-    deprecated = load_deprecated()
+    targets = lint_targets()
     unknown = [s for s in args.setup if s not in setups]
     if unknown:
         die(f"unknown setup(s): {', '.join(unknown)} (see setups.yaml)")
@@ -654,7 +690,7 @@ def cmd_run(args):
             (out_dir / "changes.diff").write_text(diff)
             snapshot(project, out_dir / "project")
             log("    building…")
-            scores = score_project(project, task, out_dir, deprecated,
+            scores = score_project(project, task, out_dir, targets,
                                    args.judge_model if args.judge else None, diff)
             result = {
                 "run_id": run_id, "setup": setup_name, "agent": setup["agent"],
@@ -677,7 +713,7 @@ def cmd_run(args):
 
 def cmd_score(args):
     tasks = load_tasks()
-    deprecated = load_deprecated()
+    targets = lint_targets()
     run_dir = find_run(args.run)
     for path in sorted(run_dir.glob("*/*/r*/result.json")):
         result = json.loads(path.read_text())
@@ -692,7 +728,7 @@ def cmd_score(args):
             project = workdir / "EvalApp"
             shutil.copytree(out_dir / "project", project)
             diff = (out_dir / "changes.diff").read_text() if (out_dir / "changes.diff").exists() else ""
-            scores = score_project(project, task, out_dir, deprecated,
+            scores = score_project(project, task, out_dir, targets,
                                    args.judge_model if args.judge else None, diff)
         finally:
             shutil.rmtree(workdir, ignore_errors=True)
@@ -708,6 +744,80 @@ def cmd_score(args):
 
 def cmd_report(args):
     print(save_report(find_run(args.run)))
+
+
+SELF_TEST_SWIFT = '''import SwiftUI
+
+struct Card: View {
+    var body: some View {
+        NavigationView {
+            // .foregroundColor(.red) in a comment doesn't count
+            Text("Hi")
+                .cornerRadius(12)
+                .font(.system(size: 30))
+        }
+    }
+}
+'''
+
+
+def cmd_self_test(args):
+    """Checks the harness without running an agent, a build, or the judge: tasks and
+    setups parse, agent commands are well formed, and scoring counts the right hits."""
+    problems = []
+    tasks, setups = load_tasks(), load_setups()
+    targets = lint_targets()
+    if targets != {"ios": "iOS 18.0", "macos": "macOS 15.0"}:
+        problems.append(f"template deployment targets read as {targets}; update this test if they changed on purpose")
+
+    for name in ("ours", "ours-no-primer"):
+        s = setups.get(name)
+        if not s:
+            problems.append(f"setups.yaml has no {name!r} setup")
+            continue
+        for key in ("skills_dir", "primer"):
+            if s.get(key) is not None and not resolve(s[key]).exists():
+                problems.append(f"setup {name}: {key} {s[key]} doesn't exist; run scripts/agent-build.py")
+    if setups.get("ours", {}).get("primer") is None:
+        problems.append("setup ours should include the primer")
+    if setups.get("ours-no-primer", {}).get("primer") is not None:
+        problems.append("setup ours-no-primer should have no primer")
+
+    extra = ["--flag", "value"]
+    codex = agent_command({"agent": "codex", "model": "m", "extra_args": extra}, "PROMPT", Path("/p"))
+    if codex[-2:] != ["--", "PROMPT"] or codex.index("--flag") > codex.index("--"):
+        problems.append(f"codex: extra_args must come before `--` and the prompt: {codex}")
+    claude = agent_command({"agent": "claude", "extra_args": extra}, "PROMPT", Path("/p"))
+    allowed = claude[claude.index("--allowedTools") + 1:]
+    if claude.index("--flag") > claude.index("--allowedTools") or "--flag" in allowed:
+        problems.append(f"claude: extra_args must come before the --allowedTools list: {claude}")
+    if any(a.startswith(("Bash(find", "Bash(rg")) for a in allowed):
+        problems.append(f"claude: the allowlist should search with Glob and Grep, not find or rg: {allowed}")
+    for tool in ("Glob", "Grep"):
+        if tool not in allowed or tool not in CLAUDE_TOOLS.split(","):
+            problems.append(f"claude: {tool} should be in --tools and --allowedTools")
+
+    with tempfile.TemporaryDirectory(prefix="sfh-eval-selftest-") as tmp:
+        project = Path(tmp)
+        (project / "Shared").mkdir()
+        (project / "Shared" / "Card.swift").write_text(SELF_TEST_SWIFT)
+        task = {"platform": "ios", "checks": {"forbid": [{"label": "no cornerRadius", "pattern": r"\.cornerRadius\("}]}}
+        scores = score_sources(project, task, targets)
+        hits = scores["deprecated_hits"]
+        want = {"navigation-view": ["Shared/Card.swift:5"], "corner-radius": ["Shared/Card.swift:8"]}
+        if hits["by_id"] != want or hits["total"] != 2:
+            problems.append(f"deprecated hits: expected {want}, got {hits['by_id']} "
+                            "(comments and HIG checks such as hig-fixed-font-size must not count)")
+        if scores["checks"]["passed"] != 0 or scores["checks"]["total"] != 1:
+            problems.append(f"task checks: expected the forbid check to fail, got {scores['checks']}")
+
+    if problems:
+        print("self-test FAILED:")
+        for p in problems:
+            print(f"  {p}")
+        sys.exit(1)
+    print(f"self-test passed: {len(tasks)} tasks and {len(setups)} setups parse, agent commands are well formed, "
+          "and check-swift.sh scoring counts the right deprecated-API hits")
 
 
 def find_run(run):
@@ -837,8 +947,9 @@ def render_report(run_dir):
             hits.setdefault(pid, {}).setdefault(r["setup"], 0)
             hits[pid][r["setup"]] += len(locs)
     if hits:
-        lines += ["", "## Deprecated-API hits by pattern", "",
-                  "| Pattern | " + " | ".join(setups) + " |", "|---|" + "---|" * len(setups)]
+        lines += ["", "## Deprecated-API hits by rule", "",
+                  "Rule ids are check-swift.sh's, from agent/src/corrections.yaml.", "",
+                  "| Rule | " + " | ".join(setups) + " |", "|---|" + "---|" * len(setups)]
         for pid in sorted(hits):
             lines.append(f"| {pid} | " + " | ".join(str(hits[pid].get(s, 0)) for s in setups) + " |")
     failures = [r for r in results if not r["build"]["ok"]]
@@ -857,6 +968,8 @@ def main():
     sub = ap.add_subparsers(dest="command", required=True)
 
     sub.add_parser("list", help="validate and list tasks and setups").set_defaults(func=cmd_list)
+    sub.add_parser("self-test", help="check the harness itself (no agents, builds, or cost)").set_defaults(
+        func=cmd_self_test)
 
     run = sub.add_parser("run", help="run agents on tasks and score them")
     run.add_argument("--setup", action="append", required=True, help="setup name from setups.yaml (repeatable)")

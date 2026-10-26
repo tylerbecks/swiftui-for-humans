@@ -12,8 +12,6 @@ reviewed: October 2026
 
 Build layouts that fit any screen, window size, orientation, and text size.
 
-Also called: responsive, responsive design, media query, breakpoint, @media, container query, size class, horizontalSizeClass, compact, regular.
-
 ## Contents
 
 - Rules
@@ -48,12 +46,7 @@ iOS sums up the space in each direction as one of two **size classes**: `compact
 
 ## Key APIs
 
-- `\.horizontalSizeClass`: `.compact` when narrow, `.regular` when wide.
-- `ViewThatFits`: Shows the first child that fits.
-- `AnyLayout`: Switches stack direction without losing state.
-- `GridItem(.adaptive)`: As many columns as fit.
-- `.containerRelativeFrame(_:)`: Sizes a view relative to its container.
-- `.onGeometryChange(for:)`: Reacts to a view's real size.
+`\.horizontalSizeClass`, `ViewThatFits`, `AnyLayout`, `GridItem(.adaptive)`, `.containerRelativeFrame(_:)`, `.onGeometryChange(for:)`
 
 ## Variants
 

@@ -19,7 +19,6 @@ Puts buttons and menus in the bar at the top or bottom of a screen.
 - Rules
 - Pitfalls
 - Key APIs
-- Variants
 - On macOS
 - Related
 
@@ -72,37 +71,6 @@ NavigationStack
 
 `.toolbar { }`, `ToolbarItem(placement:)`, `.topBarLeading`, `.topBarTrailing`, `.confirmationAction`, `.cancellationAction`, `.bottomBar`, `ToolbarSpacer(_:placement:)`, `.toolbar(_:for:)`
 
-## Variants
-
-### Save and Cancel in a sheet
-
-Use `.cancellationAction` and `.confirmationAction` to put Cancel and Save where people expect them.
-
-```swift
-@State private var showEditor = false
-
-Button("New Event") { showEditor = true }
-    .sheet(isPresented: $showEditor) {
-        NavigationStack {
-            Form {
-                TextField("Title", text: .constant(""))
-            }
-            .navigationTitle("New Event")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel", role: .cancel) { showEditor = false }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Add", role: .confirm) { showEditor = false }
-                }
-            }
-        }
-    }
-```
-
-**Note:** A sheet doesn't get a bar of its own. Wrap its content in a `NavigationStack` to show a title and toolbar.
-
 ## On macOS
 
 Commands, controls, and search at the top of a window, placed by what they do.
@@ -137,7 +105,7 @@ List(["Lunch on Friday?", "Your receipt"], id: \.self) { subject in
 }
 ```
 
-More variants, left out to keep this file short: Menu in the toolbar, Placements (macOS), A toolbar people can customize (macOS), Space between groups (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/view/toolbar(content:).md
+More variants, left out to keep this file short: Save and Cancel in a sheet, Menu in the toolbar, Placements (macOS), A toolbar people can customize (macOS), Space between groups (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/view/toolbar(content:).md
 
 ## Related
 

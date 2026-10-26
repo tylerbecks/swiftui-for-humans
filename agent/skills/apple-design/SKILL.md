@@ -28,46 +28,48 @@ The Human Interface Guidelines as decisions you can apply while writing SwiftUI:
 
 ## Index
 
+Each id is a file, `references/<id>.md`. (macOS) marks Mac-only topics.
+
 ### Start here
 
-- `references/hig-decisions.md`: The design calls agents most often get wrong, as 36 rules with reasons.
-- `references/liquid-glass.md`: Liquid Glass rules, default code, and the fallback before 26.
+- `hig-decisions` — The design calls agents most often get wrong
+- `liquid-glass` — Liquid Glass rules, default code
 
 ### Foundations
 
-- `references/system-colors.md`: Colors that adapt to light mode, dark mode, and accessibility settings for you.
-- `references/typography.md`: Apple's built-in text styles, which resize automatically when people change their text size.
-- `references/materials.md`: Frosted, blurred backgrounds that let the content behind them show through.
-- `references/sf-symbols.md`: Thousands of built-in icons that match the system font and scale with text.
-- `references/dark-mode.md`: Use colors that adapt, so your app looks right in light and dark.
-- `references/layout-adaptivity.md`: Build layouts that fit any screen, window size, orientation, and text size.
-- `references/motion.md`: Animate to explain what changed, keep it short, and know when to skip it.
-- `references/app-icons.md`: Design one layered icon that the system turns into every appearance and size.
-- `references/writing.md`: Short, specific words for buttons, alerts, errors, and empty screens.
-- `references/windows-layout.md` (macOS only): Lay out windows that people move, resize, and stack beside other apps.
-- `references/color.md` (macOS only): Semantic colors that adapt, and an accent color people choose for every app.
+- `system-colors` — Colors that adapt to light mode
+- `typography` — Apple's built-in text styles
+- `materials` — Frosted, blurred backgrounds that let the content
+- `sf-symbols` — Thousands of built-in icons that match the system
+- `dark-mode` — Use colors that adapt
+- `layout-adaptivity` — Build layouts that fit any screen
+- `motion` — Animate to explain what changed
+- `app-icons` — Design one layered icon that the system turns
+- `writing` — Short, specific words for buttons, alerts, errors
+- `windows-layout` (macOS) — Lay out windows that people move, resize
+- `color` (macOS) — Semantic colors that adapt
 
 ### Accessibility
 
-- `references/accessibility.md`: What to support from day one so everyone can use your app.
-- `references/voiceover.md`: Labels, traits, and grouping that tell the screen reader what each view is.
-- `references/dynamic-type.md`: Let text grow to the size people choose, and keep layouts readable when it does.
-- `references/reduce-motion.md`: Swap big movement for fades when people ask for less motion.
-- `references/color-and-contrast.md`: Readable contrast, Increase Contrast support, and never using color as the only signal.
-- `references/keyboard-access.md` (macOS only): Let people reach every control and command without touching the pointer.
-- `references/contrast-transparency.md` (macOS only): Stay readable when people turn on Increase Contrast or Reduce Transparency.
+- `accessibility` — What to support from day one so everyone
+- `voiceover` — Labels, traits, and grouping that tell the screen
+- `dynamic-type` — Let text grow to the size people choose
+- `reduce-motion` — Swap big movement for fades when people ask
+- `color-and-contrast` — Readable contrast, Increase Contrast support
+- `keyboard-access` (macOS) — Let people reach every control and command
+- `contrast-transparency` (macOS) — Stay readable when people turn on Increase Contrast
 
 ### Patterns
 
-- `references/launching.md`: Open fast, look like your first screen, and pick up where people left off.
-- `references/loading.md`: Show something right away, then swap in the content, an empty state, or an error.
-- `references/feedback.md`: Tell people what happened, with an interruption that matches how much it matters.
-- `references/entering-data.md`: Ask for less, show the right keyboard, and catch mistakes while people type.
-- `references/modality.md`: When to use a sheet, full-screen cover, alert, or popover, and how people get out.
-- `references/undo-redo.md`: Let people take back what they did, instead of asking “Are you sure?” first.
-- `references/requesting-permission.md`: Ask for access when a feature needs it, say why, and handle “no” gracefully.
-- `references/menu-bar-conventions.md` (macOS only): The standard menus, their order, and which commands belong in each.
-- `references/settings-pattern.md` (macOS only): Keep rare, app-wide options in Settings, and task options in the window they affect.
-- `references/windows-tabs.md` (macOS only): More than one window, tabs that gather them, and windows that come back after a relaunch.
-- `references/toolbars-pattern.md` (macOS only): Which commands earn a place in the toolbar, how to group them, and letting people customize.
-- `references/full-screen.md` (macOS only): Let a window fill the screen for focused work, and keep what people need in reach.
+- `launching` — Open fast, look like your first screen
+- `loading` — Show something right away
+- `feedback` — Tell people what happened
+- `entering-data` — Ask for less, show the right keyboard
+- `modality` — When to use a sheet, full-screen cover
+- `undo-redo` — Let people take back what they did
+- `requesting-permission` — Ask for access when a feature needs it
+- `menu-bar-conventions` (macOS) — The standard menus, their order
+- `settings-pattern` (macOS) — Keep rare, app-wide options in Settings
+- `windows-tabs` (macOS) — More than one window
+- `toolbars-pattern` (macOS) — Which commands earn a place in the toolbar
+- `full-screen` (macOS) — Let a window fill the screen for focused

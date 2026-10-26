@@ -102,13 +102,7 @@ struct OrdersView: View {
 
 ## Key APIs
 
-- `.task { }`: Runs async work as the view appears.
-- `.task(id:) { }`: Cancels and restarts the work when `id` changes.
-- `.redacted(reason: .placeholder)`: Draws views as gray placeholders.
-- `ProgressView(value:total:)`: A bar that fills as work completes.
-- `ProgressView()`: A spinner, for work of unknown length.
-- `ContentUnavailableView`: Empty and error states with an action.
-- `.refreshable { }`: Adds pull to refresh to a `List`.
+`.task { }`, `.task(id:) { }`, `.redacted(reason: .placeholder)`, `ProgressView(value:total:)`, `ProgressView()`, `ContentUnavailableView`, `.refreshable { }`
 
 ## Variants
 

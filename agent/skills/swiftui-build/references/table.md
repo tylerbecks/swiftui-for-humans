@@ -11,8 +11,6 @@ hig: https://developer.apple.com/design/human-interface-guidelines/lists-and-tab
 
 Rows of data in columns that people sort, resize, and select, like Finder's list view.
 
-Also called: TableColumn, NSTableView, data grid, spreadsheet, <table>, columns, sort, sortOrder, KeyPathComparator, SortComparator.
-
 ## Contents
 
 - Use when
@@ -82,14 +80,7 @@ Table(files, selection:, sortOrder:)
 
 ## Key APIs
 
-- `Table(_:selection:sortOrder:)`: Rows from data, selectable and sortable.
-- `TableColumn(_:value:)`: A column that shows and sorts by a key path.
-- `KeyPathComparator(_:)`: Describes one sort: a key path and order.
-- `.width(min:ideal:max:)`: Limits how wide a column can get.
-- `.contextMenu(forSelectionType:)`: A menu and double-click for selected rows.
-- `.customizationID(_:)`: Lets people hide and reorder a column.
-- `.tableStyle(_:)`: `.inset` or `.bordered`.
-- `.alternatingRowBackgrounds()`: Stripes every other row.
+`Table(_:selection:sortOrder:)`, `TableColumn(_:value:)`, `KeyPathComparator(_:)`, `.width(min:ideal:max:)`, `.contextMenu(forSelectionType:)`, `.customizationID(_:)`, `.tableStyle(_:)`, `.alternatingRowBackgrounds()`
 
 ## Variants
 

@@ -68,22 +68,6 @@ VStack(alignment: .leading, spacing: 12) {
 
 **Note:** An `Image` inside `Text` flows and wraps like a word, which suits ratings and inline hints.
 
-### Variants
-
-`.symbolVariant` switches every symbol inside a view to its filled, circled, or slashed version.
-
-```swift
-HStack(spacing: 24) {
-    Image(systemName: "bell")
-    Image(systemName: "bell").symbolVariant(.fill)
-    Image(systemName: "bell").symbolVariant(.circle)
-    Image(systemName: "bell").symbolVariant(.slash)
-}
-.font(.largeTitle)
-```
-
-**Note:** Tab bars apply `.fill` for you, so give a `Tab` the outline name and iOS picks the right one.
-
 ## On macOS
 
 Icons drawn to match the system font, for toolbars, sidebars, and menus.
@@ -134,7 +118,7 @@ HStack(spacing: 24) {
 }
 ```
 
-More variants, left out to keep this file short: Add depth with a rendering mode (macOS), Show a level with variable color (macOS), Confirm an action with an animation (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/image/init(systemname:).md
+More variants, left out to keep this file short: Variants, Add depth with a rendering mode (macOS), Show a level with variable color (macOS), Confirm an action with an animation (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/image/init(systemname:).md
 
 ## Related
 

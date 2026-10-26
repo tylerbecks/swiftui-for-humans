@@ -17,7 +17,6 @@ A button that reveals a list of actions when tapped.
 - Rules
 - Pitfalls
 - Key APIs
-- Variants
 - On macOS
 - Related
 
@@ -47,43 +46,6 @@ Menu("Options", systemImage: "ellipsis.circle") {
 ## Key APIs
 
 `Menu(_:systemImage:content:)`, `Menu { } label: { }`, `primaryAction:`, `Section` / `Divider`, `role: .destructive`, `.menuOrder(_:)`
-
-## Variants
-
-### More button
-
-A `Menu` with an ellipsis label holds a screen's extra actions, at the end of a row or in a toolbar.
-
-```swift
-@State private var showsHidden = false
-@State private var layout = "Grid"
-
-HStack {
-    VStack(alignment: .leading) {
-        Text("Documents").font(.headline)
-        Text("\(layout) view\(showsHidden ? ", hidden files shown" : "")")
-            .font(.footnote)
-            .foregroundStyle(.secondary)
-    }
-    Spacer()
-    Menu {
-        Picker("View as", selection: $layout) {
-            Label("Grid", systemImage: "square.grid.2x2").tag("Grid")
-            Label("List", systemImage: "list.bullet").tag("List")
-        }
-        Toggle("Show Hidden Files", isOn: $showsHidden)
-        Divider()
-        Button("Select", systemImage: "checkmark.circle") {}
-    } label: {
-        Image(systemName: "ellipsis")
-            .padding(8)
-    }
-    .buttonStyle(.glass)
-    .buttonBorderShape(.circle)
-}
-```
-
-**Note:** The `Picker` and `Toggle` inside show checkmarks on their own. Don't draw your own checkmarks.
 
 ## On macOS
 
@@ -157,7 +119,7 @@ Menu("View Options", systemImage: "slider.horizontal.3") {
 }
 ```
 
-More variants, left out to keep this file short: Split button with primaryAction, Sections with titles, Items with a subtitle (macOS), A borderless menu (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/menu.md
+More variants, left out to keep this file short: More button, Split button with primaryAction, Sections with titles, Items with a subtitle (macOS), A borderless menu (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/menu.md
 
 ## Related
 

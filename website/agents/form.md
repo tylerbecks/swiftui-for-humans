@@ -20,7 +20,6 @@ A container that lays out controls as grouped rows, like the Settings app.
 - Rules
 - Pitfalls
 - Key APIs
-- Variants
 - On macOS
 - Related
 
@@ -80,34 +79,6 @@ Form
 
 `Form { }`, `Section(_:content:)`, `Section { } footer: { }`, `LabeledContent(_:value:)`, `.pickerStyle(_:)`, `.disabled(_:)`
 
-## Variants
-
-### Sign-up form with validation
-
-Keep the submit `Button` disabled with `.disabled(_:)` until the input is valid.
-
-```swift
-@State private var email = ""
-@State private var agreed = false
-
-Form {
-    Section("Account") {
-        TextField("Email", text: $email)
-            .keyboardType(.emailAddress)
-            .textInputAutocapitalization(.never)
-        Toggle("I agree to the terms", isOn: $agreed)
-    }
-    Section {
-        Button("Create Account") {
-            // Submit
-        }
-        .disabled(!email.contains("@") || !agreed)
-    }
-}
-```
-
-**Note:** A `Button` in a form is just another row, drawn as tinted text.
-
 ## On macOS
 
 Groups labeled controls for settings and data entry, in Mac columns or System Settings rows.
@@ -142,30 +113,7 @@ Form {
 
 `.formStyle(.columns)`, `.formStyle(.grouped)`, `LabeledContent { } label: { }`
 
-### Variants
-
-#### A classic Mac columns form
-
-`.formStyle(.columns)` right-aligns each label against its control, and by Mac convention the labels end with a colon.
-
-```swift
-@State private var startsWith = "Last session"
-@State private var fontSize = 13.0
-@State private var opensInTabs = true
-
-Form {
-    Picker("Start with:", selection: $startsWith) {
-        Text("Last session").tag("Last session")
-        Text("New document").tag("New document")
-    }
-    .pickerStyle(.radioGroup)
-    Stepper("Font size: \(Int(fontSize)) pt", value: $fontSize, in: 9...24)
-    Toggle("Open documents in tabs", isOn: $opensInTabs)
-}
-.formStyle(.columns)
-```
-
-More variants, left out to keep this file short: Inline picker, Rows that open other screens, Grouped, like System Settings (macOS), Read-only rows with LabeledContent (macOS), Several checkboxes under one label (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/form.md
+More variants, left out to keep this file short: Sign-up form with validation, Inline picker, Rows that open other screens, A classic Mac columns form (macOS), Grouped, like System Settings (macOS), Read-only rows with LabeledContent (macOS), Several checkboxes under one label (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/form.md
 
 ## Related
 

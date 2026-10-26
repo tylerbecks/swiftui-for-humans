@@ -11,8 +11,6 @@ hig: https://developer.apple.com/design/human-interface-guidelines/windows.md
 
 Scene modifiers for a window's title bar, toolbar style, size, and position.
 
-Also called: windowStyle, hiddenTitleBar, title bar, titlebar, transparent title bar, windowToolbarStyle, unified toolbar, expanded toolbar, defaultSize, window size.
-
 ## Contents
 
 - Use when
@@ -43,14 +41,7 @@ Also called: windowStyle, hiddenTitleBar, title bar, titlebar, transparent title
 
 ## Key APIs
 
-- `.defaultSize(width:height:)`: The size a new window opens at.
-- `.windowResizability(.contentSize)`: Sizes the window from its content's frame.
-- `.defaultPosition(.topTrailing)`: Where the first window appears on screen.
-- `.windowStyle(.hiddenTitleBar)`: Hides the title and the title bar's backing.
-- `.windowToolbarStyle(.unified)`: How the toolbar and title bar combine.
-- `.containerBackground(_:for:)`: With `.window`, the window's background.
-- `WindowDragGesture()`: Lets people drag the window by a view.
-- `.windowResizeBehavior(.disabled)`: Turns off resizing from inside the window.
+`.defaultSize(width:height:)`, `.windowResizability(.contentSize)`, `.defaultPosition(.topTrailing)`, `.windowStyle(.hiddenTitleBar)`, `.windowToolbarStyle(.unified)`, `.containerBackground(_:for:)`, `WindowDragGesture()`, `.windowResizeBehavior(.disabled)`
 
 ## Variants
 

@@ -11,17 +11,6 @@ reviewed: October 2026
 
 Tell Apple what data your app collects, and why it uses certain APIs.
 
-Also called: privacy nutrition label, privacy label, app privacy, data collection, privacy manifest, PrivacyInfo.xcprivacy, xcprivacy, required reason API, NSPrivacyAccessedAPITypes, UserDefaults.
-
-## Contents
-
-- Rules
-- Pitfalls
-- Guide
-- Key APIs
-- Variants
-- Related
-
 ## Rules
 
 - **Make the privacy policy easy to find.** Guideline 5.1.1(i) wants a link in App Store Connect and inside the app. A row in Settings is the usual place.
@@ -97,32 +86,11 @@ Each SDK reports its own data use and required reason APIs in its own manifest; 
 
 **Note:** Apple keeps a list of commonly used SDKs, such as Firebase modules, Alamofire, and SDWebImage. A new app, or an update that adds one, must include that SDK's manifest, and a signature if you add it as a binary.
 
-### Before you submit
-
-- **Privacy policy URL in App Store Connect**: It's required for every app.
-- **Privacy policy link in the app**: Somewhere easy to find, like Settings. (`settings-screen` (swiftui-build skill))
-- **App Privacy answers published**: Include data your SDKs collect.
-- **Privacy manifest in your target**: `PrivacyInfo.xcprivacy`, with a reason for each required reason API.
-- **SDK manifests included**: Update SDKs on Apple's list to versions that ship one.
-- **A clear purpose string for each permission**: Say what you use the data for. (`requesting-permission` (apple-design skill))
-
 ## Key APIs
 
 `PrivacyInfo.xcprivacy`, `NSPrivacyAccessedAPITypes`, `NSPrivacyCollectedDataTypes`, `NSPrivacyTracking`, `Link`
 
-## Variants
-
-### Privacy policy row
-
-Use `Link` in your settings screen; it opens the policy in Safari.
-
-```swift
-Form {
-    Section("About") {
-        Link("Privacy Policy", destination: URL(string: "https://example.com/privacy")!)
-    }
-}
-```
+More variants, left out to keep this file short: Privacy policy row. Guide sections left out to keep this file short: Before you submit. Apple's docs: https://developer.apple.com/documentation/bundleresources/privacy-manifest-files.md
 
 ## Related
 

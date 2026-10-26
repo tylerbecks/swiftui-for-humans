@@ -76,27 +76,6 @@ VStack(alignment: .leading) {
 
 **Important:** On iOS, the slider's own label isn't drawn. VoiceOver reads it, but you need to show a visible title yourself.
 
-### Brightness with icons
-
-Use `minimumValueLabel:` and `maximumValueLabel:` for icons that show what each end means.
-
-```swift
-@State private var brightness = 0.7
-
-Slider(value: $brightness) {
-    Text("Brightness")
-} minimumValueLabel: {
-    Image(systemName: "sun.min")
-} maximumValueLabel: {
-    Image(systemName: "sun.max.fill")
-}
-.tint(.yellow)
-
-RoundedRectangle(cornerRadius: 12)
-    .fill(.yellow.opacity(brightness))
-    .frame(height: 60)
-```
-
 ## On macOS
 
 A track with a thumb for picking a value between a minimum and a maximum.
@@ -150,25 +129,7 @@ Slider(value: $iconSize, in: 16...128) {
 }
 ```
 
-#### Tick marks with labels
-
-In macOS 26, pass `ticks:` to place a `SliderTick` at each value that matters, labeling only the ones that help, like the ends.
-
-```swift
-@State private var quality = 0.75
-
-Slider(value: $quality) {
-    Text("Quality")
-} ticks: {
-    SliderTick(0.0) { Text("Small file") }
-    SliderTick(0.25)
-    SliderTick(0.5)
-    SliderTick(0.75)
-    SliderTick(1.0) { Text("Best") }
-}
-```
-
-More variants, left out to keep this file short: Act when the drag ends, Tick marks, Fill from the middle, Live preview, save at the end (macOS), With a field and a stepper (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/slider.md
+More variants, left out to keep this file short: Brightness with icons, Act when the drag ends, Tick marks, Fill from the middle, Tick marks with labels (macOS), Live preview, save at the end (macOS), With a field and a stepper (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/slider.md
 
 ## Related
 

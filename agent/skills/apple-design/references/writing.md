@@ -10,16 +10,6 @@ reviewed: October 2026
 
 Short, specific words for buttons, alerts, errors, and empty screens.
 
-## Contents
-
-- Rules
-- Pitfalls
-- Guide
-- Key APIs
-- Variants
-- On macOS
-- Related
-
 ## Rules
 
 - **Label buttons with verbs.** Say what happens when people tap. Clever or cute labels make them stop and think.
@@ -90,38 +80,7 @@ Menu and button names people recognize: verbs, title case, and an ellipsis when 
 
 `Button("Export…")`, `CommandGroup(after:)`, `CommandMenu(_:)`, `.keyboardShortcut(_:modifiers:)`, `.help(_:)`, `String(localized:)`
 
-### Variants
-
-#### Name menu commands the Mac way
-
-Give each command a verb in title case, and end it with … when it opens a panel or window to ask for more.
-
-```swift
-.commands {
-    CommandGroup(after: .newItem) {
-        Button("Duplicate Trip") { }
-            .keyboardShortcut("s", modifiers: [.shift, .command])
-        Button("Export Itinerary…") { }
-            .keyboardShortcut("e", modifiers: [.shift, .command])
-    }
-}
-```
-
-**Note:** Menu bar menus belong to the app, not a page, so the preview draws this one. See Commands (`commands`, swiftui-build skill) for adding them.
-
-#### A label that follows the state
-
-Switch the title with the state, so the item always says what clicking it will do.
-
-```swift
-@State private var showsMap = true
-
-Button(showsMap ? "Hide Map" : "Show Map") {
-    showsMap.toggle()
-}
-```
-
-More variants, left out to keep this file short: An error next to the field, An empty state with a way forward, A setting that explains itself, An error next to the field (macOS), A button that opens more (macOS).
+More variants, left out to keep this file short: An error next to the field, An empty state with a way forward, A setting that explains itself, Name menu commands the Mac way (macOS), A label that follows the state (macOS), An error next to the field (macOS), A button that opens more (macOS).
 
 ## Related
 

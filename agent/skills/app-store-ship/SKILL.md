@@ -28,50 +28,52 @@ What App Review checks and what App Store Connect asks for, with the guideline n
 
 ## Index
 
+Each id is a file, `references/<id>.md`. (macOS) marks Mac-only topics.
+
 ### Start Here
 
-- `references/submission-checklist.md`: Everything to check before you tap Submit for Review, in one list.
-- `references/rejection-guide.md`: The guidelines apps break most often, what each means, and how to fix it.
-- `references/native-vs-catalyst.md` (macOS only): Three ways onto the Mac: a native Mac app, Mac Catalyst, or your iPad app as it is.
-- `references/great-mac-app.md` (macOS only): Menus, the keyboard, windows, Settings, and drag and drop: what people expect on a Mac.
+- `submission-checklist` — Everything to check before you tap Submit
+- `rejection-guide` — The guidelines apps break most often
+- `native-vs-catalyst` (macOS) — Three ways onto the Mac
+- `great-mac-app` (macOS) — Menus, the keyboard, windows, Settings
 
 ### Feels Native
 
-- `references/native-not-web.md`: What makes an app feel like a website in a frame, and how to fix it.
-- `references/appearance-check.md`: Before you submit, check every screen in Dark Mode and at the largest text size.
-- `references/states-check.md`: Give every screen an empty, loading, and error state, and ship no placeholders.
+- `native-not-web` — What makes an app feel like a website
+- `appearance-check` — Before you submit
+- `states-check` — Give every screen an empty, loading
 
 ### Test & Release
 
-- `references/testflight.md`: Share beta builds with your team and up to 10,000 outside testers.
-- `references/app-review.md`: What reviewers need from you, how long review takes, and what to do if you're rejected.
-- `references/releasing.md`: Choose when an approved version goes live, roll updates out slowly, and number builds right.
-- `references/testflight-mac.md` (macOS only): Send Mac builds to testers with TestFlight, the same way as iPhone builds.
-- `references/hardened-runtime.md` (macOS only): Runtime protections Apple requires before it notarizes your Mac app.
-- `references/developer-id-notarization.md` (macOS only): Ship outside the Mac App Store: sign with Developer ID, notarize, and staple the ticket.
-- `references/updates-outside-store.md` (macOS only): Apps you distribute yourself deliver their own updates; Mac App Store apps must not.
+- `testflight` — Share beta builds with your team and up
+- `app-review` — What reviewers need from you
+- `releasing` — Choose when an approved version goes live
+- `testflight-mac` (macOS) — Send Mac builds to testers with TestFlight
+- `hardened-runtime` (macOS) — Runtime protections Apple requires before it notarizes
+- `developer-id-notarization` (macOS) — Ship outside the Mac App Store
+- `updates-outside-store` (macOS) — Apps you distribute yourself deliver their own updates
 
 ### Required by Apple
 
-- `references/sign-in-with-apple.md`: Apple's sign-in button, and when App Review expects you to offer it.
-- `references/delete-account.md`: If people can create an account in your app, they must be able to delete it there too.
-- `references/paywall.md`: Sell digital features with StoreKit's ready-made store views, and show what Apple requires.
-- `references/request-review.md`: Ask for an App Store rating with the system prompt, at a good moment, and never for a reward.
-- `references/app-sandbox.md` (macOS only): Every Mac App Store app runs in a sandbox, with only the access it asks for.
-- `references/privacy-permissions.md` (macOS only): Purpose strings, the privacy manifest, App Privacy answers, and the Mac's permission prompts.
-- `references/mac-app-review.md` (macOS only): Guideline 2.4.5's extra Mac App Store rules, and the issues that most often stall review.
+- `sign-in-with-apple` — Apple's sign-in button
+- `delete-account` — If people can create an account
+- `paywall` — Sell digital features with StoreKit's ready-made store views
+- `request-review` — Ask for an App Store rating
+- `app-sandbox` (macOS) — Every Mac App Store app runs
+- `privacy-permissions` (macOS) — Purpose strings, the privacy manifest
+- `mac-app-review` (macOS) — Guideline 2.4.5's extra Mac App Store rules
 
 ### App Store Connect
 
-- `references/screenshots.md`: The screenshot sizes App Store Connect requires, and how to make clean ones.
-- `references/privacy-details.md`: Tell Apple what data your app collects, and why it uses certain APIs.
-- `references/accessibility-labels.md`: Accessibility Nutrition Labels show which accessibility features your app supports.
-- `references/store-forms.md`: Age rating, encryption, EU trader status, content rights, and the Xcode you need.
-- `references/universal-purchase.md` (macOS only): One App Store listing and one purchase for your iPhone, iPad, and Mac apps.
-- `references/mac-screenshots.md` (macOS only): Mac screenshot sizes, app previews, and the text on your Mac product page.
-- `references/pricing-category.md` (macOS only): Set your Mac app's category in Xcode and App Store Connect, then its price and countries.
+- `screenshots` — The screenshot sizes App Store Connect requires
+- `privacy-details` — Tell Apple what data your app collects
+- `accessibility-labels` — Accessibility Nutrition Labels show which accessibility features
+- `store-forms` — Age rating, encryption, EU trader status
+- `universal-purchase` (macOS) — One App Store listing and one purchase
+- `mac-screenshots` (macOS) — Mac screenshot sizes, app previews
+- `pricing-category` (macOS) — Set your Mac app's category in Xcode
 
 ### Feels Like a Mac
 
-- `references/mac-native-checklist.md` (macOS only): The details Mac users and reviewers notice, in one list to check before you ship.
-- `references/ipad-app-in-window.md` (macOS only): The signs of a port that wasn't adapted to the Mac, and what to do instead.
+- `mac-native-checklist` (macOS) — The details Mac users and reviewers notice
+- `ipad-app-in-window` (macOS) — The signs of a port that wasn't adapted

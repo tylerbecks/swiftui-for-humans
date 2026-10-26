@@ -107,33 +107,7 @@ ProductView(id: "com.example.recipes.lifetime") {
 .productViewStyle(.compact)
 ```
 
-### A small store
-
-`StoreView(ids:)` lists several products, such as tips or packs, and adds columns when there's room.
-
-```swift
-StoreView(ids: [
-    "com.example.recipes.tip.small",
-    "com.example.recipes.tip.large",
-])
-.storeButton(.visible, for: .restorePurchases)
-```
-
-### Your own Restore button
-
-In a custom paywall, call `AppStore.sync()` from a Restore Purchases button.
-
-```swift
-Button("Restore Purchases") {
-    Task {
-        try? await AppStore.sync()
-    }
-}
-```
-
-**Important:** Call `sync()` only when someone taps the button: it asks them to sign in to the App Store. StoreKit already keeps purchases up to date on its own, including after a reinstall.
-
-More variants, left out to keep this file short: Unlock Pro when subscribed. Apple's docs: https://developer.apple.com/documentation/storekit/subscriptionstoreview.md
+More variants, left out to keep this file short: A small store, Your own Restore button, Unlock Pro when subscribed. Apple's docs: https://developer.apple.com/documentation/storekit/subscriptionstoreview.md
 
 ## Related
 

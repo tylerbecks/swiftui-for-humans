@@ -57,14 +57,7 @@ WindowGroup
 
 ## Key APIs
 
-- `.commands { }`: Adds menus and items to a scene.
-- `CommandMenu(_:)`: A new menu, after View.
-- `CommandGroup(after:)`: Adds items to a standard menu.
-- `CommandGroup(replacing:)`: Swaps out a standard group of items.
-- `@FocusedValue`: Reads a value from the focused window or view.
-- `.focusedSceneValue(_:_:)`: Publishes a value for the whole window.
-- `.focusedValue(_:_:)`: Publishes a value while a view has focus.
-- `SidebarCommands()`: Adds Show or Hide Sidebar to the View menu.
+`.commands { }`, `CommandMenu(_:)`, `CommandGroup(after:)`, `CommandGroup(replacing:)`, `@FocusedValue`, `.focusedSceneValue(_:_:)`, `.focusedValue(_:_:)`, `SidebarCommands()`
 
 ## Variants
 

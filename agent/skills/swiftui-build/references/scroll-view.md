@@ -108,40 +108,7 @@ ScrollView {
 
 `.scrollIndicators(_:axes:)`, `.scrollPosition(_:anchor:)`, `.defaultScrollAnchor(_:)`
 
-### Variants
-
-#### Jump to a row with scrollPosition
-
-Bind `.scrollPosition` to a `ScrollPosition` to scroll from code and to read which row is at the top.
-
-```swift
-struct Message: Identifiable {
-    let id: Int
-    var text: String { "Message \(id)" }
-}
-
-@State private var position = ScrollPosition(idType: Int.self)
-private let messages = (1...100).map(Message.init)
-
-VStack {
-    ScrollView {
-        LazyVStack(alignment: .leading) {
-            ForEach(messages) { Text($0.text) }
-        }
-        .scrollTargetLayout()
-    }
-    .scrollPosition($position)
-    .frame(height: 140)
-
-    HStack {
-        Button("Top") { position.scrollTo(edge: .top) }
-        Button("Message 50") { position.scrollTo(id: 50) }
-        Button("Bottom") { position.scrollTo(edge: .bottom) }
-    }
-}
-```
-
-More variants, left out to keep this file short: Carousel with peeking cards, Scroll to top, Pull to refresh, Start in the middle of a canvas (macOS), A horizontal row with room at the edges (macOS), Keep scroll bars inside rounded corners (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/scrollview.md
+More variants, left out to keep this file short: Carousel with peeking cards, Scroll to top, Pull to refresh, Jump to a row with scrollPosition (macOS), Start in the middle of a canvas (macOS), A horizontal row with room at the edges (macOS), Keep scroll bars inside rounded corners (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/scrollview.md
 
 ## Related
 

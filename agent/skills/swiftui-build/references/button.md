@@ -11,17 +11,6 @@ hig: https://developer.apple.com/design/human-interface-guidelines/buttons.md
 
 A control that runs an action when tapped.
 
-## Contents
-
-- Don't use when
-- Default code
-- Rules
-- Pitfalls
-- Key APIs
-- Variants
-- On macOS
-- Related
-
 ## Don't use when
 
 - Moving to another screen: use `NavigationLink(value:)` with `.navigationDestination(for:)`.
@@ -74,26 +63,6 @@ Button {
 .controlSize(.large)
 ```
 
-### Icon button
-
-Use a `Label` with `.labelStyle(.iconOnly)`, so VoiceOver still reads the title.
-
-```swift
-@State private var isFavorite = false
-
-Button {
-    isFavorite.toggle()
-} label: {
-    Label("Favorite", systemImage: isFavorite ? "heart.fill" : "heart")
-        .labelStyle(.iconOnly)
-        .contentTransition(.symbolEffect(.replace))
-}
-.buttonStyle(.bordered)
-.buttonBorderShape(.circle)
-.controlSize(.large)
-.tint(.pink)
-```
-
 ## On macOS
 
 A push button that runs an action when someone clicks it.
@@ -124,29 +93,7 @@ Button("Add to Library") {
 
 `Button(_:systemImage:action:)`, `Button(_:role:action:)`, `.keyboardShortcut(.defaultAction)`, `.keyboardShortcut(.cancelAction)`, `.help(_:)`
 
-### Variants
-
-#### Default and cancel buttons
-
-Add `.keyboardShortcut(.defaultAction)` to the likeliest button so Return clicks it and tints it, and `.cancelAction` so Escape cancels.
-
-```swift
-HStack {
-    Button("Cancel", role: .cancel) {
-        dismiss()
-    }
-    .keyboardShortcut(.cancelAction)
-
-    Button("Save") {
-        save()
-    }
-    .keyboardShortcut(.defaultAction)
-}
-```
-
-**Note:** If more than one button has `.defaultAction`, only the first gets the tint.
-
-More variants, left out to keep this file short: Loading state, Destructive with confirmation, Destructive actions (macOS), Small buttons that act on a list (macOS), A button that looks like a link (macOS), Scope bar buttons (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/button.md
+More variants, left out to keep this file short: Icon button, Loading state, Destructive with confirmation, Default and cancel buttons (macOS), Destructive actions (macOS), Small buttons that act on a list (macOS), A button that looks like a link (macOS), Scope bar buttons (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/button.md
 
 ## Related
 

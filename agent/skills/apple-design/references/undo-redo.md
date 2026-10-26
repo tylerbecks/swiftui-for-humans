@@ -12,15 +12,6 @@ reviewed: October 2026
 
 Let people take back what they did, instead of asking “Are you sure?” first.
 
-## Contents
-
-- Rules
-- Pitfalls
-- Guide
-- Key APIs
-- On macOS
-- Related
-
 ## Rules
 
 - **Offer undo instead of asking first.** For everyday deletes, just do it and let people undo. A confirmation every time slows people down, and they soon tap through it without reading.
@@ -90,27 +81,7 @@ struct GroceryList: View {
 
 `@Environment(\.undoManager)`, `registerUndo(withTarget:handler:)`, `setActionName(_:)`, `undo()` and `redo()`, `canUndo` and `canRedo`, `beginUndoGrouping()`, `removeAllActions(withTarget:)`
 
-## On macOS
-
-Let people take back any change with ⌘Z, and tell them what they're undoing.
-
-### Rules
-
-- **Keep Undo and Redo at the top of the Edit menu.** Mac users look for them there, and press ⌘Z and ⇧⌘Z without looking.
-- **Don't limit undo without reason.** People expect to undo everything since they opened or saved the document.
-- **Undo a burst of small changes as one.** Dragging a slider makes many tiny changes. Record one undo for the whole drag, so one ⌘Z puts it back.
-- **Add undo buttons only when you must.** The Edit menu and ⌘Z are where people go. If your app needs buttons too, put them in the toolbar with the standard symbols.
-
-### Pitfalls
-
-- **The window brings the undo manager.** Read `\.undoManager` from the environment. It's `nil` where undo isn't supported, so skip registering then.
-- **Undo registers redo for you.** When an undo runs code that registers its own undo, that becomes the redo. Write each change as a method that registers its opposite.
-
-### Key APIs
-
-`undoMenuItemTitle`, `canUndo` / `canRedo`
-
-More variants, left out to keep this file short: One undo for a whole drag (macOS), Undo and redo buttons, when you need them (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/environmentvalues/undomanager.md
+The On macOS section was left out to keep this file short. Apple's docs: https://developer.apple.com/documentation/swiftui/environmentvalues/undomanager.md
 
 ## Related
 

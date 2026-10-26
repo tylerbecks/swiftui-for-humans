@@ -69,14 +69,7 @@ Map(position: $position)
 
 ## Key APIs
 
-- `Map(position:selection:)`: A map with a camera binding and optional selection.
-- `MapCameraPosition`: What the map shows: `.automatic`, `.region`, `.camera`, or `.item`.
-- `Marker(_:systemImage:coordinate:)`: The standard balloon pin.
-- `Annotation(_:coordinate:)`: Any SwiftUI view, pinned to a spot.
-- `MapPolyline(coordinates:)`: A line through coordinates, like a route.
-- `.mapStyle(_:)`: `.standard`, `.imagery` (satellite), or `.hybrid`.
-- `.mapControls { }`: Compass, scale, and location buttons.
-- `UserAnnotation()`: The person's location, once they allow it.
+`Map(position:selection:)`, `MapCameraPosition`, `Marker(_:systemImage:coordinate:)`, `Annotation(_:coordinate:)`, `MapPolyline(coordinates:)`, `.mapStyle(_:)`, `.mapControls { }`, `UserAnnotation()`
 
 ## Variants
 

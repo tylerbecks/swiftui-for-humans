@@ -11,8 +11,6 @@ hig: https://developer.apple.com/design/human-interface-guidelines/the-menu-bar.
 
 A small app that lives in the menu bar and opens a panel when clicked.
 
-Also called: MenuBarExtra, status item, status bar app, menu bar app, tray icon, NSStatusItem, agent app, LSUIElement, no Dock icon, popover from menu bar.
-
 ## Contents
 
 - Built from
@@ -46,12 +44,7 @@ MenuBarExtra("Focus", systemImage:)
 
 ## Key APIs
 
-- `MenuBarExtra(_:systemImage:)`: A scene that lives in the menu bar.
-- `.menuBarExtraStyle(.window)`: Opens a panel of your own views.
-- `.menuBarExtraStyle(.menu)`: Pulls down a regular menu.
-- `MenuBarExtra(…isInserted:)`: Lets a setting show or hide the extra.
-- `LSUIElement`: Info.plist key that hides the Dock icon.
-- `SettingsLink`: Opens your Settings window from the panel.
+`MenuBarExtra(_:systemImage:)`, `.menuBarExtraStyle(.window)`, `.menuBarExtraStyle(.menu)`, `MenuBarExtra(…isInserted:)`, `LSUIElement`, `SettingsLink`
 
 ## Variants
 

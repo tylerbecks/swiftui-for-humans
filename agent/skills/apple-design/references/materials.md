@@ -12,16 +12,6 @@ reviewed: October 2026
 
 Frosted, blurred backgrounds that let the content behind them show through.
 
-## Contents
-
-- Default code
-- Rules
-- Pitfalls
-- Key APIs
-- Variants
-- On macOS
-- Related
-
 ## Default code
 
 ```swift
@@ -77,18 +67,6 @@ Image("photo")
     .clipShape(.rect(cornerRadius: 20))
 ```
 
-### Floating badge
-
-Use `.background(.thinMaterial, in: .capsule)` for counts, tags, and status that sit above content.
-
-```swift
-Label("3 new", systemImage: "bell.fill")
-    .font(.subheadline.weight(.semibold))
-    .padding(.horizontal, 14)
-    .padding(.vertical, 8)
-    .background(.thinMaterial, in: .capsule)
-```
-
 ## On macOS
 
 Liquid Glass for controls that float above content, standard materials within it.
@@ -109,33 +87,7 @@ Liquid Glass for controls that float above content, standard materials within it
 
 `.glassEffect(_:in:)`, `GlassEffectContainer`, `.buttonStyle(.glass)`, `.buttonStyle(.glassProminent)`, `.glassEffect(.clear)`, `\.accessibilityReduceTransparency`
 
-### Variants
-
-#### Glass buttons over media
-
-Use `.buttonStyle(.glass)` for controls that float over a photo or video, and wrap them in a `GlassEffectContainer`.
-
-```swift
-ZStack(alignment: .bottom) {
-    Image("photo")
-        .resizable()
-        .scaledToFill()
-    GlassEffectContainer {
-        HStack {
-            Button("Previous", systemImage: "backward.fill") { }
-            Button("Play", systemImage: "play.fill") { }
-            Button("Next", systemImage: "forward.fill") { }
-        }
-        .labelStyle(.iconOnly)
-        .buttonStyle(.glass)
-    }
-    .padding()
-}
-.frame(width: 360, height: 200)
-.clipped()
-```
-
-More variants, left out to keep this file short: Progress overlay, Clear glass with a dimming layer (macOS), A material in the content (macOS), Respect Reduce Transparency (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/material.md
+More variants, left out to keep this file short: Floating badge, Progress overlay, Glass buttons over media (macOS), Clear glass with a dimming layer (macOS), A material in the content (macOS), Respect Reduce Transparency (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/material.md
 
 ## Related
 

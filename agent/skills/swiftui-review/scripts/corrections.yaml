@@ -11,8 +11,10 @@
 #   brief        old → new in a few words, for tables and the primer
 #   why          one line
 #   min_os       the oldest OS where `new` works ("any" means every supported OS)
-#   severity     error   = deprecated, and the compiler already warns
-#                warning = deprecated by Apple (some only in the docs so far) or clearly superseded
+#   severity     error   = hard-deprecated: the compiler warns once the deployment target reaches
+#                          the version that deprecated it (for a 26.0 deprecation, a 26+ target)
+#                warning = deprecated by Apple (some only soft-deprecated, `deprecated: 100000`,
+#                          which never warns) or clearly superseded
 #                info    = a judgment call: often wrong, sometimes fine
 #   regex        Python regex matched against Swift source with comments and string
 #                contents blanked. One line at a time unless `multiline: true`.
@@ -662,7 +664,7 @@
   old: '.cornerRadius(12)'
   new: '.clipShape(.rect(cornerRadius: 12))'
   brief: '`.cornerRadius(r)` → `.clipShape(.rect(cornerRadius: r))`'
-  why: 'cornerRadius is deprecated; clipShape with a shape is explicit and matches backgrounds drawn in: the same shape.'
+  why: 'Soft-deprecated (deprecated in a future version), so no warning yet; Apple says use clipShape or fill, and the shape matches backgrounds.'
   min_os: 'any'
   severity: warning
   regex: '\.cornerRadius\s*\('
@@ -745,7 +747,7 @@
   old: 'Text("Total: ") + Text(price).bold()'
   new: 'Text("Total: \(Text(price).bold())") (interpolate the styled Text)'
   brief: '`Text + Text` → `Text("a \(Text(b).bold())")`'
-  why: 'Text + Text was deprecated in iOS 26; interpolation keeps one localizable string.'
+  why: 'Text + Text is deprecated in iOS and macOS 26 (it warns only with a 26+ deployment target); interpolation keeps one localizable string.'
   min_os: 'iOS 14, macOS 11'
   severity: error
   regex: '\)\s*\+\s*Text\s*\('
@@ -890,7 +892,7 @@
   old: 'UIScreen.main.bounds.width'
   new: 'containerRelativeFrame, onGeometryChange, or size classes'
   brief: '`UIScreen.main.bounds` → `.containerRelativeFrame` / size classes'
-  why: 'UIScreen.main is deprecated in iOS 26 and wrong in iPad windows, Stage Manager, and external displays.'
+  why: 'UIScreen.main is deprecated in iOS 26 (it warns only with a 26+ target) and wrong in iPad windows, Stage Manager, and external displays.'
   min_os: 'iOS 17'
   severity: error
   regex: '\bUIScreen\.main\b'

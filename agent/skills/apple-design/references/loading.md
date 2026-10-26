@@ -12,8 +12,6 @@ reviewed: October 2026
 
 Show something right away, then swap in the content, an empty state, or an error.
 
-Also called: loading state, skeleton, skeleton screen, shimmer, spinner, activity indicator, placeholder, Suspense, useEffect fetch, fetch data.
-
 ## Contents
 
 - Rules
@@ -102,13 +100,7 @@ struct OrdersView: View {
 
 ## Key APIs
 
-- `.task { }`: Runs async work as the view appears.
-- `.task(id:) { }`: Cancels and restarts the work when `id` changes.
-- `.redacted(reason: .placeholder)`: Draws views as gray placeholders.
-- `ProgressView(value:total:)`: A bar that fills as work completes.
-- `ProgressView()`: A spinner, for work of unknown length.
-- `ContentUnavailableView`: Empty and error states with an action.
-- `.refreshable { }`: Adds pull to refresh to a `List`.
+`.task { }`, `.task(id:) { }`, `.redacted(reason: .placeholder)`, `ProgressView(value:total:)`, `ProgressView()`, `ContentUnavailableView`, `.refreshable { }`
 
 ## Variants
 

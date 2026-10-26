@@ -12,8 +12,6 @@ reviewed: October 2026
 
 Ask for less, show the right keyboard, and catch mistakes while people type.
 
-Also called: form input, input type, inputmode, autocomplete, keyboard type, <input type="email">, autofill, one-time code, form validation, return key.
-
 ## Contents
 
 - Rules
@@ -42,13 +40,7 @@ Typing on a phone is slow and easy to get wrong. Ask only for what you can't get
 
 ## Key APIs
 
-- `.keyboardType(.emailAddress)`: Picks the keys: email, numbers, phone.
-- `.textContentType(_:)`: Says what the field is, for AutoFill.
-- `.textInputAutocapitalization`: `.never` turns off the automatic shift key.
-- `.autocorrectionDisabled()`: Stops autocorrect on names and codes.
-- `.submitLabel(.next)`: Changes the Return key's title.
-- `.onSubmit { }`: Runs when people tap Return.
-- `TextField(_:value:format:)`: Edits a number, date, or currency.
+`.keyboardType(.emailAddress)`, `.textContentType(_:)`, `.textInputAutocapitalization`, `.autocorrectionDisabled()`, `.submitLabel(.next)`, `.onSubmit { }`, `TextField(_:value:format:)`
 
 ## Variants
 

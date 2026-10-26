@@ -54,13 +54,7 @@ RoundedRectangle(cornerRadius: 12)
 
 ## Key APIs
 
-- `withAnimation(_:_:)`: Animates every view the state change affects.
-- `.animation(_:value:)`: Animates only this view, when `value` changes.
-- `.easeInOut(duration:)`: Slow start and end. Also `.easeIn`, `.easeOut`, and `.linear`.
-- `.delay(_:)`: Waits before the animation starts.
-- `.repeatForever(autoreverses:)`: Loops the animation until the view goes away.
-- `withAnimation(_:_:completion:)`: Runs code when the animation finishes (iOS 17+).
-- `\.accessibilityReduceMotion`: True when the person turned on Reduce Motion.
+`withAnimation(_:_:)`, `.animation(_:value:)`, `.easeInOut(duration:)`, `.delay(_:)`, `.repeatForever(autoreverses:)`, `withAnimation(_:_:completion:)`, `\.accessibilityReduceMotion`
 
 ## Variants
 

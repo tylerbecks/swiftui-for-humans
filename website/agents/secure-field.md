@@ -133,28 +133,7 @@ Form {
 
 **Note:** On the Mac, the default button gets special coloring, so people can see that Return clicks it.
 
-#### Create a password
-
-Use `.textContentType(.newPassword)` for a password people are making, and check the two fields match as they type.
-
-```swift
-@State private var newPassword = ""
-@State private var confirmation = ""
-
-Form {
-    SecureField("New Password", text: $newPassword)
-        .textContentType(.newPassword)
-    SecureField("Verify", text: $confirmation)
-        .textContentType(.newPassword)
-    if !confirmation.isEmpty && confirmation != newPassword {
-        Text("The passwords don't match.")
-            .foregroundStyle(.red)
-    }
-}
-.frame(width: 320)
-```
-
-More variants, left out to keep this file short: Show / hide password, New password with strength meter, Show the password (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/securefield.md
+More variants, left out to keep this file short: Show / hide password, New password with strength meter, Create a password (macOS), Show the password (macOS). Apple's docs: https://developer.apple.com/documentation/swiftui/securefield.md
 
 ## Related
 

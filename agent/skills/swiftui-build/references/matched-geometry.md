@@ -11,8 +11,6 @@ hig: https://developer.apple.com/design/human-interface-guidelines/motion.md
 
 Morph one view into another, like a sliding tab highlight or a card growing full screen.
 
-Also called: hero animation, shared element transition, FLIP, layoutId, framer motion layout, morph, zoom transition, magic move, namespace.
-
 ## Contents
 
 - Rules
@@ -34,11 +32,7 @@ Also called: hero animation, shared element transition, FLIP, layoutId, framer m
 
 ## Key APIs
 
-- `@Namespace`: A scope for ids, declared once in the parent view.
-- `.matchedGeometryEffect(id:in:)`: Links this view's frame to others with the same id.
-- `isSource:`: Pass `false` on copies that should follow, not lead.
-- `.matchedTransitionSource(id:in:)`: Marks the tile a new screen zooms out of (iOS 18+).
-- `.navigationTransition(.zoom(sourceID:in:))`: Zooms a pushed screen or sheet from its source.
+`@Namespace`, `.matchedGeometryEffect(id:in:)`, `isSource:`, `.matchedTransitionSource(id:in:)`, `.navigationTransition(.zoom(sourceID:in:))`
 
 ## Variants
 
@@ -118,51 +112,7 @@ VStack {
 
 **Important:** Each id can be on screen only once. If both versions show at the same time, give one `isSource: false`, or SwiftUI warns and the result is unpredictable.
 
-### Zoom transition
-
-Pair `.matchedTransitionSource(id:in:)` on the tile with `.navigationTransition(.zoom(sourceID:in:))` on the new screen.
-
-```swift
-struct Album: Identifiable {
-    let id: Int
-    let name: String
-    let color: Color
-}
-
-@Namespace private var zoom
-@State private var selected: Album?
-let albums = [
-    Album(id: 0, name: "Pink", color: .pink),
-    Album(id: 1, name: "Orange", color: .orange),
-    Album(id: 2, name: "Teal", color: .teal),
-    Album(id: 3, name: "Indigo", color: .indigo),
-]
-
-LazyVGrid(columns: [GridItem(), GridItem()], spacing: 12) {
-    ForEach(albums) { album in
-        Button {
-            selected = album
-        } label: {
-            RoundedRectangle(cornerRadius: 16)
-                .fill(album.color.gradient)
-                .frame(height: 100)
-        }
-        .matchedTransitionSource(id: album.id, in: zoom)
-    }
-}
-.fullScreenCover(item: $selected) { album in
-    Rectangle()
-        .fill(album.color.gradient)
-        .ignoresSafeArea()
-        .overlay {
-            Button("Close") { selected = nil }
-                .buttonStyle(.borderedProminent)
-        }
-        .navigationTransition(.zoom(sourceID: album.id, in: zoom))
-}
-```
-
-**Note:** The same two modifiers work for a `NavigationLink` push and a `.sheet`. Put `.navigationTransition` on the destination's root view.
+More variants, left out to keep this file short: Zoom transition. Apple's docs: https://developer.apple.com/documentation/swiftui/view/matchedgeometryeffect(id:in:properties:anchor:issource:).md
 
 ## Related
 

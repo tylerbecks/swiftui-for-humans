@@ -10,14 +10,6 @@ reviewed: October 2026
 
 Guideline 2.4.5's extra Mac App Store rules, and the issues that most often stall review.
 
-## Contents
-
-- Rules
-- Pitfalls
-- Guide
-- Variants
-- Related
-
 ## Rules
 
 - **Open to your app, not a license screen.** Guideline 2.4.5(vi) rules out license screens at launch, license keys, and your own copy protection. The Mac App Store handles purchases; use In-App Purchase to unlock more.
@@ -72,37 +64,7 @@ Apple lists the most common reasons submissions get stuck. None are Mac-only, an
 - **Tested on the current macOS**: No deprecated or optionally installed technologies.
 - **App Review Information is complete**: Demo account, notes, and a contact who answers.
 
-## Variants
-
-### An Open at Login setting
-
-`SMAppService.mainApp` registers your app as a login item, so tie it to a toggle that's off until people turn it on.
-
-```swift
-import ServiceManagement
-import SwiftUI
-
-struct LoginItemToggle: View {
-    @State private var opensAtLogin = SMAppService.mainApp.status == .enabled
-
-    var body: some View {
-        Toggle("Open at login", isOn: $opensAtLogin)
-            .onChange(of: opensAtLogin) { _, isOn in
-                do {
-                    if isOn {
-                        try SMAppService.mainApp.register()
-                    } else {
-                        try SMAppService.mainApp.unregister()
-                    }
-                } catch {
-                    opensAtLogin = SMAppService.mainApp.status == .enabled
-                }
-            }
-    }
-}
-```
-
-**Note:** The preview's toggle doesn't change your login items. People can also review login items in System Settings, and `SMAppService.openSystemSettingsLoginItems()` opens that pane.
+More variants, left out to keep this file short: An Open at Login setting. Apple's docs: https://developer.apple.com/distribute/app-review/
 
 ## Related
 
