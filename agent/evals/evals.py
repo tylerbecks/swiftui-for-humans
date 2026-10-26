@@ -21,6 +21,7 @@ import signal
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 from contextlib import contextmanager
 from pathlib import Path
@@ -47,25 +48,29 @@ PLATFORMS = {
 }
 CATEGORIES = {"deprecated-api", "liquid-glass", "hig", "mac", "app-review"}
 
-# Headless Claude Code: edits are auto-accepted inside the temp project, a short
-# allowlist covers the shell commands it needs, and anything else that would
-# ask for permission is denied. User settings, plugins, MCP servers, and
-# ~/.claude/CLAUDE.md are left out so every setup starts from the same place.
-# Searching goes through Glob and Grep rather than shell `find` (whose -exec and
-# -delete run anything) or `rg` (whose --pre runs a command per file).
+# Headless Claude Code runs every shell command inside its OS sandbox, which
+# auto-approves them but confines writes to the temp project and blocks the
+# network. File edits are auto-accepted inside the project, WebFetch is limited
+# to developer.apple.com, and anything else that would ask is denied. Per-command
+# allowlists don't work here: Claude Code splits compound commands
+# (`./build.sh ios 2>&1 | tail; echo $?`) and denies the whole thing if one
+# part isn't listed, then denies every later approval in the session, so an
+# agent that chains commands loses its build checks. xcodebuild can't run in
+# the sandbox (it needs CoreSimulator and paths outside the project), so the
+# project's ./build.sh asks the harness's BuildBroker to build instead.
+# User settings, plugins, MCP servers, and ~/.claude/CLAUDE.md are left out so
+# every setup starts from the same place.
 CLAUDE_TOOLS = "Bash,Edit,Read,Write,Glob,Grep,Skill,WebFetch,Task"
 CLAUDE_ALLOWED = [
     "Read", "Edit", "Write", "Glob", "Grep", "Skill",
-    "Bash(./build.sh *)", "Bash(xcodegen *)",
-    "Bash(ls *)", "Bash(cat *)", "Bash(head *)", "Bash(tail *)", "Bash(wc *)", "Bash(grep *)",
-    "Bash(mkdir *)", "Bash(cd *)", "Bash(git status *)", "Bash(git diff *)",
-    # Skills ship scripts (ours tells the agent to lint with check_swift.py).
-    # Without these, a skill setup's `./build.sh ios && python3 …` is denied
-    # whole, and Claude Code then denies every later approval in the session.
-    "Bash(python3 .claude/skills/*)", "Bash(python3 */.claude/skills/*)",
-    "Bash(.claude/skills/*)", "Bash(*/.claude/skills/*)",
     "WebFetch(domain:developer.apple.com)",
 ]
+CLAUDE_SANDBOX = {"sandbox": {
+    "enabled": True,
+    "autoAllowBashIfSandboxed": True,
+    "allowUnsandboxedCommands": False,  # no retrying outside the sandbox
+    "failIfUnavailable": True,          # never fall back to running unsandboxed
+}}
 JUDGE_SCHEMA = {
     "type": "object",
     "properties": {
@@ -250,6 +255,70 @@ def build_lock():
         shutil.rmtree(LOCK, ignore_errors=True)
 
 
+class BuildBroker(threading.Thread):
+    """Builds for the agent while it runs. The project's ./build.sh drops
+    `<id>.req` (holding ios or mac) into .build/requests/ and waits; the broker
+    builds outside the agent's sandbox, then writes `<id>.out` and `<id>.done`
+    (the exit code). `build` is injectable for the self-test."""
+
+    def __init__(self, project, build=None):
+        super().__init__(daemon=True)
+        self.dir = project / ".build" / "requests"
+        self.project = project
+        self.build = build or agent_build
+        self.stopping = threading.Event()
+        self.builds = 0
+
+    def __enter__(self):
+        self.dir.mkdir(parents=True, exist_ok=True)
+        (self.dir / "broker").write_text(f"{os.getpid()}\n")
+        self.start()
+        return self
+
+    def __exit__(self, *exc):
+        self.stopping.set()
+        self.join(timeout=5)
+
+    def run(self):
+        while not self.stopping.is_set():
+            for req in sorted(self.dir.glob("*.req")):
+                work = req.with_suffix(".work")
+                try:
+                    req.rename(work)
+                    platform = {"mac": "macos"}.get(work.read_text().strip(), "ios")
+                except OSError:
+                    continue
+                try:
+                    output, code = self.build(self.project, platform)
+                except Exception as e:  # report it to the agent rather than hang it
+                    output, code = f"build service error: {e}\n", 70
+                self.builds += 1
+                (work.with_suffix(".out")).write_text(output)
+                tmp = work.with_suffix(".done-tmp")
+                tmp.write_text(f"{code}\n")
+                tmp.rename(work.with_suffix(".done"))
+                work.unlink(missing_ok=True)
+            self.stopping.wait(0.5)
+
+
+def agent_build(project, platform):
+    """What the template's build.sh used to run itself: an incremental build in
+    the project's own DerivedData, behind the machine-wide lock."""
+    scheme, destination, _ = PLATFORMS[platform]
+    with build_lock():
+        gen = subprocess.run(["xcodegen", "generate", "--quiet"], cwd=project, capture_output=True, text=True)
+        if gen.returncode != 0:
+            return gen.stdout + gen.stderr, gen.returncode
+        r = subprocess.run(["xcodebuild", "-project", "EvalApp.xcodeproj", "-scheme", scheme,
+                            "-destination", destination, "-derivedDataPath", ".build/DerivedData",
+                            "-jobs", "4", "ARCHS=arm64", "CODE_SIGNING_ALLOWED=NO", "build", "-quiet"],
+                           cwd=project, capture_output=True, text=True)
+    output = r.stdout + r.stderr
+    if r.returncode == 0:
+        output += "Build succeeded.\n"
+    return output, r.returncode
+
+
 # ---------------------------------------------------------------- project setup
 
 def copy_template(dest):
@@ -305,7 +374,7 @@ def agent_command(setup, prompt, project):
             "--permission-mode", "acceptEdits", "--permission-prompts", "none",
             "--tools", CLAUDE_TOOLS,
             "--setting-sources", "project", "--strict-mcp-config",
-            "--no-session-persistence",
+            "--no-session-persistence", "--settings", json.dumps(CLAUDE_SANDBOX),
         ]
         if model:
             cmd += ["--model", model]
@@ -329,7 +398,8 @@ def run_agent(setup, prompt, project, out_dir, timeout):
     stdout_path = out_dir / "agent-output.jsonl"
     started = time.time()
     timed_out = False
-    with open(stdout_path, "w") as out, open(out_dir / "agent-stderr.txt", "w") as err:
+    with open(stdout_path, "w") as out, open(out_dir / "agent-stderr.txt", "w") as err, \
+            BuildBroker(project) as broker:
         proc = subprocess.Popen(cmd, cwd=project, stdout=out, stderr=err, stdin=subprocess.DEVNULL,
                                 start_new_session=True)
         try:
@@ -346,7 +416,7 @@ def run_agent(setup, prompt, project, out_dir, timeout):
             os.killpg(proc.pid, signal.SIGKILL)
             raise
     info = {"exit_code": proc.returncode, "timed_out": timed_out,
-            "seconds": round(time.time() - started, 1)}
+            "seconds": round(time.time() - started, 1), "builds": broker.builds}
     text = stdout_path.read_text()
     info.update(parse_claude(text) if setup["agent"] == "claude" else parse_codex(text))
     if setup["agent"] == "claude" and limit_hit(text, (out_dir / "agent-stderr.txt").read_text()):
@@ -836,8 +906,11 @@ def cmd_self_test(args):
     allowed = claude[claude.index("--allowedTools") + 1:]
     if claude.index("--flag") > claude.index("--allowedTools") or "--flag" in allowed:
         problems.append(f"claude: extra_args must come before the --allowedTools list: {claude}")
-    if any(a.startswith(("Bash(find", "Bash(rg")) for a in allowed):
-        problems.append(f"claude: the allowlist should search with Glob and Grep, not find or rg: {allowed}")
+    if any(a.startswith("Bash") for a in allowed):
+        problems.append(f"claude: shell commands run in the sandbox, not through the allowlist: {allowed}")
+    sandbox = json.loads(claude[claude.index("--settings") + 1])["sandbox"]
+    if not (sandbox["enabled"] and sandbox["failIfUnavailable"] and not sandbox["allowUnsandboxedCommands"]):
+        problems.append(f"claude: the agent must run in the sandbox with no unsandboxed fallback: {sandbox}")
     for tool in ("Glob", "Grep"):
         if tool not in allowed or tool not in CLAUDE_TOOLS.split(","):
             problems.append(f"claude: {tool} should be in --tools and --allowedTools")
@@ -856,6 +929,21 @@ def cmd_self_test(args):
         if scores["checks"]["passed"] != 0 or scores["checks"]["total"] != 1:
             problems.append(f"task checks: expected the forbid check to fail, got {scores['checks']}")
 
+    with tempfile.TemporaryDirectory(prefix="sfh-eval-selftest-") as tmp:
+        project = Path(tmp) / "EvalApp"
+        copy_template(project)
+        stub = lambda proj, platform: (f"built {platform} in {proj.name}\n", 0 if platform == "ios" else 65)
+        with BuildBroker(project, build=stub) as broker:
+            ios = subprocess.run(["./build.sh", "ios"], cwd=project, capture_output=True, text=True, timeout=30)
+            mac = subprocess.run(["./build.sh", "mac"], cwd=project, capture_output=True, text=True, timeout=30)
+        if (ios.returncode, ios.stdout, mac.returncode, mac.stdout, broker.builds) != (
+                0, "built ios in EvalApp\n", 65, "built macos in EvalApp\n", 2):
+            problems.append(f"build broker: ./build.sh should relay the build's output and exit code: "
+                            f"{ios.returncode} {ios.stdout!r} {ios.stderr!r} / {mac.returncode} {mac.stdout!r}")
+        leftovers = sorted(p.name for p in (project / ".build" / "requests").iterdir() if p.name != "broker")
+        if leftovers:
+            problems.append(f"build broker: request files left behind: {leftovers}")
+
     limited = json.dumps({"type": "result", "is_error": True, "result": "Claude AI usage limit reached|1793000000"})
     chatty = json.dumps({"type": "result", "is_error": False, "result": "Added a rate limit to the search field."})
     if not limit_hit(limited) or not limit_hit("", "API Error: 429 rate_limit_error") or limit_hit(chatty):
@@ -867,7 +955,8 @@ def cmd_self_test(args):
             print(f"  {p}")
         sys.exit(1)
     print(f"self-test passed: {len(tasks)} tasks and {len(setups)} setups parse, agent commands are well formed, "
-          "check-swift.sh scoring counts the right deprecated-API hits, and usage limits are caught")
+          "check-swift.sh scoring counts the right deprecated-API hits, ./build.sh reaches the build broker, "
+          "and usage limits are caught")
 
 
 def find_run(run):
