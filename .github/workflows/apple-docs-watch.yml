@@ -202,8 +202,40 @@ jobs:
           prompt: ${{ steps.prompt.outputs.prompt }}
           claude_args: |
             --max-turns 250
-            --allowedTools "Read,Edit,Write,Glob,Grep,WebFetch(domain:developer.apple.com),WebFetch(domain:support.apple.com),WebFetch(domain:www.apple.com),Bash(scripts/build.sh:*),Bash(scripts/export-catalog.sh:*),Bash(python3 scripts/apple-watch.py:*),Bash(python3 scripts/agent-build.py:*),Bash(curl -sI https://developer.apple.com/:*),Bash(curl -sI https://support.apple.com/:*),Bash(curl -sI https://www.apple.com/:*),Bash(curl -sL https://developer.apple.com/:*),Bash(find SwiftUIForHumans -name _SnippetCheck.swift -delete),Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git switch -c apple-docs/:*),Bash(git add:*),Bash(git commit:*),Bash(git push -u origin HEAD),Bash(gh pr create:*),Bash(gh pr list:*),Bash(gh issue list:*),Bash(gh issue create:*),Bash(gh issue comment:*)"
+            --allowedTools "Read,Edit,Write,Glob,Grep,WebFetch(domain:developer.apple.com),WebFetch(domain:support.apple.com),WebFetch(domain:www.apple.com),Bash(scripts/build.sh:*),Bash(scripts/export-catalog.sh:*),Bash(python3 scripts/apple-watch.py:*),Bash(python3 scripts/agent-build.py:*),Bash(curl -sI https://developer.apple.com/:*),Bash(curl -sI https://support.apple.com/:*),Bash(curl -sI https://www.apple.com/:*),Bash(curl -sL https://developer.apple.com/:*),Bash(curl -s https://developer.apple.com/:*),Bash(curl -sL https://support.apple.com/:*),Bash(curl -sL https://www.apple.com/:*),Bash(mkdir -p /tmp/apple),Bash(grep:*),Bash(head:*),Bash(tail:*),Bash(wc:*),Bash(sort:*),Bash(jq:*),Bash(ls:*),Bash(date:*),Bash(git branch:*),Bash(git rev-parse:*),Bash(gh pr view:*),Bash(gh issue view:*),Bash(find SwiftUIForHumans -name _SnippetCheck.swift -delete),Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git switch -c apple-docs/:*),Bash(git add:*),Bash(git commit:*),Bash(git push -u origin HEAD),Bash(gh pr create:*),Bash(gh pr list:*),Bash(gh issue list:*),Bash(gh issue create:*),Bash(gh issue comment:*)"
             --disallowedTools "Edit(.github/**),Write(.github/**),Edit(project.yml),Write(project.yml),Edit(CODEOWNERS),Write(CODEOWNERS),Edit(scripts/**),Write(scripts/**),Edit(apple-sources.json),Write(apple-sources.json)"
+
+      # A run where Claude gives up looks like success to the action. Log
+      # every tool call it was denied (names and inputs only), and fail when
+      # it left neither a branch for this run (update) nor a flood issue.
+      - name: Check Claude's result
+        if: always() && steps.claude.outcome != 'skipped'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXECUTION_FILE: ${{ steps.claude.outputs.execution_file }}
+          MODE: ${{ steps.prompt.outputs.mode }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          # shellcheck disable=SC2016  # the backticks are Markdown, not expansions
+          if [ -f "$EXECUTION_FILE" ]; then
+            denials=$(jq -c '[.[] | select(.type == "result") | .permission_denials[]?] | .[]' "$EXECUTION_FILE" || true)
+            if [ -n "$denials" ]; then
+              echo "::warning::Claude was denied $(wc -l <<< "$denials" | tr -d ' ') tool calls"
+              printf '### Denied tool calls\n\n' >> "$GITHUB_STEP_SUMMARY"
+              while IFS= read -r d; do
+                line=$(jq -r '"\(.tool_name): \(.tool_input.command // .tool_input.url // .tool_input.file_path // (.tool_input | tostring))"' <<< "$d")
+                echo "denied: $line"
+                printf -- '- `%s`\n' "$line" >> "$GITHUB_STEP_SUMMARY"
+              done <<< "$denials"
+            fi
+          fi
+          if [ "$MODE" = flood ]; then
+            gh issue list --repo "$GITHUB_REPOSITORY" --state open --label "$FLOOD_LABEL" --json number -q 'length' | grep -qv '^0$' ||
+              { echo "::error::Flood mode ended without an open $FLOOD_LABEL issue"; exit 1; }
+          else
+            git ls-remote --heads origin | grep -q "refs/heads/apple-docs/.*-$RUN_ID$" ||
+              { echo "::error::Claude finished without pushing an apple-docs/*-$RUN_ID branch; see the denied tool calls above"; exit 1; }
+          fi
 
       # Hard scope guard. Fails the run if Claude's branch (or wherever HEAD
       # ended up) changes anything outside the content Claude may update:
