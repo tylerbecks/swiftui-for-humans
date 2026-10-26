@@ -9,3 +9,5 @@ agent/build/
 # MCP server (mcp/): dependencies and Vercel CLI state
 mcp/node_modules/
 mcp/.vercel/
+# apple-watch.py: the latest check's report
+/changes.json

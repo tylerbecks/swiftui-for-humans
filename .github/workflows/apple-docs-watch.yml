@@ -1,0 +1,144 @@
+# Notices when an Apple page the app cites changes, and has Claude open a PR
+# that updates the affected pages.
+#
+# detect: a deterministic check on Ubuntu (scripts/apple-watch.py, no LLM).
+#   Quiet days end here and cost nothing.
+# update: runs only when something changed, on a macOS runner so Claude can
+#   build and test the app. It opens one PR per run with the lockfile
+#   refreshed, or one tracking issue when too many pages changed at once.
+#
+# Needs the ANTHROPIC_API_KEY repository secret and the Claude GitHub App.
+# Re-baseline by hand with `python3 scripts/apple-watch.py --update-lock`.
+
+name: Apple docs watch
+
+on:
+  schedule:
+    - cron: "0 14 * 6-9 *"          # daily, June through September (WWDC betas)
+    - cron: "0 14 * 1-5,10-12 1"    # Mondays the rest of the year
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "Only check sources whose URL, citing file, or page id contains this (for example Controls or human-interface-guidelines)"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: apple-docs-watch
+  cancel-in-progress: false
+
+env:
+  # Above this many changed Apple pages, open a tracking issue instead of a PR.
+  FLOOD_LIMIT: "25"
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    outputs:
+      changed: ${{ steps.watch.outputs.changed }}
+      files: ${{ steps.watch.outputs.files }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Check Apple pages
+        id: watch
+        env:
+          ONLY: ${{ inputs.only }}
+        run: |
+          if [ -n "$ONLY" ]; then
+            python3 scripts/apple-watch.py --only "$ONLY"
+          else
+            python3 scripts/apple-watch.py
+          fi
+
+      - name: Summarize
+        run: |
+          python3 - <<'EOF' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          report = json.load(open("changes.json"))
+          print(f"### Apple docs watch: {report['changed']} of {report['checked']} pages changed\n")
+          for change in report["changes"]:
+              print(f"- {change['url']} ({', '.join(change['reasons'])})")
+          if report["errors"]:
+              print(f"\n{len(report['errors'])} pages couldn't be fetched (not counted as changes).")
+          if report["sources_stale"]:
+              print("\napple-sources.json is out of date; run `python3 scripts/apple-watch.py --sources`.")
+          EOF
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: apple-changes
+          path: changes.json
+          retention-days: 14
+
+  update:
+    needs: detect
+    if: needs.detect.outputs.changed != '' && needs.detect.outputs.changed != '0'
+    runs-on: macos-26
+    timeout-minutes: 180
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write   # lets the action trade the run's OIDC token for the Claude GitHub App's token
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: apple-changes
+
+      - name: Select the newest Xcode
+        run: |
+          xcode=$(for app in /Applications/Xcode_*.app; do
+            case $app in *[Bb]eta*) ;; *) echo "$app" ;; esac
+          done | sort -V | tail -1)
+          echo "Using $xcode"
+          sudo xcode-select -s "$xcode"
+          xcodebuild -version
+
+      - name: Build the prompt
+        id: prompt
+        env:
+          CHANGED: ${{ needs.detect.outputs.changed }}
+          FILES: ${{ needs.detect.outputs.files }}
+          ONLY: ${{ inputs.only }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          if [ "$CHANGED" -gt "$FLOOD_LIMIT" ]; then mode=flood; else mode=update; fi
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
+          {
+            echo "prompt<<SFH_PROMPT_END"
+            cat .github/prompts/apple-docs-update.md
+            echo
+            echo "## This run"
+            echo
+            echo "- Mode: $mode"
+            echo "- Changed Apple pages: $CHANGED (limit for one PR: $FLOOD_LIMIT)"
+            echo "- Affected Swift files: $FILES"
+            echo "- Filter: ${ONLY:-none}"
+            echo "- Date: $(date -u +%Y-%m-%d)"
+            echo "- Run id: $RUN_ID"
+            echo "- Run: $RUN_URL"
+            echo "SFH_PROMPT_END"
+          } >> "$GITHUB_OUTPUT"
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: ${{ steps.prompt.outputs.prompt }}
+          claude_args: |
+            --max-turns 250
+            --allowedTools "Read,Edit,Write,Glob,Grep,WebFetch(domain:developer.apple.com),WebFetch(domain:support.apple.com),WebFetch(domain:www.apple.com),Bash(scripts/build.sh:*),Bash(python3 scripts/apple-watch.py:*),Bash(python3 scripts/agent-build.py:*),Bash(swift scripts/agent-build.swift:*),Bash(curl -sI https://developer.apple.com/:*),Bash(curl -sI https://support.apple.com/:*),Bash(curl -sI https://www.apple.com/:*),Bash(curl -sL https://developer.apple.com/:*),Bash(find SwiftUIForHumans -name _SnippetCheck.swift -delete),Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git switch -c apple-docs/:*),Bash(git add:*),Bash(git commit:*),Bash(git push -u origin HEAD),Bash(gh pr create:*),Bash(gh pr list:*),Bash(gh issue list:*),Bash(gh issue create:*),Bash(gh issue comment:*)"

@@ -45,6 +45,10 @@ Each tab has a slowly shifting wallpaper behind its title (`Wallpaper` in `Share
 
 The website's hero board tiles (`iOS/App/HeroTiles.swift`) are real components rendered by the debug-only reel. If you change a tile, rerun `scripts/hero-reel.sh`.
 
+## Apple docs watcher
+
+`.github/workflows/apple-docs-watch.yml` checks every Apple page the app cites: daily from June through September, on Mondays the rest of the year, and by hand with `workflow_dispatch`. `scripts/apple-watch.py` (Python stdlib only) reads `apple-sources.json`, the map from each URL to the Swift files that cite it, plus Apple's change logs. It fetches the pages (the `.md` version for docs and HIG pages), hashes each section, and compares the hashes with `apple-sources.lock.json`. The lockfile holds hashes and HTTP statuses only, never Apple's text. A 404, a redirect, or Apple's "Page Not Found" page counts as a change. When something changed, Claude runs on a macOS runner with `.github/prompts/apple-docs-update.md` and opens one PR that fixes the affected pages and refreshes the lockfile. When more than 25 pages changed, it opens a tracking issue instead. After you add or remove an Apple link, run `python3 scripts/apple-watch.py --sources`, then `--update-lock` (add `--only <url or file>` to fetch just those pages). Run `--update-lock` alone to re-baseline after reviewing a change by hand. The check writes `changes.json`, which git ignores.
+
 ## Building and checking
 
 - Build and test with `scripts/build.sh` (`ios`, `test-ios`, `mac`, `test-mac`). It passes `-jobs 4` and `ARCHS=arm64` and holds a machine-wide lock, so builds from parallel worktrees wait their turn instead of bogging down the user's machine. Don't call `xcodebuild` directly for routine builds.
