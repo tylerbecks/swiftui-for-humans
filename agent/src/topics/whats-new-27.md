@@ -1,6 +1,8 @@
 ---
 id: whats-new-27
 title: What's new in SwiftUI 27
+summary: SwiftUI APIs new in iOS and macOS 27 and 27.1, and what changed.
+skills: [swiftui-build]
 platforms: [iOS, iPadOS, macOS]
 availability: iOS 27, macOS 27 (Xcode 27); some items 27.1
 reviewed: 2026-10-26

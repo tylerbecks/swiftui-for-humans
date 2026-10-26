@@ -1,6 +1,8 @@
 ---
 id: review-checklist
 title: SwiftUI review checklist
+summary: The review pass: linter, availability, accessibility, Dynamic Type, previews, and HIG checks.
+skills: [swiftui-review]
 platforms: [iOS, iPadOS, macOS]
 reviewed: 2026-10-26
 ---

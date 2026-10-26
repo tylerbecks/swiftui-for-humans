@@ -1,6 +1,8 @@
 ---
 id: liquid-glass
 title: Liquid Glass
+summary: Liquid Glass rules, default code, and the fallback before 26.
+skills: [swiftui-build, apple-design]
 platforms: [iOS, iPadOS, macOS]
 availability: iOS 26, macOS 26
 reviewed: 2026-10-26

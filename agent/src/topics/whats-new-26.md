@@ -1,6 +1,8 @@
 ---
 id: whats-new-26
 title: What's new in SwiftUI 26
+summary: SwiftUI APIs new in iOS and macOS 26, with availability.
+skills: [swiftui-build]
 platforms: [iOS, iPadOS, macOS]
 availability: iOS 26, macOS 26 (Xcode 26)
 reviewed: 2026-10-26

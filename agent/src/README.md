@@ -5,7 +5,9 @@ Hand-written content for the agent pack that doesn't come from the app's pages. 
 | File | What it is |
 |---|---|
 | `corrections.yaml` | Outdated SwiftUI → current SwiftUI, with why, minimum OS, a lint regex, and examples. Feeds the primer, the skills' top rules, the linter, and `topics/deprecated-apis.md`. |
-| `topics/*.md` | Agent-only topics: `liquid-glass`, `whats-new-26`, `whats-new-27`, `deprecated-apis` (generated), `review-checklist`, `hig-decisions`. Terse, imperative, at most about 1,500 tokens each. |
+| `topics/*.md` | Agent-only topics: `liquid-glass`, `whats-new-26`, `whats-new-27`, `deprecated-apis` (generated), `review-checklist`, `hig-decisions`. Terse, imperative, at most about 1,500 tokens each. Frontmatter needs `title`, `summary` (the index line), and `skills` (which skills get a copy). A topic with a page's id replaces that page. |
+| `skills/<skill>.md` | Each SKILL.md's frontmatter (`name` and `description` only), workflow, and top rules. `{{index}}` and `{{corrections}}` are filled in by the generator. |
+| `overlays/<id>.md` | Agent-only sections merged into a page's topic. See "Agent overlays" in docs/content-guide.md. |
 | `check-swift.sh`, `check_swift.py` | The linter shipped inside the review skill. Reads `corrections.yaml` plus built-in HIG checks. Python 3 standard library only. |
 | `make_deprecated_topic.py` | Regenerates `topics/deprecated-apis.md` from `corrections.yaml`. |
 | `snippet_check.py` | Writes every `example_new` and topic code block into temporary `_SnippetCheck` files so the app builds them. |
@@ -18,6 +20,7 @@ python3 agent/src/make_deprecated_topic.py    # refresh the generated topic (use
 python3 agent/src/snippet_check.py write      # then build both editions:
 scripts/build.sh ios && scripts/build.sh mac
 python3 agent/src/snippet_check.py clean      # always, before committing
+scripts/agent-build.py && scripts/agent-build.py --check   # regenerate agent/skills and agent/primer
 ```
 
 Check new URLs with `curl -sI` (they must return 200, and `.md` links must return markdown). In topic code fences, `swift ios` or `swift macos` limits a block to one platform, and `swift nocompile` skips it.

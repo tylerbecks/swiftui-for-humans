@@ -1,6 +1,8 @@
 ---
 id: deprecated-apis
 title: Deprecated and outdated SwiftUI APIs
+summary: Every outdated SwiftUI API models still write, with its replacement and minimum OS.
+skills: [swiftui-build, swiftui-review]
 platforms: [iOS, iPadOS, macOS]
 generated-from: agent/src/corrections.yaml
 reviewed: 2026-10-26

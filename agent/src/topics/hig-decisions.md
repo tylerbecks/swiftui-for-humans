@@ -1,6 +1,8 @@
 ---
 id: hig-decisions
 title: HIG decision rules
+summary: The design calls agents most often get wrong, as 36 rules with reasons.
+skills: [apple-design, swiftui-review]
 platforms: [iOS, iPadOS, macOS]
 reviewed: 2026-10-26
 ---

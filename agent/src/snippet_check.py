@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Extract the agent sources' Swift snippets into temporary files the app targets build.
 
-Every example_new in corrections.yaml and every ```swift block in topics/*.md becomes
+Every example_new in corrections.yaml and every ```swift block in topics/*.md,
+overlays/*.md, and skills/*.md becomes
 one file, so names never collide: top-level declarations are made fileprivate. Code
 fences can carry flags after the language:
 
@@ -39,14 +40,16 @@ def snippets():
     for e in load_rules(HERE / "corrections.yaml"):
         plat = e.get("platforms", "all")
         yield f"corrections_{e['id']}", ({"ios", "macos"} if plat == "all" else {plat}), e["example_new"]
-    for md in sorted((HERE / "topics").glob("*.md")):
+    sources = sorted((HERE / "topics").glob("*.md")) + sorted((HERE / "overlays").glob("*.md")) \
+        + sorted((HERE / "skills").glob("*.md"))
+    for md in sources:
         for n, m in enumerate(FENCE.finditer(md.read_text(encoding="utf-8")), start=1):
             flags = set(m.group(1).split())
             if "nocompile" in flags:
                 continue
             plats = flags & {"ios", "macos"} or {"ios", "macos"}
             line = md.read_text(encoding="utf-8")[:m.start()].count("\n") + 1
-            yield f"{md.stem}_{n:02d}_line{line}", plats, m.group(2)
+            yield f"{md.parent.name}_{md.stem}_{n:02d}_line{line}", plats, m.group(2)
 
 
 def to_file(name: str, code: str) -> str:

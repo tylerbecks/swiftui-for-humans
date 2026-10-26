@@ -21,6 +21,8 @@ TOPIC = HERE / "topics" / "deprecated-apis.md"
 HEADER = """---
 id: deprecated-apis
 title: Deprecated and outdated SwiftUI APIs
+summary: Every outdated SwiftUI API models still write, with its replacement and minimum OS.
+skills: [swiftui-build, swiftui-review]
 platforms: [iOS, iPadOS, macOS]
 generated-from: agent/src/corrections.yaml
 reviewed: {reviewed}
