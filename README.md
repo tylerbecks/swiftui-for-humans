@@ -118,6 +118,10 @@ To add or improve a page:
    - Button (`SwiftUIForHumans/iOS/Examples/Controls/ButtonExample.swift`) for a simple control
    - NavigationStack (`SwiftUIForHumans/iOS/Examples/Navigation/NavigationStackPage.swift`) for a container
 
+## License
+
+The code is under the [MIT License](LICENSE). The written content (the agent pack, the website's agent pages, and the prose on the app's pages) is under [CC BY 4.0](LICENSE-CONTENT.md), and its code samples are MIT too.
+
 ## Support the project
 
 SwiftUI for Humans is free. If it saved you some time, you can [buy me a coffee ☕](https://buymeacoffee.com/tylerbecks).

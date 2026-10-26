@@ -9,5 +9,6 @@
   },
   "homepage": "https://www.swiftuiforhumans.com",
   "repository": "https://github.com/tylerbecks/swiftui-for-humans",
+  "license": "MIT AND CC-BY-4.0",
   "keywords": ["swiftui", "lint", "hook"]
 }
