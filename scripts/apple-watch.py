@@ -4,23 +4,34 @@
     python3 scripts/apple-watch.py                  check every source, write changes.json
     python3 scripts/apple-watch.py --update-lock    re-fetch and record new hashes
     python3 scripts/apple-watch.py --only buttons   limit either mode to matching sources
-    python3 scripts/apple-watch.py --sources        rebuild apple-sources.json from the Swift files
+    python3 scripts/apple-watch.py --sources        rebuild apple-sources.json from the sources
+    python3 scripts/apple-watch.py --self-test      offline checks of fetch handling (no network)
 
-apple-sources.json maps each Apple URL to the Swift files that cite it, plus
-a few "signal" pages (Apple's change logs and the App Review Guidelines).
-apple-sources.lock.json holds one hash per page and per section, never
-Apple's text: the repo is public, and AGENTS.md forbids copying Apple's words.
+apple-sources.json maps each Apple URL to the files that cite it (the Swift
+pages, plus the agent pack's sources in agent/src/**/*.yaml and *.md), and
+adds a few "signal" pages (Apple's change logs and the App Review
+Guidelines). apple-sources.lock.json holds one hash per page and per section,
+never Apple's text: the repo is public, and AGENTS.md forbids copying Apple's
+words.
 
 Docs and HIG pages are fetched as markdown (Apple serves it when the URL ends
 in .md). Every other page is HTML, and only its main article text is kept.
 Before hashing, the text is normalized so noise doesn't count as change: the
 metadata comment keeps only title and availability, images are dropped (art
 refreshes often), and whitespace is collapsed. A page that moves, redirects,
-or starts returning 404 counts as changed too, which catches link rot.
+or starts returning 404 or 410 counts as changed too, which catches link rot.
 
-A check exits 0 whatever it finds and prints "changed: N". Fetch errors
-(timeouts, 5xx after retries) are listed in changes.json but never counted as
-changes, and --update-lock keeps the old entry for them. Python stdlib only.
+Only 404 and 410 count as status changes. 403, 429, 5xx, timeouts, and
+network errors are transient: they are retried with backoff, then listed as
+fetch errors in changes.json, never counted as changes, and --update-lock
+keeps the old entry for them. If more than 20% of the fetches fail, Apple is
+probably blocking or down: the run stops early, writes nothing, and exits 3,
+so the update job never runs on a partial picture.
+
+A successful check exits 0 whatever it finds and prints "changed: N".
+changes.json also holds flood_hash, a stable hash of the sorted set of
+changed URLs, which the workflow uses to skip a flood it already reported.
+Python stdlib only.
 """
 
 from __future__ import annotations
@@ -33,6 +44,7 @@ import html
 import html.parser
 import json
 import os
+import random
 import re
 import sys
 import threading
@@ -43,6 +55,7 @@ import urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SWIFT_ROOT = "SwiftUIForHumans"
+AGENT_SRC = os.path.join("agent", "src")  # agent-only sources; *.yaml and *.md are swept
 SOURCES_FILE = "apple-sources.json"
 LOCK_FILE = "apple-sources.lock.json"
 CHANGES_FILE = "changes.json"
@@ -54,7 +67,13 @@ USER_AGENT = (
 REQUESTS_PER_SECOND = 2.0
 WORKERS = 4
 TIMEOUT = 30
-RETRIES = 3
+RETRIES = 4  # attempts per page for transient failures
+BACKOFF = 2.0  # seconds before the first retry; doubles each time
+MAX_BACKOFF = 60.0  # cap, including a server's Retry-After
+MAX_ERROR_RATIO = 0.20  # more fetch errors than this and the run writes nothing
+
+GONE = {404, 410}  # the only statuses that count as a status change
+THROTTLED = {403, 429}  # Apple's CDN answers these when it rate-limits; transient
 
 # Pages that change often for reasons that don't matter to the app, or aren't
 # pages at all. Matched against the URL without its fragment.
@@ -65,6 +84,7 @@ EXCLUDE = [
     re.compile(r"^https?://www\.apple\.com/?$"),  # home page
     re.compile(r"^https?://www\.apple\.com/privacy/?$"),  # marketing page
     re.compile(r"^https?://developer\.apple\.com/?$"),  # home page
+    re.compile(r"^https?://support\.apple\.com/?$"),  # home page, in a code sample
 ]
 
 # Hosts worth watching. Anything else on apple.com is ignored.
@@ -144,6 +164,21 @@ def fetch_url(url: str) -> str:
     return url
 
 
+def canonical(url: str) -> str:
+    """One key per page: no fragment, and no .md on docs and HIG URLs (the
+    agent sources cite the .md form; fetch_url adds it back)."""
+    url = strip_fragment(url)
+    if is_markdown_url(url) and url.endswith(".md"):
+        url = url[: -len(".md")]
+    return url
+
+
+def change_set_hash(urls) -> str:
+    """A stable hash of a set of URLs: order and duplicates don't matter."""
+    unique = sorted(set(urls))
+    return short_hash("\n".join(unique)) if unique else ""
+
+
 def watched(url: str) -> bool:
     host = urllib.parse.urlsplit(url).hostname or ""
     if host not in WATCHED_HOSTS:
@@ -154,37 +189,43 @@ def watched(url: str) -> bool:
 # ------------------------------------------------------------ source sweep
 
 
+def source_files():
+    """The files swept for Apple URLs: Swift pages, then the agent sources."""
+    for top, suffixes in ((SWIFT_ROOT, (".swift",)), (AGENT_SRC, (".yaml", ".md"))):
+        for dirpath, dirnames, filenames in os.walk(os.path.join(ROOT, top)):
+            dirnames.sort()
+            for name in sorted(filenames):
+                if name.endswith(suffixes):
+                    yield os.path.join(dirpath, name)
+
+
 def sweep_sources() -> dict:
-    """Every watched apple.com URL in the Swift sources → the files citing it."""
+    """Every watched apple.com URL in the sources → the files citing it."""
     found: dict[str, dict] = {}
-    base = os.path.join(ROOT, SWIFT_ROOT)
-    for dirpath, dirnames, filenames in os.walk(base):
-        dirnames.sort()
-        for name in sorted(filenames):
-            if not name.endswith(".swift"):
+    for path in source_files():
+        with open(path, encoding="utf-8") as f:
+            text = f.read()
+        # Page ids come only from Swift pages; agent topics aren't app pages.
+        page_ids = PAGE_ID_RE.findall(text) if path.endswith(".swift") else []
+        for match in URL_RE.finditer(text):
+            cited = clean_url(match.group(0))
+            fragment = urllib.parse.urldefrag(cited)[1]
+            url = canonical(cited)
+            if not watched(url):
                 continue
-            path = os.path.join(dirpath, name)
-            with open(path, encoding="utf-8") as f:
-                text = f.read()
-            page_ids = PAGE_ID_RE.findall(text)
-            for match in URL_RE.finditer(text):
-                cited = clean_url(match.group(0))
-                url = strip_fragment(cited)
-                if not watched(url):
-                    continue
-                entry = found.setdefault(url, {"files": set(), "pages": set(), "cited": set()})
-                entry["files"].add(rel(path))
-                entry["pages"].update(page_ids)
-                if cited != url:
-                    entry["cited"].add(cited)
+            entry = found.setdefault(url, {"files": set(), "pages": set(), "anchors": set()})
+            entry["files"].add(rel(path))
+            entry["pages"].update(page_ids)
+            if fragment:
+                entry["anchors"].add(fragment)
     sources = {}
     for url, entry in found.items():
         sources[url] = {
             "files": sorted(entry["files"]),
             "pages": sorted(entry["pages"]),
         }
-        if entry["cited"]:
-            sources[url]["anchors"] = sorted(urllib.parse.urldefrag(c)[1] for c in entry["cited"])
+        if entry["anchors"]:
+            sources[url]["anchors"] = sorted(entry["anchors"])
     for url in SIGNALS:
         sources.setdefault(url, {"files": [], "pages": []})["signal"] = True
     return dict(sorted(sources.items()))
@@ -219,18 +260,43 @@ class RateLimiter:
         if delay > 0:
             time.sleep(delay)
 
+    def pause(self, seconds: float) -> None:
+        """Holds every worker back, as when Apple's CDN starts throttling."""
+        with self.lock:
+            self.next = max(self.next, time.monotonic() + seconds)
 
-def fetch(url: str, limiter: RateLimiter) -> dict:
-    """Returns {status, final, body, kind} or {error}. Kind follows the response's type."""
+
+def retry_after(error: urllib.error.HTTPError) -> float | None:
+    value = error.headers.get("Retry-After") if error.headers is not None else None
+    try:
+        return max(0.0, float(value))
+    except (TypeError, ValueError):
+        return None  # an HTTP date or nothing; fall back to our own backoff
+
+
+def is_transient(status: int) -> bool:
+    return status in THROTTLED or 500 <= status <= 599
+
+
+def fetch(url: str, limiter: RateLimiter, abort: threading.Event | None = None) -> dict:
+    """Returns {status, final, body, kind} or {error}. Kind follows the response's type.
+
+    Only 200s and 404/410 come back with a status. Throttling (403, 429), server
+    errors, and network failures are retried with backoff, then returned as
+    {error}, so they can never be mistaken for a page that changed or vanished.
+    Any other HTTP error is returned as {error} right away."""
     target = fetch_url(url)
     kind = "md" if is_markdown_url(url) else "html"
     last_error = ""
     for attempt in range(RETRIES):
+        if abort is not None and abort.is_set():
+            return {"error": f"skipped after too many fetch errors ({last_error or 'not tried'})"}
         limiter.wait()
         request = urllib.request.Request(
             target,
             headers={"User-Agent": USER_AGENT, "Accept": "text/markdown, text/html;q=0.9, */*;q=0.1"},
         )
+        delay = min(BACKOFF * 2 ** attempt, MAX_BACKOFF)
         try:
             with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
                 body = response.read().decode("utf-8", "replace")
@@ -238,12 +304,20 @@ def fetch(url: str, limiter: RateLimiter) -> dict:
                 return {"status": response.status, "final": response.geturl(), "body": body,
                         "kind": "md" if "markdown" in ctype else "html"}
         except urllib.error.HTTPError as error:
-            if error.code in (404, 410, 403, 401, 400):
+            if error.code in GONE:
                 return {"status": error.code, "final": error.geturl() or target, "body": "", "kind": kind}
             last_error = f"HTTP {error.code}"
+            if not is_transient(error.code):
+                return {"error": last_error}
+            waited = retry_after(error)
+            if waited is not None:
+                delay = min(max(delay, waited), MAX_BACKOFF)
+            if error.code in THROTTLED:
+                limiter.pause(delay)  # slow everyone down, not just this worker
         except (urllib.error.URLError, TimeoutError, ConnectionError, OSError) as error:
             last_error = f"{type(error).__name__}: {getattr(error, 'reason', error)}"
-        time.sleep(2 ** attempt * 2)
+        if attempt + 1 < RETRIES:
+            time.sleep(delay + random.uniform(0, delay / 4))
     return {"error": last_error}
 
 
@@ -493,17 +567,32 @@ def select(sources: dict, only: str | None) -> dict:
     }
 
 
+def error_budget(total: int) -> int:
+    """How many fetch errors a run of `total` pages may have and still count."""
+    return int(total * MAX_ERROR_RATIO)
+
+
 def fetch_all(urls: list[str]) -> dict[str, dict]:
+    """Fetches every URL. Once the errors exceed the budget the run can't
+    count anyway, so the remaining fetches are skipped instead of retried."""
     limiter = RateLimiter(REQUESTS_PER_SECOND)
+    abort = threading.Event()
+    budget = error_budget(len(urls))
+    failed = 0
     results: dict[str, dict] = {}
     with concurrent.futures.ThreadPoolExecutor(max_workers=WORKERS) as pool:
-        futures = {pool.submit(fetch, url, limiter): url for url in urls}
+        futures = {pool.submit(fetch, url, limiter, abort): url for url in urls}
         for done, future in enumerate(concurrent.futures.as_completed(futures), 1):
             url = futures[future]
             try:
                 results[url] = future.result()
             except Exception as error:  # a parser bug shouldn't sink the run
                 results[url] = {"error": f"{type(error).__name__}: {error}"}
+            if "error" in results[url]:
+                failed += 1
+                if failed > budget and not abort.is_set():
+                    print(f"  {failed} fetch errors (budget {budget}); skipping the rest", file=sys.stderr)
+                    abort.set()
             if done % 50 == 0 or done == len(urls):
                 print(f"  fetched {done}/{len(urls)}", file=sys.stderr)
     return results
@@ -517,15 +606,19 @@ def github_output(**values) -> None:
                 f.write(f"{key}={value}\n")
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--update-lock", action="store_true", help="re-fetch and write new hashes to the lockfile")
     parser.add_argument("--only", metavar="SUBSTR", help="only sources whose URL, citing file, or page id contains SUBSTR")
-    parser.add_argument("--sources", action="store_true", help="rebuild apple-sources.json from the Swift sources")
+    parser.add_argument("--sources", action="store_true", help="rebuild apple-sources.json from the Swift and agent sources")
     parser.add_argument("--sources-file", default=os.path.join(ROOT, SOURCES_FILE), help=argparse.SUPPRESS)
     parser.add_argument("--lock-file", default=os.path.join(ROOT, LOCK_FILE), help=argparse.SUPPRESS)
     parser.add_argument("--out", default=os.path.join(ROOT, CHANGES_FILE), help="where to write changes.json")
-    args = parser.parse_args()
+    parser.add_argument("--self-test", action="store_true", help=argparse.SUPPRESS)
+    args = parser.parse_args(argv)
+
+    if args.self_test:
+        return self_test()
 
     if args.sources:
         sources = sweep_sources()
@@ -558,6 +651,20 @@ def main() -> int:
             errors.append({"url": url, "error": result["error"]})
         else:
             snapshots[url] = snapshot(url, result)
+
+    if len(errors) > error_budget(len(sources)):
+        # Throttled or down: a partial picture would read as mass link rot or
+        # leave half the lockfile stale. Write nothing, so Claude never runs.
+        if not args.update_lock and os.path.exists(args.out):
+            os.remove(args.out)  # don't leave an older report lying around
+        for error in errors[:20]:
+            print(f"  error: {error['url']}: {error['error']}", file=sys.stderr)
+        if len(errors) > 20:
+            print(f"  … and {len(errors) - 20} more", file=sys.stderr)
+        print(f"too many fetch errors: {len(errors)} of {len(sources)} "
+              f"(more than {MAX_ERROR_RATIO:.0%}); wrote nothing", file=sys.stderr)
+        github_output(changed=0, files=0, errors=len(errors), hash="")
+        return 3
 
     if args.update_lock:
         for url, entry in snapshots.items():
@@ -601,11 +708,13 @@ def main() -> int:
         stale = sweep_sources() != all_sources
 
     affected_files = sorted({f for c in changes for f in c["files"]})
+    flood_hash = change_set_hash(c["url"] for c in changes)
     report = {
         "generated": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "only": args.only,
         "checked": len(sources),
         "changed": len(changes),
+        "flood_hash": flood_hash,
         "affected_files": affected_files,
         "changes": changes,
         "errors": errors,
@@ -623,8 +732,141 @@ def main() -> int:
     if stale:
         print("  apple-sources.json is out of date with the Swift sources; run --sources", file=sys.stderr)
     print(f"changed: {len(changes)} (affected files: {len(affected_files)}, errors: {len(errors)}) → {rel(args.out)}")
-    github_output(changed=len(changes), files=len(affected_files), errors=len(errors))
+    if flood_hash:
+        print(f"flood hash: {flood_hash}")
+    github_output(changed=len(changes), files=len(affected_files), errors=len(errors), hash=flood_hash)
     return 0
+
+
+# ---------------------------------------------------------------- self-test
+
+
+def self_test() -> int:
+    """Offline checks against a local server: throttling and server errors are
+    fetch errors (never changes), 404/410 are status changes, the error budget
+    stops a run from writing anything, and the flood hash is stable."""
+    import contextlib
+    import http.server
+    import io
+    import tempfile
+
+    global BACKOFF, MAX_BACKOFF, REQUESTS_PER_SECOND
+    saved = (BACKOFF, MAX_BACKOFF, REQUESTS_PER_SECOND)
+    BACKOFF, MAX_BACKOFF, REQUESTS_PER_SECOND = 0.01, 0.05, 1000.0
+
+    state = {"throttled": set(), "gone": set(), "hits": {}, "flaky": 1}
+    page = "<html><head><title>{0}</title></head><body><article><h2>{0}</h2><p>Same text.</p></article></body></html>"
+
+    class Handler(http.server.BaseHTTPRequestHandler):
+        def log_message(self, *args):
+            pass
+
+        def do_GET(self):
+            path = self.path
+            state["hits"][path] = state["hits"].get(path, 0) + 1
+            if path in state["throttled"] or path == "/forbidden":
+                return self.send_error(403)
+            if path == "/ratelimited":
+                self.send_response(429)
+                self.send_header("Retry-After", "0")
+                self.end_headers()
+                return
+            if path in state["gone"]:
+                return self.send_error(404)
+            if path == "/removed":
+                return self.send_error(410)
+            if path == "/bad":
+                return self.send_error(400)
+            if path == "/flaky" and state["flaky"] > 0:
+                state["flaky"] -= 1
+                return self.send_error(503)
+            body = page.format(path.strip("/")).encode()
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+    server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    base = f"http://127.0.0.1:{server.server_address[1]}"
+    failures: list[str] = []
+
+    def check(condition: bool, label: str) -> None:
+        print(f"  {'ok  ' if condition else 'FAIL'} {label}")
+        if not condition:
+            failures.append(label)
+
+    saved_output = os.environ.pop("GITHUB_OUTPUT", None)
+    try:
+        limiter = RateLimiter(REQUESTS_PER_SECOND)
+        result = fetch(f"{base}/forbidden", limiter)
+        check(result.get("error") == "HTTP 403" and "status" not in result, "403 is a fetch error, not a status")
+        check(state["hits"].get("/forbidden") == RETRIES, f"403 is retried ({RETRIES} attempts)")
+        result = fetch(f"{base}/ratelimited", limiter)
+        check(result.get("error") == "HTTP 429" and state["hits"].get("/ratelimited") == RETRIES, "429 is retried, then an error")
+        result = fetch(f"{base}/flaky", limiter)
+        check(result.get("status") == 200, "a 503 that recovers on retry is a 200")
+        result = fetch(f"{base}/bad", limiter)
+        check(result.get("error") == "HTTP 400" and state["hits"].get("/bad") == 1, "400 is an error, not retried")
+        state["gone"].add("/gone")
+        check(fetch(f"{base}/gone", limiter).get("status") == 404, "404 is a status")
+        check(fetch(f"{base}/removed", limiter).get("status") == 410, "410 is a status")
+
+        urls = [f"{base}/page{i}" for i in range(10)]
+        with tempfile.TemporaryDirectory() as tmp:
+            sources_file = os.path.join(tmp, "sources.json")
+            lock_file = os.path.join(tmp, "lock.json")
+            out = os.path.join(tmp, "changes.json")
+            write_json(sources_file, {"sources": {u: {"files": [f"F{u[-1]}.swift"], "pages": []} for u in urls}})
+            common = ["--only", "127.0.0.1", "--sources-file", sources_file, "--lock-file", lock_file, "--out", out]
+
+            def run(*extra: str) -> tuple[int, dict | None]:
+                if os.path.exists(out):
+                    os.remove(out)
+                with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                    code = main([*extra, *common])
+                return code, load_json(out, None)
+
+            code, _ = run("--update-lock")
+            check(code == 0 and len(load_json(lock_file, {}).get("pages", {})) == 10, "baseline records 10 pages")
+
+            code, report = run()
+            check(code == 0 and report and report["changed"] == 0 and report["flood_hash"] == "", "unchanged pages: 0 changes")
+
+            state["throttled"] = {"/page3"}
+            code, report = run()
+            check(code == 0 and report and report["changed"] == 0
+                  and [e["url"] for e in report["errors"]] == [urls[3]], "one 403 (10%): listed as an error, 0 changes")
+
+            state["throttled"] = {"/page1", "/page2", "/page3"}
+            with open(lock_file, encoding="utf-8") as f:
+                lock_before = f.read()
+            code, report = run()
+            check(code == 3 and report is None, "three 403s (30%): exits 3 and writes no changes.json")
+            code, _ = run("--update-lock")
+            with open(lock_file, encoding="utf-8") as f:
+                check(code == 3 and f.read() == lock_before, "three 403s (30%): --update-lock leaves the lockfile alone")
+
+            state["throttled"] = set()
+            state["gone"] = {"/page5", "/page8"}
+            code, first = run()
+            code2, second = run()
+            gone = [urls[8], urls[5]]
+            check(code == 0 and first and first["changed"] == 2
+                  and all(c["reasons"] == ["status"] for c in first["changes"]), "two 404s: 2 status changes")
+            check(bool(first and second) and first["flood_hash"] == second["flood_hash"] == change_set_hash(gone),
+                  "flood hash is the same across runs")
+            check(change_set_hash(gone) == change_set_hash(list(reversed(gone)) + gone),
+                  "flood hash ignores order and duplicates")
+    finally:
+        server.shutdown()
+        BACKOFF, MAX_BACKOFF, REQUESTS_PER_SECOND = saved
+        if saved_output is not None:
+            os.environ["GITHUB_OUTPUT"] = saved_output
+
+    print(f"self-test: {'all passed' if not failures else f'{len(failures)} failed'}")
+    return 1 if failures else 0
 
 
 if __name__ == "__main__":

@@ -1,13 +1,20 @@
-# Notices when an Apple page the app cites changes, and has Claude open a PR
-# that updates the affected pages.
+# Notices when an Apple page the app or the agent pack cites changes, and has
+# Claude open a PR that updates the affected pages.
 #
 # detect: a deterministic check on Ubuntu (scripts/apple-watch.py, no LLM).
-#   Quiet days end here and cost nothing.
-# update: runs only when something changed, on a macOS runner so Claude can
-#   build and test the app. It opens one PR per run with the lockfile
-#   refreshed, or one tracking issue when too many pages changed at once.
+#   Quiet days end here and cost nothing. When Apple throttles or fails more
+#   than 20% of the fetches, the script exits non-zero, writes nothing, and
+#   the update job never runs. A flood (too many changes for one PR) that an
+#   open apple-docs-flood issue already lists is skipped too.
+# update: runs only when something changed, on the same macOS image as CI so
+#   Claude can build and test the app. It opens one PR per run with the
+#   lockfile refreshed, or one tracking issue when too many pages changed.
+#   Claude can't edit workflows, scripts, project.yml, CODEOWNERS, or
+#   apple-sources.json, and the last step fails the run if the PR branch
+#   touches anything outside the content paths.
 #
 # Needs the ANTHROPIC_API_KEY repository secret and the Claude GitHub App.
+# Every action is pinned to a full commit SHA; Dependabot keeps them current.
 # Re-baseline by hand with `python3 scripts/apple-watch.py --update-lock`.
 
 name: Apple docs watch
@@ -34,6 +41,9 @@ concurrency:
 env:
   # Above this many changed Apple pages, open a tracking issue instead of a PR.
   FLOOD_LIMIT: "25"
+  # Label on the flood tracking issue. Its body or comments carry each run's
+  # flood hash, so the same set of changes isn't reported twice.
+  FLOOD_LABEL: apple-docs-flood
 
 jobs:
   detect:
@@ -41,14 +51,19 @@ jobs:
     timeout-minutes: 20
     permissions:
       contents: read
+      issues: read   # to find an open flood issue that already lists this run's changes
     outputs:
       changed: ${{ steps.watch.outputs.changed }}
       files: ${{ steps.watch.outputs.files }}
+      hash: ${{ steps.watch.outputs.hash }}
+      repeat: ${{ steps.repeat.outputs.repeat }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
+      # Exits 3 without writing changes.json when more than 20% of the fetches
+      # fail (403, 429, 5xx, timeouts), which fails this job and skips update.
       - name: Check Apple pages
         id: watch
         env:
@@ -66,6 +81,8 @@ jobs:
           import json
           report = json.load(open("changes.json"))
           print(f"### Apple docs watch: {report['changed']} of {report['checked']} pages changed\n")
+          if report["flood_hash"]:
+              print(f"Flood hash: `{report['flood_hash']}`\n")
           for change in report["changes"]:
               print(f"- {change['url']} ({', '.join(change['reasons'])})")
           if report["errors"]:
@@ -74,7 +91,29 @@ jobs:
               print("\napple-sources.json is out of date; run `python3 scripts/apple-watch.py --sources`.")
           EOF
 
-      - uses: actions/upload-artifact@v7
+      # In WWDC week the same flood can show up run after run until someone
+      # works through the tracking issue. Skip Claude when an open flood issue
+      # (body or comments) already holds this exact set's hash.
+      - name: Skip a flood that's already tracked
+        id: repeat
+        if: steps.watch.outputs.hash != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HASH: ${{ steps.watch.outputs.hash }}
+        run: |
+          matches=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --label "$FLOOD_LABEL" \
+              --limit 100 --json number,body,comments |
+            jq --arg hash "$HASH" '[.[]
+              | select((.body | contains($hash)) or any(.comments[]?; .body | contains($hash)))
+              | .number]')
+          if [ "$(jq length <<< "$matches")" -gt 0 ]; then
+            echo "::notice::Flood $HASH is already tracked in issue(s) $(jq -r 'map("#\(.)") | join(", ")' <<< "$matches"); skipping the update."
+            echo "repeat=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "repeat=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: apple-changes
           path: changes.json
@@ -82,37 +121,41 @@ jobs:
 
   update:
     needs: detect
-    if: needs.detect.outputs.changed != '' && needs.detect.outputs.changed != '0'
-    runs-on: macos-26
+    if: >-
+      needs.detect.outputs.changed != '' &&
+      needs.detect.outputs.changed != '0' &&
+      needs.detect.outputs.repeat != 'true'
+    # Same image and Xcode as CI (.github/workflows/ci.yml).
+    runs-on: xcode-27
     timeout-minutes: 180
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.1.app/Contents/Developer
     permissions:
       contents: write
       pull-requests: write
       issues: write
       id-token: write   # lets the action trade the run's OIDC token for the Claude GitHub App's token
     steps:
-      - uses: actions/checkout@v7
+      # The Claude action pushes with its own GitHub App token (it replaces
+      # any checkout credential), so the checkout keeps none.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+          persist-credentials: false
 
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: apple-changes
 
-      - name: Select the newest Xcode
-        run: |
-          xcode=$(for app in /Applications/Xcode_*.app; do
-            case $app in *[Bb]eta*) ;; *) echo "$app" ;; esac
-          done | sort -V | tail -1)
-          echo "Using $xcode"
-          sudo xcode-select -s "$xcode"
-          xcodebuild -version
+      - name: Show toolchain
+        run: xcodebuild -version
 
       - name: Build the prompt
         id: prompt
         env:
           CHANGED: ${{ needs.detect.outputs.changed }}
           FILES: ${{ needs.detect.outputs.files }}
+          HASH: ${{ needs.detect.outputs.hash }}
           ONLY: ${{ inputs.only }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           RUN_ID: ${{ github.run_id }}
@@ -127,7 +170,9 @@ jobs:
             echo
             echo "- Mode: $mode"
             echo "- Changed Apple pages: $CHANGED (limit for one PR: $FLOOD_LIMIT)"
-            echo "- Affected Swift files: $FILES"
+            echo "- Affected files: $FILES"
+            echo "- Flood hash: $HASH"
+            echo "- Flood label: $FLOOD_LABEL"
             echo "- Filter: ${ONLY:-none}"
             echo "- Date: $(date -u +%Y-%m-%d)"
             echo "- Run id: $RUN_ID"
@@ -135,10 +180,48 @@ jobs:
             echo "SFH_PROMPT_END"
           } >> "$GITHUB_OUTPUT"
 
-      - uses: anthropics/claude-code-action@v1
+      - name: Create the flood label
+        if: steps.prompt.outputs.mode == 'flood'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create "$FLOOD_LABEL" --repo "$GITHUB_REPOSITORY" --color D93F0B \
+            --description "Apple docs watch: too many changed pages for one PR" 2>/dev/null ||
+            echo "The $FLOOD_LABEL label already exists."
+
+      # --disallowedTools wins over --allowedTools: Claude can't edit the
+      # workflows, scripts, build config, owners, or the generated source map
+      # (apple-watch.py --sources rewrites that one). The scope guard below
+      # backs this up for anything a Bash command might write.
+      - uses: anthropics/claude-code-action@925afb53776cf1a2b738c6bdbed37b4d4000ef13 # v1.0.262
+        id: claude
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           prompt: ${{ steps.prompt.outputs.prompt }}
           claude_args: |
             --max-turns 250
-            --allowedTools "Read,Edit,Write,Glob,Grep,WebFetch(domain:developer.apple.com),WebFetch(domain:support.apple.com),WebFetch(domain:www.apple.com),Bash(scripts/build.sh:*),Bash(python3 scripts/apple-watch.py:*),Bash(python3 scripts/agent-build.py:*),Bash(swift scripts/agent-build.swift:*),Bash(curl -sI https://developer.apple.com/:*),Bash(curl -sI https://support.apple.com/:*),Bash(curl -sI https://www.apple.com/:*),Bash(curl -sL https://developer.apple.com/:*),Bash(find SwiftUIForHumans -name _SnippetCheck.swift -delete),Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git switch -c apple-docs/:*),Bash(git add:*),Bash(git commit:*),Bash(git push -u origin HEAD),Bash(gh pr create:*),Bash(gh pr list:*),Bash(gh issue list:*),Bash(gh issue create:*),Bash(gh issue comment:*)"
+            --allowedTools "Read,Edit,Write,Glob,Grep,WebFetch(domain:developer.apple.com),WebFetch(domain:support.apple.com),WebFetch(domain:www.apple.com),Bash(scripts/build.sh:*),Bash(scripts/export-catalog.sh:*),Bash(python3 scripts/apple-watch.py:*),Bash(python3 scripts/agent-build.py:*),Bash(curl -sI https://developer.apple.com/:*),Bash(curl -sI https://support.apple.com/:*),Bash(curl -sI https://www.apple.com/:*),Bash(curl -sL https://developer.apple.com/:*),Bash(find SwiftUIForHumans -name _SnippetCheck.swift -delete),Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git switch -c apple-docs/:*),Bash(git add:*),Bash(git commit:*),Bash(git push -u origin HEAD),Bash(gh pr create:*),Bash(gh pr list:*),Bash(gh issue list:*),Bash(gh issue create:*),Bash(gh issue comment:*)"
+            --disallowedTools "Edit(.github/**),Write(.github/**),Edit(project.yml),Write(project.yml),Edit(CODEOWNERS),Write(CODEOWNERS),Edit(scripts/**),Write(scripts/**),Edit(apple-sources.json),Write(apple-sources.json)"
+
+      # Hard scope guard. Fails the run if Claude's branch (or wherever HEAD
+      # ended up) changes anything outside the content Claude may update:
+      # pages, the agent pack and its generated outputs, the MCP corpus, and
+      # the watcher's own source map and lockfile. A red run here means the
+      # PR needs a close look, or closing.
+      - name: Scope guard
+        if: always()
+        run: |
+          base=$(git rev-parse origin/main)
+          refs=$(git for-each-ref --format='%(refname)' refs/heads/apple-docs/)
+          touched=$(for ref in HEAD $refs; do git diff --name-only "$base...$ref"; done | sort -u)
+          allowed='^(SwiftUIForHumans/|agent/|website/agents/|mcp/data/)|^website/llms[^/]*\.txt$|^apple-sources(\.lock)?\.json$'
+          outside=$(grep -Ev "$allowed" <<< "$touched" | sed '/^$/d' || true)
+          if [ -n "$outside" ]; then
+            printf '### Scope guard failed\n\nThe watcher branch changes files it must not touch:\n\n' >> "$GITHUB_STEP_SUMMARY"
+            while IFS= read -r file; do
+              printf -- "- \`%s\`\n" "$file" >> "$GITHUB_STEP_SUMMARY"
+              echo "::error file=$file::Outside the Apple docs watcher's allowed paths"
+            done <<< "$outside"
+            exit 1
+          fi
+          echo "Scope guard passed: $(sed '/^$/d' <<< "$touched" | wc -l | tr -d ' ') files changed, all inside the allowed paths."
