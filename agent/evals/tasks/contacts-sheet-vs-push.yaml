@@ -1,0 +1,18 @@
+id: contacts-sheet-vs-push
+title: Push to view, sheet to create
+platform: ios
+category: hig
+prompt: >
+  Build a contacts list. Tapping a contact shows their details. A plus button
+  lets the user create a new contact with name, phone, and email fields.
+checks:
+  require:
+    - label: Uses a navigation stack
+      pattern: '\bNavigationStack\b|\bNavigationSplitView\b'
+    - label: Presents creation modally
+      pattern: '\.sheet\(|\.fullScreenCover\('
+rubric:
+  - Viewing a contact pushes a detail screen, while creating one is presented modally in a sheet.
+  - The new-contact sheet has Cancel and Add (or Save / Done), with Add disabled until the input is valid.
+  - The plus button has an accessibility label or is a Label with a title.
+  - The phone and email fields use matching keyboard types and text content types.

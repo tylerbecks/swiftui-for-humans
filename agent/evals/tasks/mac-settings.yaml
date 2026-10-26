@@ -1,0 +1,17 @@
+id: mac-settings
+title: Mac preferences window
+platform: macos
+category: mac
+prompt: >
+  Add a preferences window to the Mac app with two tabs: General (a "Launch at
+  login" toggle and a default export format picker) and Appearance (a theme
+  picker and a font size slider).
+checks:
+  require:
+    - label: Uses the Settings scene
+      pattern: '\bSettings\s*\{'
+rubric:
+  - Uses the Settings scene, so the app menu gets Settings… with Command-comma automatically, not a custom window or a sheet.
+  - Uses a TabView with a title and SF Symbol per tab inside the Settings scene.
+  - Values persist with @AppStorage.
+  - The window has a sensible size and a Form layout with aligned labels.

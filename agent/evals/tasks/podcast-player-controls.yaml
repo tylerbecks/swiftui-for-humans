@@ -1,0 +1,18 @@
+id: podcast-player-controls
+title: Icon-only player controls that are accessible
+platform: ios
+category: hig
+prompt: >
+  Build a podcast now-playing screen with episode artwork (a placeholder), the
+  episode title, a progress slider, and a row of icon-only buttons: skip back 15
+  seconds, play/pause, skip forward 30 seconds, and share.
+checks:
+  require:
+    - label: Gives controls accessibility labels
+      pattern: '\.accessibilityLabel\(|\bLabel\('
+rubric:
+  - Every icon-only button has a meaningful accessibility label (accessibilityLabel, or a Label shown icon-only).
+  - Tap targets are at least 44 by 44 points (frame, contentShape, or a large control size).
+  - The play/pause label and symbol reflect the current state.
+  - Share uses ShareLink.
+  - The slider has an accessibility label or value that describes playback position.

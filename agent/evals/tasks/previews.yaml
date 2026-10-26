@@ -1,0 +1,19 @@
+id: previews
+title: Reusable view with light, dark, and large-text previews
+platform: ios
+category: deprecated-api
+prompt: >
+  Create a reusable ProfileHeader view (a circle with the person's initials, their
+  name, and their username) and add Xcode previews that show it in light mode,
+  dark mode, and at the largest accessibility text size. Use it in ContentView.
+checks:
+  require:
+    - label: Uses the #Preview macro
+      pattern: '#Preview\b'
+  forbid:
+    - label: No PreviewProvider
+      pattern: '\bPreviewProvider\b'
+rubric:
+  - Previews cover light mode, dark mode, and an accessibility Dynamic Type size.
+  - The header still lays out sensibly at the largest text size (wraps or stacks instead of truncating).
+  - The initials circle is hidden from VoiceOver or combined with the name, so it isn't read as stray letters.

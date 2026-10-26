@@ -1,0 +1,55 @@
+# The eval app. The harness copies this folder into a temp directory for
+# every run and runs `xcodegen generate` there, so no .xcodeproj is
+# committed. Sources are synchronized folders: new files are picked up
+# without regenerating.
+name: EvalApp
+
+options:
+  bundleIdPrefix: com.example.evalapp
+  deploymentTarget:
+    iOS: "18.0"
+    macOS: "15.0"
+
+settings:
+  base:
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    # The Swift settings a new Xcode 26+ app project starts with.
+    SWIFT_VERSION: "5.0"
+    SWIFT_APPROACHABLE_CONCURRENCY: YES
+    SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
+    SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY: YES
+    GENERATE_INFOPLIST_FILE: YES
+    CODE_SIGN_STYLE: Automatic
+
+targets:
+  EvalApp-iOS:
+    type: application
+    platform: iOS
+    sources:
+      - path: Shared
+        type: syncedFolder
+      - path: iOS
+        type: syncedFolder
+    settings:
+      base:
+        PRODUCT_NAME: EvalApp
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.evalapp
+        TARGETED_DEVICE_FAMILY: "1,2"
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+    scheme: {}
+
+  EvalApp-macOS:
+    type: application
+    platform: macOS
+    sources:
+      - path: Shared
+        type: syncedFolder
+      - path: macOS
+        type: syncedFolder
+    settings:
+      base:
+        PRODUCT_NAME: EvalApp
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.evalapp.mac
+    scheme: {}
