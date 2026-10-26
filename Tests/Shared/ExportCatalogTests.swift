@@ -103,12 +103,33 @@ struct ExportCatalogTests {
         return collector.blocks
     }
 
-    /// Lays out and draws `view` once. Pages scroll, so their content gets
-    /// its full height whatever size the renderer proposes; nothing in a
-    /// page's own text sits in a lazy stack.
+    /// Lays out `view` once. Pages scroll, so their content gets its full
+    /// height whatever size is proposed; nothing in a page's own text sits
+    /// in a lazy stack.
+    ///
+    /// On iOS the page goes in a hosting controller, the way the app shows
+    /// it. `ImageRenderer` can't draw UIKit-backed views (the navigation
+    /// stack inside a `PhoneScreen`, switches, segmented pickers), and on
+    /// CI that tripped an AttributeGraph precondition ("accessing attribute
+    /// in a different namespace") that crashed the test host.
     static func render(_ view: some View) {
-        let renderer = ImageRenderer(content: view.frame(width: 700, height: 1000))
-        _ = renderer.cgImage
+        let sized = view.frame(width: 700, height: 1000)
+        #if canImport(UIKit)
+        // Preferences only resolve once the hosting view is in a window.
+        let frame = CGRect(x: 0, y: 0, width: 700, height: 1000)
+        let scene = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first
+        let window = scene.map { UIWindow(windowScene: $0) } ?? UIWindow(frame: frame)
+        window.frame = frame
+        window.rootViewController = UIHostingController(rootView: sized)
+        window.isHidden = false
+        window.layoutIfNeeded()
+        RunLoop.main.run(until: .now + 0.05)
+        window.layoutIfNeeded()
+        window.isHidden = true
+        window.rootViewController = nil
+        #else
+        _ = ImageRenderer(content: sized).cgImage
+        #endif
     }
 
     static func encode(_ catalog: ExportCatalog) throws -> Data {
