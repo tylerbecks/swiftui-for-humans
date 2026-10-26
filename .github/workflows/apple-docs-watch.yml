@@ -215,6 +215,7 @@ jobs:
           EXECUTION_FILE: ${{ steps.claude.outputs.execution_file }}
           MODE: ${{ steps.prompt.outputs.mode }}
           RUN_ID: ${{ github.run_id }}
+          HASH: ${{ needs.detect.outputs.hash }}
         run: |
           # shellcheck disable=SC2016  # the backticks are Markdown, not expansions
           if [ -f "$EXECUTION_FILE" ]; then
@@ -230,8 +231,13 @@ jobs:
             fi
           fi
           if [ "$MODE" = flood ]; then
-            gh issue list --repo "$GITHUB_REPOSITORY" --state open --label "$FLOOD_LABEL" --json number -q 'length' | grep -qv '^0$' ||
-              { echo "::error::Flood mode ended without an open $FLOOD_LABEL issue"; exit 1; }
+            # Same test as the detector's skip step: an open flood issue whose
+            # body or a comment carries this run's hash. An older issue
+            # without it doesn't count, or the next run would flood again.
+            gh issue list --repo "$GITHUB_REPOSITORY" --state open --label "$FLOOD_LABEL" \
+                --limit 100 --json number,body,comments |
+              jq -e --arg hash "$HASH" 'any(.[]; (.body | contains($hash)) or any(.comments[]?; .body | contains($hash)))' > /dev/null ||
+              { echo "::error::Flood mode ended without the flood hash $HASH on an open $FLOOD_LABEL issue"; exit 1; }
           else
             git ls-remote --heads origin | grep -q "refs/heads/apple-docs/.*-$RUN_ID$" ||
               { echo "::error::Claude finished without pushing an apple-docs/*-$RUN_ID branch; see the denied tool calls above"; exit 1; }
