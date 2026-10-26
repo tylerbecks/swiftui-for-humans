@@ -1,0 +1,21 @@
+id: styled-card
+title: Profile card with rounded corners, tint, and shadow
+platform: ios
+category: deprecated-api
+prompt: >
+  Create a profile card: a rounded rectangle with a photo placeholder (an SF
+  Symbol), the person's name in the accent color, their job title in a
+  secondary color, and a soft shadow. Show two cards on the main screen.
+checks:
+  require:
+    - label: Uses foregroundStyle
+      pattern: '\.foregroundStyle\('
+  forbid:
+    - label: No cornerRadius modifier
+      pattern: '\.cornerRadius\('
+    - label: No foregroundColor modifier
+      pattern: '\.foregroundColor\('
+rubric:
+  - Uses semantic colors (.secondary, .tint or the accent color, system backgrounds) that adapt to dark mode, not hard-coded RGB values.
+  - Rounded corners use clipShape, RoundedRectangle, or background(_:in:), not the cornerRadius modifier.
+  - The shadow is subtle and the card has a visible background in both light and dark mode.

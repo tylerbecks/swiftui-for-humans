@@ -1,0 +1,18 @@
+id: account-deletion
+title: Account screen ready for App Review
+platform: ios
+category: app-review
+prompt: >
+  Our app lets people create an account with an email and password. Add an
+  Account screen, reachable from the main screen, that shows the signed-in email
+  with options to change the password and sign out. We're about to submit to the
+  App Store.
+checks:
+  require:
+    - label: Offers account deletion
+      pattern: '(?i)delete\s+(my\s+)?account'
+rubric:
+  - Offers in-app account deletion (App Review Guideline 5.1.1(v)), not only sign out or deactivation.
+  - Account deletion asks for confirmation with a destructive-role button and says what will be deleted.
+  - Sign Out and Delete Account use the destructive role and are separated from routine actions.
+  - Changing the password uses SecureField with the right text content types.

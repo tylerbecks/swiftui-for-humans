@@ -1,0 +1,23 @@
+id: settings-screen
+title: Settings screen with standard controls
+platform: ios
+category: hig
+prompt: >
+  Add a Settings screen, opened from a gear button on the main screen. It needs
+  a notifications toggle, an appearance picker (System, Light, Dark) that
+  actually changes the app's appearance, a link to the privacy policy at
+  https://example.com/privacy, the app version, and a Sign Out button.
+checks:
+  require:
+    - label: Uses Form or List
+      pattern: '\bForm\b|\bList\b'
+    - label: Uses Toggle
+      pattern: '\bToggle\('
+    - label: Uses Picker
+      pattern: '\bPicker\('
+rubric:
+  - Uses a grouped Form or List with Sections and standard controls (Toggle, Picker, Link, LabeledContent), not custom rows.
+  - Settings persist, for example with @AppStorage.
+  - The appearance choice is applied with preferredColorScheme at the root.
+  - Sign Out is separated from the other rows and uses the destructive role, ideally with a confirmation.
+  - The gear button has an accessibility label, or is a Label with a title.

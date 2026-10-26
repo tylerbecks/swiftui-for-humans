@@ -1,0 +1,1288 @@
+# Corrections: SwiftUI code that models still write, and what to write instead.
+#
+# One source for the primer, the skills' top rules, check-swift.sh, and the MCP server.
+# Checked against the iOS 27.1 / macOS 27.0 SDK interfaces (Xcode 27) and Apple's
+# documentation in October 2026.
+#
+# Fields
+#   id           unique kebab-case id, also the linter's rule name
+#   old          the outdated or deprecated form
+#   new          what to write instead
+#   brief        old → new in a few words, for tables and the primer
+#   why          one line
+#   min_os       the oldest OS where `new` works ("any" means every supported OS)
+#   severity     error   = hard-deprecated: the compiler warns once the deployment target reaches
+#                          the version that deprecated it (for a 26.0 deprecation, a 26+ target)
+#                warning = deprecated by Apple (some only soft-deprecated, `deprecated: 100000`,
+#                          which never warns) or clearly superseded
+#                info    = a judgment call: often wrong, sometimes fine
+#   regex        Python regex matched against Swift source with comments and string
+#                contents blanked. One line at a time unless `multiline: true`.
+#   multiline    optional; match across lines (whole file)
+#   file_requires optional regex the file must also contain
+#   unless_near  optional regex; skip a match when it appears on the same line or up to 6 lines above
+#   platforms    optional; where example_new compiles: all (default), ios, or macos
+#   docs         Apple documentation for `new` (the .md form)
+#   example_old  code the linter must flag (never compiled)
+#   example_new  complete Swift declarations that build in the repo's snippet check
+#
+# This file is a YAML subset (a list of flat maps; scalars, single-quoted strings,
+# and `|` blocks) so the linter can read it with the Python standard library.
+
+# ---------------------------------------------------------------- Navigation
+
+- id: navigation-view
+  old: 'NavigationView'
+  new: 'NavigationStack, or NavigationSplitView for a sidebar and columns'
+  brief: '`NavigationView` → `NavigationStack` / `NavigationSplitView`'
+  why: 'NavigationView is deprecated; the new containers support value-based, programmatic navigation.'
+  min_os: 'iOS 16, macOS 13'
+  severity: warning
+  regex: '\bNavigationView\b'
+  docs: https://developer.apple.com/documentation/swiftui/navigationstack.md
+  example_old: |
+    NavigationView {
+        List(items) { Text($0.name) }
+    }
+  example_new: |
+    struct FruitList: View {
+        var body: some View {
+            NavigationStack {
+                List {
+                    NavigationLink("Apples", value: "Apples")
+                    NavigationLink("Pears", value: "Pears")
+                }
+                .navigationTitle("Fruit")
+                .navigationDestination(for: String.self) { Text($0) }
+            }
+        }
+    }
+
+- id: navigation-view-style
+  old: '.navigationViewStyle(.stack)'
+  new: 'Delete it, and pick NavigationStack or NavigationSplitView directly'
+  brief: '`.navigationViewStyle(_:)` → delete; pick the container'
+  why: 'Navigation view styles only configure the deprecated NavigationView.'
+  min_os: 'iOS 16, macOS 13'
+  severity: warning
+  regex: '\.navigationViewStyle\s*\('
+  docs: https://developer.apple.com/documentation/swiftui/navigationsplitview.md
+  example_old: |
+    NavigationView { Sidebar() }
+        .navigationViewStyle(.stack)
+  example_new: |
+    enum Mailbox: String, CaseIterable, Identifiable {
+        case inbox, sent
+        var id: Self { self }
+    }
+
+    struct MailSidebar: View {
+        @State private var selection: Mailbox?
+
+        var body: some View {
+            NavigationSplitView {
+                List(Mailbox.allCases, selection: $selection) { Text($0.rawValue.capitalized) }
+            } detail: {
+                Text(selection?.rawValue.capitalized ?? "Select a mailbox")
+            }
+        }
+    }
+
+- id: navigation-link-is-active
+  old: 'NavigationLink(destination:isActive:) or NavigationLink(tag:selection:)'
+  new: '.navigationDestination(isPresented:) or NavigationLink(value:) with .navigationDestination(for:)'
+  brief: '`NavigationLink(isActive:)` / `(tag:selection:)` → `.navigationDestination(isPresented:)` / `NavigationLink(value:)`'
+  why: 'The binding-driven NavigationLink initializers were deprecated in iOS 16 and break deep links.'
+  min_os: 'iOS 16, macOS 13'
+  severity: error
+  regex: '\bNavigationLink\s*\([^\n]*?\b(?:isActive|tag)\s*:'
+  docs: https://developer.apple.com/documentation/swiftui/view/navigationdestination(ispresented:destination:).md
+  example_old: |
+    NavigationLink(destination: Detail(), isActive: $showDetail) { EmptyView() }
+  example_new: |
+    struct Checkout: View {
+        @State private var showReceipt = false
+
+        var body: some View {
+            NavigationStack {
+                Button("Pay") { showReceipt = true }
+                    .navigationDestination(isPresented: $showReceipt) {
+                        Text("Receipt")
+                    }
+            }
+        }
+    }
+
+- id: navigation-bar-title
+  old: '.navigationBarTitle("Title", displayMode: .inline)'
+  new: '.navigationTitle("Title") plus .navigationBarTitleDisplayMode(.inline) on iOS'
+  brief: '`.navigationBarTitle` → `.navigationTitle` + `.navigationBarTitleDisplayMode`'
+  why: 'navigationBarTitle is deprecated and iOS-only; navigationTitle works on every platform.'
+  min_os: 'iOS 14, macOS 11'
+  severity: warning
+  regex: '\.navigationBarTitle\s*\('
+  platforms: ios
+  docs: https://developer.apple.com/documentation/swiftui/view/navigationtitle(_:).md
+  example_old: |
+    List { Text("Row") }
+        .navigationBarTitle("Settings", displayMode: .inline)
+  example_new: |
+    struct SettingsScreen: View {
+        var body: some View {
+            List { Text("Row") }
+                .navigationTitle("Settings")
+                .navigationBarTitleDisplayMode(.inline)
+        }
+    }
+
+- id: navigation-bar-items
+  old: '.navigationBarItems(trailing: Button(...))'
+  new: '.toolbar { ToolbarItem(placement: .topBarTrailing) { ... } }'
+  brief: '`.navigationBarItems` → `.toolbar { ToolbarItem }`'
+  why: 'navigationBarItems is deprecated; toolbar items adapt to every platform and get Liquid Glass.'
+  min_os: 'iOS 14, macOS 11'
+  severity: warning
+  regex: '\.navigationBarItems\s*\('
+  platforms: ios
+  docs: https://developer.apple.com/documentation/swiftui/view/toolbar(content:)-5w0tj.md
+  example_old: |
+    List { Text("Row") }
+        .navigationBarItems(trailing: Button("Add") { add() })
+  example_new: |
+    struct NotesList: View {
+        @State private var count = 0
+
+        var body: some View {
+            List { Text("\(count) notes") }
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Add Note", systemImage: "plus") { count += 1 }
+                    }
+                }
+        }
+    }
+
+- id: navigation-bar-placement
+  old: 'ToolbarItem(placement: .navigationBarTrailing)'
+  new: '.topBarTrailing / .topBarLeading (or .primaryAction for a cross-platform main action)'
+  brief: '`.navigationBarLeading/Trailing` → `.topBarLeading/Trailing`'
+  why: 'The navigationBar placements are deprecated in favor of the topBar names.'
+  min_os: 'iOS 14'
+  severity: warning
+  regex: '\.navigationBar(?:Leading|Trailing)\b'
+  platforms: ios
+  docs: https://developer.apple.com/documentation/swiftui/toolbaritemplacement/topbartrailing.md
+  example_old: |
+    .toolbar {
+        ToolbarItem(placement: .navigationBarTrailing) { EditButton() }
+    }
+  example_new: |
+    struct EditableList: View {
+        var body: some View {
+            List { Text("Row") }
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) { EditButton() }
+                }
+        }
+    }
+
+- id: navigation-bar-hidden
+  old: '.navigationBarHidden(true)'
+  new: '.toolbarVisibility(.hidden, for: .navigationBar)'
+  brief: '`.navigationBarHidden(true)` → `.toolbarVisibility(.hidden, for: .navigationBar)`'
+  why: 'navigationBarHidden is deprecated; toolbarVisibility names the bar it hides.'
+  min_os: 'iOS 18'
+  severity: warning
+  regex: '\.navigationBarHidden\s*\('
+  platforms: ios
+  docs: https://developer.apple.com/documentation/swiftui/view/toolbarvisibility(_:for:).md
+  example_old: |
+    PlayerView()
+        .navigationBarHidden(true)
+  example_new: |
+    struct PlayerScreen: View {
+        var body: some View {
+            Color.black
+                .toolbarVisibility(.hidden, for: .navigationBar)
+        }
+    }
+
+- id: tab-item
+  old: 'View().tabItem { Label("Home", systemImage: "house") }'
+  new: 'Tab("Home", systemImage: "house") { View() } inside TabView'
+  brief: '`.tabItem { }` → `Tab("Title", systemImage:) { }`'
+  why: 'tabItem is deprecated; Tab supports selection values, roles like .search, sections, and the iPad sidebar.'
+  min_os: 'iOS 18, macOS 15'
+  severity: warning
+  regex: '\.tabItem\s*[({]'
+  docs: https://developer.apple.com/documentation/swiftui/tab.md
+  example_old: |
+    TabView {
+        HomeView().tabItem { Label("Home", systemImage: "house") }
+    }
+  example_new: |
+    struct RootTabs: View {
+        var body: some View {
+            TabView {
+                Tab("Home", systemImage: "house") { Text("Home") }
+                Tab("Settings", systemImage: "gear") { Text("Settings") }
+            }
+        }
+    }
+
+- id: presentation-mode
+  old: '@Environment(\.presentationMode) var presentationMode'
+  new: '@Environment(\.dismiss) private var dismiss, then dismiss()'
+  brief: '`\.presentationMode` → `\.dismiss`'
+  why: 'presentationMode is deprecated; dismiss closes sheets and pops pushed views.'
+  min_os: 'iOS 15, macOS 12'
+  severity: warning
+  regex: '\\\.presentationMode\b|\bpresentationMode\.wrappedValue\b'
+  docs: https://developer.apple.com/documentation/swiftui/environmentvalues/dismiss.md
+  example_old: |
+    @Environment(\.presentationMode) var presentationMode
+    Button("Close") { presentationMode.wrappedValue.dismiss() }
+  example_new: |
+    struct EditSheet: View {
+        @Environment(\.dismiss) private var dismiss
+
+        var body: some View {
+            Button("Done") { dismiss() }
+        }
+    }
+
+# ---------------------------------------------------------------- Presentation
+
+- id: action-sheet
+  old: '.actionSheet(isPresented:) { ActionSheet(...) }'
+  new: '.confirmationDialog("Title", isPresented:) { Button(...) }'
+  brief: '`ActionSheet` / `.actionSheet` → `.confirmationDialog`'
+  why: 'ActionSheet is deprecated; confirmationDialog takes ordinary Buttons with roles and adapts per platform.'
+  min_os: 'iOS 15, macOS 12'
+  severity: warning
+  regex: '\.actionSheet\s*\(|\bActionSheet\s*\('
+  docs: https://developer.apple.com/documentation/swiftui/view/confirmationdialog(_:ispresented:titlevisibility:actions:).md
+  example_old: |
+    .actionSheet(isPresented: $showOptions) {
+        ActionSheet(title: Text("Discard draft?"), buttons: [.destructive(Text("Discard")), .cancel()])
+    }
+  example_new: |
+    struct DraftToolbar: View {
+        @State private var isConfirming = false
+
+        var body: some View {
+            Button("Close Draft") { isConfirming = true }
+                .confirmationDialog("Close this draft?", isPresented: $isConfirming) {
+                    Button("Delete Draft", role: .destructive) { }
+                    Button("Save Draft") { }
+                }
+        }
+    }
+
+- id: alert-struct
+  old: '.alert(isPresented:) { Alert(title:message:dismissButton:) }'
+  new: '.alert("Title", isPresented:) { Button(...) } message: { Text(...) }'
+  brief: '`Alert(title:)` → `.alert(_:isPresented:actions:message:)`'
+  why: 'The Alert struct is deprecated; the modifier form takes Buttons with roles and a message view.'
+  min_os: 'iOS 15, macOS 12'
+  severity: warning
+  regex: '\bAlert\s*\(\s*title\s*:|\bAlert\.Button\b'
+  docs: https://developer.apple.com/documentation/swiftui/view/alert(_:ispresented:actions:message:).md
+  example_old: |
+    .alert(isPresented: $showError) {
+        Alert(title: Text("Error"), message: Text("Try again"), dismissButton: .default(Text("OK")))
+    }
+  example_new: |
+    struct SaveButton: View {
+        @State private var showError = false
+
+        var body: some View {
+            Button("Save") { showError = true }
+                .alert("Couldn't Save", isPresented: $showError) {
+                    Button("Try Again") { }
+                    Button("Cancel", role: .cancel) { }
+                } message: {
+                    Text("Check your connection, then try again.")
+                }
+        }
+    }
+
+# ---------------------------------------------------------------- Data flow
+
+- id: observable-object
+  old: 'class Model: ObservableObject { @Published var name = "" }'
+  new: '@Observable class Model { var name = "" }'
+  brief: '`ObservableObject` → `@Observable`'
+  why: 'With Observation, views update only for the properties they read, and no wrappers are needed.'
+  min_os: 'iOS 17, macOS 14'
+  severity: warning
+  regex: '\bclass\s+\w+(?:<[^>\n]*>)?\s*:[^{\n]*\bObservableObject\b'
+  docs: https://developer.apple.com/documentation/observation/observable().md
+  example_old: |
+    final class Library: ObservableObject {
+        var books: [String] = []
+    }
+  example_new: |
+    @Observable
+    final class Library {
+        var books: [String] = []
+    }
+
+- id: published
+  old: '@Published var books: [Book] = []'
+  new: 'A plain var inside an @Observable class'
+  brief: '`@Published var` → plain `var` in an `@Observable` class'
+  why: '@Published belongs to ObservableObject; @Observable tracks stored properties on its own.'
+  min_os: 'iOS 17, macOS 14'
+  severity: warning
+  regex: '@Published\b'
+  docs: https://developer.apple.com/documentation/observation/observable().md
+  example_old: |
+    @Published var books: [String] = []
+  example_new: |
+    @Observable
+    final class Shelf {
+        var books: [String] = []
+        var isLoading = false
+    }
+
+- id: state-object
+  old: '@StateObject private var model = Model()'
+  new: '@State private var model = Model() with an @Observable model'
+  brief: '`@StateObject` → `@State`'
+  why: '@State owns @Observable objects; @StateObject only exists for ObservableObject.'
+  min_os: 'iOS 17, macOS 14'
+  severity: warning
+  regex: '@StateObject\b'
+  docs: https://developer.apple.com/documentation/swiftui/state.md
+  example_old: |
+    @StateObject private var library = Library()
+  example_new: |
+    @Observable
+    final class Counter {
+        var value = 0
+    }
+
+    struct CounterView: View {
+        @State private var counter = Counter()
+
+        var body: some View {
+            Button("Count: \(counter.value)") { counter.value += 1 }
+        }
+    }
+
+- id: observed-object
+  old: '@ObservedObject var model: Model'
+  new: 'let model: Model (or @Bindable var model: Model when you need $bindings)'
+  brief: '`@ObservedObject` → plain property, or `@Bindable`'
+  why: 'Views track @Observable objects they read automatically; @Bindable adds bindings.'
+  min_os: 'iOS 17, macOS 14'
+  severity: warning
+  regex: '@ObservedObject\b'
+  docs: https://developer.apple.com/documentation/swiftui/bindable.md
+  example_old: |
+    @ObservedObject var profile: Profile
+  example_new: |
+    @Observable
+    final class Profile {
+        var name = ""
+    }
+
+    struct ProfileEditor: View {
+        @Bindable var profile: Profile
+
+        var body: some View {
+            TextField("Name", text: $profile.name)
+        }
+    }
+
+- id: environment-object
+  old: '@EnvironmentObject var settings: Settings'
+  new: '@Environment(Settings.self) private var settings'
+  brief: '`@EnvironmentObject` → `@Environment(Model.self)`'
+  why: 'Observable objects go in the environment by type; there is no wrapper or ObservableObject needed.'
+  min_os: 'iOS 17, macOS 14'
+  severity: warning
+  regex: '@EnvironmentObject\b'
+  docs: https://developer.apple.com/documentation/swiftui/environment.md
+  example_old: |
+    @EnvironmentObject var settings: AppSettings
+  example_new: |
+    @Observable
+    final class AppSettings {
+        var showsBadges = true
+    }
+
+    struct BadgeToggle: View {
+        @Environment(AppSettings.self) private var settings
+
+        var body: some View {
+            @Bindable var settings = settings
+            Toggle("Show Badges", isOn: $settings.showsBadges)
+        }
+    }
+
+- id: environment-object-modifier
+  old: '.environmentObject(settings)'
+  new: '.environment(settings)'
+  brief: '`.environmentObject(x)` → `.environment(x)`'
+  why: 'environment(_:) injects an @Observable object for @Environment(Type.self) to read.'
+  min_os: 'iOS 17, macOS 14'
+  severity: warning
+  regex: '\.environmentObject\s*\('
+  docs: https://developer.apple.com/documentation/swiftui/view/environment(_:).md
+  example_old: |
+    ContentView()
+        .environmentObject(settings)
+  example_new: |
+    @Observable
+    final class Session {
+        var userName = "Sam"
+    }
+
+    struct SessionRoot: View {
+        @State private var session = Session()
+
+        var body: some View {
+            Greeting()
+                .environment(session)
+        }
+    }
+
+    struct Greeting: View {
+        @Environment(Session.self) private var session
+
+        var body: some View {
+            Text("Hello, \(session.userName)")
+        }
+    }
+
+- id: state-not-private
+  old: '@State var count = 0'
+  new: '@State private var count = 0'
+  brief: '`@State var` → `@State private var`'
+  why: 'State belongs to the view; a non-private @State invites callers to pass a value that SwiftUI then ignores.'
+  min_os: 'any'
+  severity: info
+  regex: '(?<!@Previewable )@State\s+(?!private\b|fileprivate\b)(?:var|let)\b'
+  docs: https://developer.apple.com/documentation/swiftui/state.md
+  example_old: |
+    @State var count = 0
+  example_new: |
+    struct CountStepper: View {
+        @State private var count = 0
+
+        var body: some View {
+            Stepper("Count: \(count)", value: $count)
+        }
+    }
+
+- id: on-change-single-parameter
+  old: '.onChange(of: value) { newValue in ... }'
+  new: '.onChange(of: value) { oldValue, newValue in ... } or .onChange(of: value) { ... }'
+  brief: '`.onChange(of:) { new in }` → `{ old, new in }` or `{ }`'
+  why: 'The one-parameter onChange was deprecated in iOS 17; use the two- or zero-parameter closure.'
+  min_os: 'iOS 17, macOS 14'
+  severity: error
+  regex: '\.onChange\s*\(\s*of\s*:[^\n]*?\)\s*\{\s*(?:\w+|_)\s+in\b|\.onChange\s*\(\s*of\s*:[^\n]*,\s*perform\s*:'
+  docs: https://developer.apple.com/documentation/swiftui/view/onchange(of:initial:_:).md
+  example_old: |
+    .onChange(of: query) { newValue in
+        search(newValue)
+    }
+  example_new: |
+    struct SearchBox: View {
+        @State private var query = ""
+        @State private var lastChange = ""
+
+        var body: some View {
+            TextField("Search", text: $query)
+                .onChange(of: query) { oldValue, newValue in
+                    lastChange = "\(oldValue) to \(newValue)"
+                }
+        }
+    }
+
+- id: dispatch-main-async
+  old: 'DispatchQueue.main.async { self.items = loaded }'
+  new: 'async/await in .task { }, with UI state on the main actor'
+  brief: '`DispatchQueue.main.async` in views → `.task { }` + async/await'
+  why: 'Views and @Observable models are main-actor code; GCD hops hide data races that Swift 6 checks for.'
+  min_os: 'any'
+  severity: warning
+  regex: '\bDispatchQueue\.main\.async\b(?!After)'
+  file_requires: '\bimport\s+SwiftUI\b'
+  docs: https://developer.apple.com/documentation/swift/task.md
+  example_old: |
+    import SwiftUI
+    URLSession.shared.dataTask(with: url) { data, _, _ in
+        DispatchQueue.main.async { self.data = data }
+    }.resume()
+  example_new: |
+    struct FeedView: View {
+        @State private var byteCount = 0
+
+        var body: some View {
+            Text("\(byteCount) bytes")
+                .task {
+                    let url = URL(string: "https://www.apple.com")!
+                    if let (data, _) = try? await URLSession.shared.data(from: url) {
+                        byteCount = data.count
+                    }
+                }
+        }
+    }
+
+- id: dispatch-async-after
+  old: 'DispatchQueue.main.asyncAfter(deadline: .now() + 2) { ... }'
+  new: 'try await Task.sleep(for: .seconds(2)) inside .task, which cancels when the view goes away'
+  brief: '`DispatchQueue.main.asyncAfter` → `Task.sleep(for:)` in `.task`'
+  why: 'A delayed GCD block keeps running after the view is gone and ignores cancellation.'
+  min_os: 'iOS 16, macOS 13'
+  severity: warning
+  regex: '\bDispatchQueue\.main\.asyncAfter\b'
+  docs: https://developer.apple.com/documentation/swift/task/sleep(for:tolerance:clock:).md
+  example_old: |
+    DispatchQueue.main.asyncAfter(deadline: .now() + 2) { showHint = true }
+  example_new: |
+    struct HintView: View {
+        @State private var showHint = false
+
+        var body: some View {
+            Text(showHint ? "Tip: swipe to archive" : "")
+                .task {
+                    try? await Task.sleep(for: .seconds(2))
+                    showHint = true
+                }
+        }
+    }
+
+- id: task-in-on-appear
+  old: '.onAppear { Task { await load() } }'
+  new: '.task { await load() }'
+  brief: '`.onAppear { Task { } }` → `.task { }`'
+  why: '.task cancels the work when the view disappears; a Task started in onAppear keeps running.'
+  min_os: 'iOS 15, macOS 12'
+  severity: warning
+  regex: '\.onAppear\s*\{\s*Task\s*[({]'
+  multiline: true
+  docs: https://developer.apple.com/documentation/swiftui/view/task(name:priority:file:line:_:).md
+  example_old: |
+    .onAppear {
+        Task { await model.load() }
+    }
+  example_new: |
+    struct ArticleView: View {
+        @State private var title = "Loading…"
+
+        var body: some View {
+            Text(title)
+                .task {
+                    try? await Task.sleep(for: .milliseconds(200))
+                    title = "Loaded"
+                }
+        }
+    }
+
+- id: foreach-id-self
+  old: 'ForEach(items, id: \.self)'
+  new: 'Make the element Identifiable with a stable id, then ForEach(items)'
+  brief: '`ForEach(items, id: \.self)` → `Identifiable` items'
+  why: 'id: \.self is only safe for unique, unchanging values; duplicates and edits break animation and state.'
+  min_os: 'any'
+  severity: info
+  regex: '\b(?:ForEach|List)\s*\([^\n]*\bid\s*:\s*\\\.self\b'
+  docs: https://developer.apple.com/documentation/swiftui/foreach.md
+  example_old: |
+    ForEach(tasks, id: \.self) { task in Text(task.title) }
+  example_new: |
+    struct TodoItem: Identifiable {
+        let id = UUID()
+        var title: String
+    }
+
+    struct TodoList: View {
+        @State private var todos = [TodoItem(title: "Buy milk")]
+
+        var body: some View {
+            List(todos) { todo in
+                Text(todo.title)
+            }
+        }
+    }
+
+- id: foreach-indices
+  old: 'ForEach(items.indices, id: \.self) { i in Text(items[i].name) }'
+  new: 'ForEach(items) { item in ... }, or ForEach($items) { $item in ... } for bindings'
+  brief: '`ForEach(items.indices)` → `ForEach(items)` / `ForEach($items)`'
+  why: 'Index-based rows crash or show the wrong data once items are inserted, deleted, or moved.'
+  min_os: 'any'
+  severity: info
+  regex: '\bForEach\s*\(\s*(?:\$?[\w.]+\.indices\b|0\s*\.\.<\s*[\w.]+\.count\b)'
+  docs: https://developer.apple.com/documentation/swiftui/foreach.md
+  example_old: |
+    ForEach(0..<items.count, id: \.self) { index in Text(items[index].name) }
+  example_new: |
+    struct Song: Identifiable {
+        let id = UUID()
+        var title: String
+        var isFavorite = false
+    }
+
+    struct SongList: View {
+        @State private var songs = [Song(title: "Intro")]
+
+        var body: some View {
+            List($songs) { $song in
+                Toggle(song.title, isOn: $song.isFavorite)
+            }
+        }
+    }
+
+# ---------------------------------------------------------------- Styling
+
+- id: foreground-color
+  old: '.foregroundColor(.secondary)'
+  new: '.foregroundStyle(.secondary)'
+  brief: '`.foregroundColor` → `.foregroundStyle`'
+  why: 'foregroundColor is deprecated; foregroundStyle also takes hierarchical styles, gradients, and materials.'
+  min_os: 'iOS 15, macOS 12'
+  severity: warning
+  regex: '\.foregroundColor\s*\('
+  docs: https://developer.apple.com/documentation/swiftui/view/foregroundstyle(_:).md
+  example_old: |
+    Text("Subtitle").foregroundColor(.gray)
+  example_new: |
+    struct Subtitle: View {
+        var body: some View {
+            Text("Updated just now")
+                .foregroundStyle(.secondary)
+        }
+    }
+
+- id: corner-radius
+  old: '.cornerRadius(12)'
+  new: '.clipShape(.rect(cornerRadius: 12))'
+  brief: '`.cornerRadius(r)` → `.clipShape(.rect(cornerRadius: r))`'
+  why: 'Soft-deprecated (deprecated in a future version), so no warning yet; Apple says use clipShape or fill, and the shape matches backgrounds.'
+  min_os: 'any'
+  severity: warning
+  regex: '\.cornerRadius\s*\('
+  unless_near: '\b\w+Mark\s*\('
+  docs: https://developer.apple.com/documentation/swiftui/view/clipshape(_:style:).md
+  example_old: |
+    Image("cover").cornerRadius(12)
+  example_new: |
+    struct Thumbnail: View {
+        var body: some View {
+            Color.orange
+                .frame(width: 80, height: 80)
+                .clipShape(.rect(cornerRadius: 12))
+        }
+    }
+
+- id: accent-color-modifier
+  old: '.accentColor(.orange)'
+  new: '.tint(.orange), or set AccentColor in the asset catalog'
+  brief: '`.accentColor(_:)` → `.tint(_:)`'
+  why: 'The accentColor modifier is deprecated; tint is the per-view override.'
+  min_os: 'iOS 15, macOS 12'
+  severity: warning
+  regex: '\.accentColor\s*\('
+  docs: https://developer.apple.com/documentation/swiftui/view/tint(_:).md
+  example_old: |
+    Toggle("Alerts", isOn: $on).accentColor(.orange)
+  example_new: |
+    struct AlertsToggle: View {
+        @State private var isOn = true
+
+        var body: some View {
+            Toggle("Alerts", isOn: $isOn)
+                .tint(.orange)
+        }
+    }
+
+- id: edges-ignoring-safe-area
+  old: '.edgesIgnoringSafeArea(.all)'
+  new: '.ignoresSafeArea()'
+  brief: '`.edgesIgnoringSafeArea` → `.ignoresSafeArea`'
+  why: 'edgesIgnoringSafeArea is deprecated; ignoresSafeArea also handles the keyboard region.'
+  min_os: 'iOS 14, macOS 11'
+  severity: warning
+  regex: '\.edgesIgnoringSafeArea\s*\('
+  docs: https://developer.apple.com/documentation/swiftui/view/ignoressafearea(_:edges:).md
+  example_old: |
+    Color.blue.edgesIgnoringSafeArea(.all)
+  example_new: |
+    struct Backdrop: View {
+        var body: some View {
+            Color.blue
+                .ignoresSafeArea()
+        }
+    }
+
+- id: overlay-background-alignment
+  old: '.overlay(Badge(), alignment: .topTrailing)'
+  new: '.overlay(alignment: .topTrailing) { Badge() }'
+  brief: '`.overlay(v, alignment:)` → `.overlay(alignment:) { v }`'
+  why: 'The view-argument overlay and background forms are deprecated; the closure forms take builders.'
+  min_os: 'iOS 15, macOS 12'
+  severity: warning
+  regex: '\.(?:overlay|background)\s*\((?!\s*alignment\s*:)[^\n]*,\s*alignment\s*:'
+  docs: https://developer.apple.com/documentation/swiftui/view/overlay(alignment:content:).md
+  example_old: |
+    Image(systemName: "bell").overlay(Circle().fill(.red), alignment: .topTrailing)
+  example_new: |
+    struct BellBadge: View {
+        var body: some View {
+            Image(systemName: "bell")
+                .accessibilityLabel("Notifications")
+                .overlay(alignment: .topTrailing) {
+                    Circle().fill(.red).frame(width: 8, height: 8)
+                }
+        }
+    }
+
+- id: text-concatenation
+  old: 'Text("Total: ") + Text(price).bold()'
+  new: 'Text("Total: \(Text(price).bold())") (interpolate the styled Text)'
+  brief: '`Text + Text` → `Text("a \(Text(b).bold())")`'
+  why: 'Text + Text is deprecated in iOS and macOS 26 (it warns only with a 26+ deployment target); interpolation keeps one localizable string.'
+  min_os: 'iOS 14, macOS 11'
+  severity: error
+  regex: '\)\s*\+\s*Text\s*\('
+  docs: https://developer.apple.com/documentation/swiftui/text.md
+  example_old: |
+    Text("Total: ") + Text(total).bold()
+  example_new: |
+    struct TotalLabel: View {
+        let total = "$42"
+
+        var body: some View {
+            Text("Total: \(Text(total).bold())")
+        }
+    }
+
+- id: static-style-member
+  old: '.buttonStyle(PlainButtonStyle()) / .listStyle(InsetGroupedListStyle())'
+  new: '.buttonStyle(.plain) / .listStyle(.insetGrouped)'
+  brief: '`.buttonStyle(PlainButtonStyle())` → `.buttonStyle(.plain)`'
+  why: 'Static member syntax is the current spelling and reads like the rest of SwiftUI.'
+  min_os: 'iOS 15, macOS 12'
+  severity: info
+  regex: '\.(?:buttonStyle|toggleStyle|listStyle|pickerStyle|textFieldStyle|labelStyle|menuStyle|progressViewStyle|datePickerStyle|tabViewStyle|gaugeStyle)\s*\(\s*(?:Plain|Bordered|BorderedProminent|Borderless|Default|Automatic|Inset|InsetGrouped|Grouped|Sidebar|Segmented|Wheel|Menu|Inline|Switch|Button|Checkbox|RoundedBorder|IconOnly|TitleOnly|TitleAndIcon|Compact|Graphical|Field|Stepper|Page|Circular|Linear|BorderlessButton)(?:Button|Toggle|List|Picker|TextField|Label|Menu|ProgressView|DatePicker|TabView|Gauge)Style\s*\(\s*\)\s*\)'
+  docs: https://developer.apple.com/documentation/swiftui/view/buttonstyle(_:)-66fbx.md
+  example_old: |
+    List { Text("Row") }.listStyle(InsetGroupedListStyle())
+  example_new: |
+    struct PlainRows: View {
+        var body: some View {
+            List { Text("Row") }
+                .listStyle(.plain)
+        }
+    }
+
+- id: color-uikit-init
+  old: 'Color(UIColor.systemBackground) or Color(.secondaryLabel)'
+  new: 'Color(uiColor: .systemBackground), or a SwiftUI style such as .background or .secondary'
+  brief: '`Color(UIColor.x)` / `Color(.systemX)` → `Color(uiColor:)` or a SwiftUI style'
+  why: 'Color(_: UIColor) is deprecated; most system colors already exist as SwiftUI styles.'
+  min_os: 'iOS 15'
+  severity: warning
+  regex: '\bColor\s*\(\s*(?:UIColor\b|NSColor\b|\.(?:system\w+|secondarySystem\w*|tertiarySystem\w*|label|secondaryLabel|tertiaryLabel|quaternaryLabel|separator|opaqueSeparator|link|placeholderText)\s*\))'
+  platforms: ios
+  docs: https://developer.apple.com/documentation/swiftui/color/init(uicolor:).md
+  example_old: |
+    Color(.systemGroupedBackground)
+  example_new: |
+    struct GroupedBackdrop: View {
+        var body: some View {
+            Color(uiColor: .systemGroupedBackground)
+                .ignoresSafeArea()
+        }
+    }
+
+# ---------------------------------------------------------------- Animation and layout
+
+- id: animation-without-value
+  old: '.animation(.spring())'
+  new: '.animation(.spring(), value: isExpanded), or withAnimation { ... } where the state changes'
+  brief: '`.animation(_:)` → `.animation(_:value:)` / `withAnimation`'
+  why: 'The value-less animation modifier was deprecated in iOS 15 and animates unrelated changes.'
+  min_os: 'iOS 13, macOS 10.15'
+  severity: error
+  regex: '(?<![\w\]])\.animation\s*\(\s*(?:nil|(?:Animation)?\.\w+(?:\([^()\n]*\))?(?:\.\w+(?:\([^()\n]*\))?)*)\s*\)(?!\s*\{)'
+  docs: https://developer.apple.com/documentation/swiftui/view/animation(_:value:).md
+  example_old: |
+    Circle().scaleEffect(isOn ? 1.2 : 1).animation(.easeInOut)
+  example_new: |
+    struct Pulse: View {
+        @State private var isOn = false
+
+        var body: some View {
+            VStack {
+                Circle()
+                    .frame(width: 60, height: 60)
+                    .scaleEffect(isOn ? 1.2 : 1)
+                    .animation(.easeInOut, value: isOn)
+                Button("Pulse") { isOn.toggle() }
+            }
+        }
+    }
+
+- id: geometry-reader-size-hack
+  old: '.background(GeometryReader { proxy in Color.clear.preference(key: SizeKey.self, value: proxy.size) })'
+  new: '.onGeometryChange(for: CGSize.self) { $0.size } action: { size = $0 }'
+  brief: '`.background(GeometryReader…)` size hack → `.onGeometryChange`'
+  why: 'onGeometryChange reads a size without a preference key or an extra layout pass.'
+  min_os: 'iOS 16, macOS 13'
+  severity: warning
+  regex: '\.(?:background|overlay)\s*[({]\s*GeometryReader\b'
+  multiline: true
+  docs: https://developer.apple.com/documentation/swiftui/view/ongeometrychange(for:of:action:).md
+  example_old: |
+    Text("Hello")
+        .background(
+            GeometryReader { proxy in
+                Color.clear.preference(key: WidthKey.self, value: proxy.size.width)
+            }
+        )
+  example_new: |
+    struct MeasuredLabel: View {
+        @State private var width: CGFloat = 0
+
+        var body: some View {
+            Text("Hello, \(Int(width)) points")
+                .onGeometryChange(for: CGFloat.self) { proxy in
+                    proxy.size.width
+                } action: { newWidth in
+                    width = newWidth
+                }
+        }
+    }
+
+- id: geometry-proportional-frame
+  old: 'GeometryReader { geo in Card().frame(width: geo.size.width * 0.8) }'
+  new: '.containerRelativeFrame(.horizontal) { width, _ in width * 0.8 }'
+  brief: '`GeometryReader` + `size.width * k` → `.containerRelativeFrame`'
+  why: 'containerRelativeFrame sizes against the scroll view or window without GeometryReader taking all the space.'
+  min_os: 'iOS 17, macOS 14'
+  severity: info
+  regex: '\.frame\s*\(\s*(?:width|height)\s*:\s*\w+\.size\.(?:width|height)\s*[*/]'
+  docs: https://developer.apple.com/documentation/swiftui/view/containerrelativeframe(_:alignment:).md
+  example_old: |
+    GeometryReader { geo in
+        Card().frame(width: geo.size.width * 0.8)
+    }
+  example_new: |
+    struct Carousel: View {
+        var body: some View {
+            ScrollView(.horizontal) {
+                LazyHStack {
+                    ForEach(0..<5) { number in
+                        Text("Card \(number)")
+                            .containerRelativeFrame(.horizontal) { width, _ in width * 0.8 }
+                    }
+                }
+            }
+        }
+    }
+
+- id: ui-screen-main
+  old: 'UIScreen.main.bounds.width'
+  new: 'containerRelativeFrame, onGeometryChange, or size classes'
+  brief: '`UIScreen.main.bounds` → `.containerRelativeFrame` / size classes'
+  why: 'UIScreen.main is deprecated in iOS 26 (it warns only with a 26+ target) and wrong in iPad windows, Stage Manager, and external displays.'
+  min_os: 'iOS 17'
+  severity: error
+  regex: '\bUIScreen\.main\b'
+  platforms: ios
+  docs: https://developer.apple.com/documentation/swiftui/view/containerrelativeframe(_:alignment:).md
+  example_old: |
+    Image("hero").frame(width: UIScreen.main.bounds.width)
+  example_new: |
+    struct HeroImage: View {
+        var body: some View {
+            ScrollView {
+                Color.teal
+                    .containerRelativeFrame(.horizontal)
+                    .frame(height: 200)
+            }
+        }
+    }
+
+- id: any-view
+  old: 'func makeView() -> AnyView { AnyView(Text("x")) }'
+  new: '@ViewBuilder func makeView() -> some View'
+  brief: '`AnyView` → `@ViewBuilder` + `some View`'
+  why: 'AnyView erases identity, so SwiftUI loses animations and state and diffs more slowly.'
+  min_os: 'any'
+  severity: info
+  regex: '\bAnyView\b'
+  docs: https://developer.apple.com/documentation/swiftui/viewbuilder.md
+  example_old: |
+    func badge(_ isNew: Bool) -> AnyView {
+        isNew ? AnyView(Text("New")) : AnyView(EmptyView())
+    }
+  example_new: |
+    struct Badge: View {
+        let isNew: Bool
+
+        var body: some View {
+            content
+        }
+
+        @ViewBuilder
+        private var content: some View {
+            if isNew {
+                Text("New")
+            }
+        }
+    }
+
+- id: magnification-gesture
+  old: 'MagnificationGesture() / RotationGesture()'
+  new: 'MagnifyGesture() / RotateGesture()'
+  brief: '`MagnificationGesture` / `RotationGesture` → `MagnifyGesture` / `RotateGesture`'
+  why: 'The old gesture types are deprecated; the new ones report the start location and velocity.'
+  min_os: 'iOS 17, macOS 14'
+  severity: warning
+  regex: '\b(?:MagnificationGesture|RotationGesture)\b'
+  docs: https://developer.apple.com/documentation/swiftui/magnifygesture.md
+  example_old: |
+    .gesture(MagnificationGesture().onChanged { scale = $0 })
+  example_new: |
+    struct ZoomablePhoto: View {
+        @State private var scale = 1.0
+
+        var body: some View {
+            Color.indigo
+                .scaleEffect(scale)
+                .gesture(
+                    MagnifyGesture().onChanged { value in
+                        scale = value.magnification
+                    }
+                )
+        }
+    }
+
+# ---------------------------------------------------------------- Text input and accessibility
+
+- id: autocapitalization
+  old: '.autocapitalization(.none)'
+  new: '.textInputAutocapitalization(.never)'
+  brief: '`.autocapitalization` → `.textInputAutocapitalization`'
+  why: 'autocapitalization takes a UIKit type and is deprecated.'
+  min_os: 'iOS 15'
+  severity: warning
+  regex: '\.autocapitalization\s*\('
+  platforms: ios
+  docs: https://developer.apple.com/documentation/swiftui/view/textinputautocapitalization(_:).md
+  example_old: |
+    TextField("Email", text: $email).autocapitalization(.none)
+  example_new: |
+    struct EmailField: View {
+        @State private var email = ""
+
+        var body: some View {
+            TextField("Email", text: $email)
+                .textInputAutocapitalization(.never)
+                .keyboardType(.emailAddress)
+                .textContentType(.emailAddress)
+        }
+    }
+
+- id: disable-autocorrection
+  old: '.disableAutocorrection(true)'
+  new: '.autocorrectionDisabled()'
+  brief: '`.disableAutocorrection` → `.autocorrectionDisabled`'
+  why: 'disableAutocorrection is deprecated and renamed.'
+  min_os: 'iOS 13, macOS 10.15'
+  severity: warning
+  regex: '\.disableAutocorrection\s*\('
+  docs: https://developer.apple.com/documentation/swiftui/view/autocorrectiondisabled(_:).md
+  example_old: |
+    TextField("Username", text: $name).disableAutocorrection(true)
+  example_new: |
+    struct UsernameField: View {
+        @State private var name = ""
+
+        var body: some View {
+            TextField("Username", text: $name)
+                .autocorrectionDisabled()
+        }
+    }
+
+- id: text-field-on-commit
+  old: 'TextField("Name", text: $name, onCommit: save)'
+  new: 'TextField("Name", text: $name).onSubmit(save), with @FocusState for focus'
+  brief: '`TextField(onCommit:)` → `.onSubmit` + `@FocusState`'
+  why: 'The onCommit and onEditingChanged initializers are deprecated.'
+  min_os: 'iOS 15, macOS 12'
+  severity: warning
+  regex: '\b(?:TextField|SecureField)\s*\([^\n]*\bon(?:Commit|EditingChanged)\s*:'
+  docs: https://developer.apple.com/documentation/swiftui/view/onsubmit(of:_:).md
+  example_old: |
+    TextField("Name", text: $name, onCommit: save)
+  example_new: |
+    struct NameForm: View {
+        @State private var name = ""
+        @State private var saved = ""
+        @FocusState private var isFocused: Bool
+
+        var body: some View {
+            TextField("Name", text: $name)
+                .focused($isFocused)
+                .onSubmit {
+                    saved = name
+                    isFocused = false
+                }
+        }
+    }
+
+- id: resign-first-responder
+  old: 'UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)'
+  new: '@FocusState, set to false or nil; .scrollDismissesKeyboard(.interactively) for lists'
+  brief: '`resignFirstResponder` → `@FocusState`'
+  why: 'FocusState is the SwiftUI way to move and drop focus, and it works with the keyboard on every platform.'
+  min_os: 'iOS 15, macOS 12'
+  severity: warning
+  regex: '\bresignFirstResponder\b'
+  file_requires: '\bimport\s+SwiftUI\b'
+  docs: https://developer.apple.com/documentation/swiftui/focusstate.md
+  example_old: |
+    import SwiftUI
+    Button("Done") {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+  example_new: |
+    struct NoteEditor: View {
+        @State private var text = ""
+        @FocusState private var isEditing: Bool
+
+        var body: some View {
+            Form {
+                TextField("Note", text: $text, axis: .vertical)
+                    .focused($isEditing)
+                Button("Done") { isEditing = false }
+            }
+            .scrollDismissesKeyboard(.interactively)
+        }
+    }
+
+- id: accessibility-old-modifiers
+  old: '.accessibility(label: Text("Close"))'
+  new: '.accessibilityLabel("Close") (also accessibilityHint, accessibilityValue, accessibilityHidden)'
+  brief: '`.accessibility(label:)` → `.accessibilityLabel`'
+  why: 'The accessibility(label:) family is deprecated in favor of one modifier per property.'
+  min_os: 'iOS 14, macOS 11'
+  severity: warning
+  regex: '\.accessibility\s*\(\s*(?:label|hint|value|hidden|identifier|addTraits|removeTraits|sortPriority|activationPoint|selectionIdentifier)\s*:'
+  docs: https://developer.apple.com/documentation/swiftui/view/accessibilitylabel(_:)-1d7jv.md
+  example_old: |
+    Image(systemName: "xmark").accessibility(label: Text("Close"))
+  example_new: |
+    struct CloseButton: View {
+        var body: some View {
+            Button("Close", systemImage: "xmark") { }
+                .labelStyle(.iconOnly)
+        }
+    }
+
+- id: size-category
+  old: '@Environment(\.sizeCategory) var sizeCategory'
+  new: '@Environment(\.dynamicTypeSize) private var dynamicTypeSize; check .isAccessibilitySize'
+  brief: '`\.sizeCategory` → `\.dynamicTypeSize`'
+  why: 'ContentSizeCategory and sizeCategory are deprecated in favor of DynamicTypeSize.'
+  min_os: 'iOS 15, macOS 12'
+  severity: warning
+  regex: '\\\.sizeCategory\b|\bContentSizeCategory\b'
+  docs: https://developer.apple.com/documentation/swiftui/environmentvalues/dynamictypesize.md
+  example_old: |
+    @Environment(\.sizeCategory) var sizeCategory
+  example_new: |
+    struct AdaptiveRow: View {
+        @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+        var body: some View {
+            let layout = dynamicTypeSize.isAccessibilitySize
+                ? AnyLayout(VStackLayout(alignment: .leading))
+                : AnyLayout(HStackLayout())
+            layout {
+                Text("Storage")
+                Text("12 GB").foregroundStyle(.secondary)
+            }
+        }
+    }
+
+- id: section-header-init
+  old: 'Section(header: Text("Account")) { ... }'
+  new: 'Section("Account") { ... }, or Section { ... } header: { ... } footer: { ... }'
+  brief: '`Section(header:)` → `Section("Title")` / `Section { } header: { }`'
+  why: 'The header:/footer: argument initializers are deprecated in favor of trailing builders.'
+  min_os: 'iOS 15, macOS 12'
+  severity: warning
+  regex: '\bSection\s*\(\s*(?:header|footer)\s*:'
+  docs: https://developer.apple.com/documentation/swiftui/section.md
+  example_old: |
+    Section(header: Text("Account")) { Text("Email") }
+  example_new: |
+    struct AccountSection: View {
+        var body: some View {
+            Form {
+                Section {
+                    Text("Email")
+                } header: {
+                    Text("Account")
+                } footer: {
+                    Text("We use this to send receipts.")
+                }
+            }
+        }
+    }
+
+# ---------------------------------------------------------------- Platform and project
+
+- id: preview-provider
+  old: 'struct ContentView_Previews: PreviewProvider { static var previews: some View { ContentView() } }'
+  new: '#Preview { ContentView() }, with @Previewable @State for live state'
+  brief: '`PreviewProvider` → `#Preview`'
+  why: 'The #Preview macro is shorter, supports traits, and lets previews hold state.'
+  min_os: 'any (needs Xcode 15+)'
+  severity: warning
+  regex: ':\s*PreviewProvider\b'
+  docs: https://developer.apple.com/documentation/swiftui/previewable().md
+  example_old: |
+    struct Toggle_Previews: PreviewProvider {
+        static var previews: some View { ToggleRow() }
+    }
+  example_new: |
+    struct ToggleRow: View {
+        @Binding var isOn: Bool
+
+        var body: some View {
+            Toggle("Wi-Fi", isOn: $isOn)
+        }
+    }
+
+    #Preview {
+        @Previewable @State var isOn = true
+        ToggleRow(isOn: $isOn)
+    }
+
+- id: open-url-uiapplication
+  old: 'UIApplication.shared.open(url)'
+  new: '@Environment(\.openURL) private var openURL, then openURL(url); or Link("Title", destination: url)'
+  brief: '`UIApplication.shared.open` → `@Environment(\.openURL)`'
+  why: 'openURL works on every platform, can be overridden in the environment, and keeps views free of UIKit.'
+  min_os: 'iOS 14, macOS 11'
+  severity: info
+  regex: '\bUIApplication\.shared\.open\s*\('
+  file_requires: '\bimport\s+SwiftUI\b'
+  docs: https://developer.apple.com/documentation/swiftui/environmentvalues/openurl.md
+  example_old: |
+    import SwiftUI
+    Button("Help") { UIApplication.shared.open(helpURL) }
+  example_new: |
+    struct HelpButton: View {
+        @Environment(\.openURL) private var openURL
+
+        var body: some View {
+            Button("Open Help") {
+                openURL(URL(string: "https://support.apple.com")!)
+            }
+        }
+    }
+
+- id: device-idiom-layout
+  old: 'if UIDevice.current.userInterfaceIdiom == .pad { ... }'
+  new: '@Environment(\.horizontalSizeClass), ViewThatFits, or NavigationSplitView'
+  brief: '`userInterfaceIdiom == .pad` → size classes / `ViewThatFits`'
+  why: 'Lay out by available space, not device: iPad apps run in narrow windows and Slide Over.'
+  min_os: 'any'
+  severity: info
+  regex: '\buserInterfaceIdiom\s*[!=]=\s*\.(?:pad|phone)\b'
+  docs: https://developer.apple.com/documentation/swiftui/environmentvalues/horizontalsizeclass.md
+  example_old: |
+    if UIDevice.current.userInterfaceIdiom == .pad { TwoColumns() } else { OneColumn() }
+  example_new: |
+    struct AdaptiveColumns: View {
+        @Environment(\.horizontalSizeClass) private var sizeClass
+
+        var body: some View {
+            if sizeClass == .compact {
+                VStack { Text("Summary"); Text("Details") }
+            } else {
+                HStack { Text("Summary"); Text("Details") }
+            }
+        }
+    }
+
+- id: rounded-border-text-field
+  old: '.textFieldStyle(.roundedBorder)'
+  new: 'On 27+: .textFieldStyle(.bordered) with .textInputBorderShape(.roundedRectangle); keep .roundedBorder when you support 26'
+  brief: '`.textFieldStyle(.roundedBorder)` → `.bordered` + `.textInputBorderShape`'
+  why: 'RoundedBorderTextFieldStyle is deprecated in the 27 SDK; the bordered style takes any border shape.'
+  min_os: 'iOS 27, macOS 27'
+  severity: info
+  regex: '\.textFieldStyle\s*\(\s*(?:\.roundedBorder|RoundedBorderTextFieldStyle\s*\(\s*\))\s*\)'
+  docs: https://developer.apple.com/documentation/swiftui/view/textinputbordershape(_:).md
+  example_old: |
+    TextField("Search", text: $query).textFieldStyle(.roundedBorder)
+  example_new: |
+    @available(iOS 27, macOS 27, *)
+    struct BorderedSearchField: View {
+        @State private var query = ""
+
+        var body: some View {
+            TextField("Search", text: $query)
+                .textFieldStyle(.bordered)
+                .textInputBorderShape(.roundedRectangle)
+        }
+    }
+
+- id: file-document
+  old: 'struct TextFile: FileDocument { init(configuration: ReadConfiguration) ... }'
+  new: 'On 27+: an @Observable class conforming to Document (ReadableDocument & WritableDocument)'
+  brief: '`FileDocument` → `Document` (`ReadableDocument` & `WritableDocument`)'
+  why: 'FileDocument is deprecated in the 27 SDK; Document reads from a URL, so large files never load whole into memory.'
+  min_os: 'iOS 27, macOS 27'
+  severity: info
+  regex: ':\s*(?:[\w.]+\s*,\s*)*(?:Reference)?FileDocument\b'
+  docs: https://developer.apple.com/documentation/swiftui/document.md
+  example_old: |
+    struct TextFile: FileDocument {
+        static var readableContentTypes: [UTType] { [.plainText] }
+    }
+  example_new: |
+    import UniformTypeIdentifiers
+
+    @available(iOS 27, macOS 27, *)
+    @Observable
+    final class NoteDocument: Document {
+        typealias Reader = FileWrapperDocumentReader<String>
+        typealias Writer = FileWrapperDocumentWriter<String>
+
+        static let readableContentTypes: [UTType] = [.plainText]
+        var text = ""
+
+        func reader(configuration: sending ReadConfiguration) -> sending Reader {
+            Reader(configuration) { wrapper in
+                String(decoding: wrapper.regularFileContents ?? Data(), as: UTF8.self)
+            }
+        }
+
+        func apply(snapshot: sending String, previous: sending String?) async throws {
+            text = snapshot
+        }
+
+        func writer(configuration: sending WriteConfiguration) -> sending Writer {
+            Writer(configuration) { snapshot, _ in
+                FileWrapper(regularFileWithContents: Data(snapshot.utf8))
+            }
+        }
+
+        func snapshot(contentType: UTType) async throws -> sending String {
+            text
+        }
+    }

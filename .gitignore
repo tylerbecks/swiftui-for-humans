@@ -4,3 +4,10 @@ DerivedData/
 xcuserdata/
 # ship: build products and logs
 .ship/
+# Catalog export output (scripts/export-catalog.sh)
+agent/build/
+# MCP server (mcp/): dependencies and Vercel CLI state
+mcp/node_modules/
+mcp/.vercel/
+# apple-watch.py: the latest check's report
+/changes.json

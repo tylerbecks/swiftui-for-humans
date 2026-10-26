@@ -39,6 +39,7 @@ struct Aside: View {
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(kind == .note ? Color.secondary.opacity(0.1) : Color.orange.opacity(0.1), in: .rect(cornerRadius: 12))
+        .exportBlock { .aside(self) }
     }
 }
 

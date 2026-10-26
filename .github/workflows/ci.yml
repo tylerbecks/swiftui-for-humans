@@ -1,0 +1,225 @@
+# Builds and tests both editions on every pull request and every push to main,
+# checks the agent pack against the catalog the tests export, and tests the
+# MCP server.
+#
+# The job names (test-mac, test-ios, agent-pack) are the required status
+# checks in the main branch ruleset, so rename them there too if they change.
+# The mcp job isn't required until the owner adds it to the ruleset.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Read-only token. No job here needs to write to the repo, and this workflow
+# never uses pull_request_target, so a fork's PR can't reach secrets.
+permissions:
+  contents: read
+
+# A new push to a PR cancels that PR's older run. Runs on main always finish,
+# so every commit there gets a result.
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  # The xcode-27 image ships several Xcode 27 versions; pin the one the owner
+  # builds with locally so CI and the Mac agree.
+  DEVELOPER_DIR: /Applications/Xcode_27.1.app/Contents/Developer
+  HOMEBREW_NO_AUTO_UPDATE: "1"
+  HOMEBREW_NO_INSTALL_CLEANUP: "1"
+
+jobs:
+  # Also exports the Mac catalog (agent/build/macos.json) for agent-pack, and
+  # builds the agent sources' Swift snippets for macOS.
+  test-mac:
+    name: test-mac
+    runs-on: xcode-27
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install XcodeGen
+        run: command -v xcodegen || brew install xcodegen
+
+      - name: Show toolchain
+        run: |
+          xcodebuild -version
+          xcodegen --version
+
+      # Hosted runners have no signing certificate, so build unsigned.
+      # xcodebuild hands TEST_RUNNER_SFH_EXPORT_DIR to the tests as
+      # SFH_EXPORT_DIR, and ExportCatalogTests writes macos.json there.
+      - name: Test the Mac edition
+        env:
+          TEST_RUNNER_SFH_EXPORT_DIR: ${{ github.workspace }}/agent/build
+        run: scripts/build.sh test-mac CODE_SIGNING_ALLOWED=NO
+
+      # An unsigned app isn't sandboxed, so the tests write the file directly.
+      # If they ever run sandboxed, they attach it to the test results instead,
+      # and export-catalog.sh copies it out from there.
+      - name: Check the Mac catalog
+        run: |
+          if [[ ! -s agent/build/macos.json ]]; then
+            echo "::warning::The Mac tests didn't write agent/build/macos.json; copying it from the test results."
+            scripts/export-catalog.sh mac-results
+          fi
+          jq -e '.pages | length > 0' agent/build/macos.json > /dev/null
+          echo "macos.json: $(jq '.pages | length' agent/build/macos.json) pages"
+
+      - name: Upload the Mac catalog
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: catalog-macos
+          path: agent/build/macos.json
+          retention-days: 7
+          if-no-files-found: error
+
+      # Builds every agent/src snippet that targets macOS into the Mac app.
+      # It runs here, after the tests, because the app is already built in
+      # this job's DerivedData, so only the snippet files compile; a separate
+      # job would build the whole app again. test-ios does the same for iOS.
+      - name: Write the agent snippets
+        run: python3 agent/src/snippet_check.py write
+
+      - name: Build the agent snippets for macOS
+        run: scripts/build.sh mac CODE_SIGNING_ALLOWED=NO
+
+      - name: Remove the agent snippets
+        if: always()
+        run: python3 agent/src/snippet_check.py clean
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: test-mac-results
+          path: .build/DerivedData/Logs/Test/*.xcresult
+          retention-days: 7
+          if-no-files-found: ignore
+
+  # Also exports the iOS catalog (agent/build/ios.json) for agent-pack, and
+  # builds the agent sources' Swift snippets for iOS.
+  test-ios:
+    name: test-ios
+    runs-on: xcode-27
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install XcodeGen
+        run: command -v xcodegen || brew install xcodegen
+
+      - name: Show toolchain and simulators
+        run: |
+          xcodebuild -version
+          xcodegen --version
+          xcrun simctl list devices available
+
+      # SIMULATOR is left unset: build.sh falls back to the first available
+      # iPhone simulator on the image (an iPhone 17 on iOS 27.0 today).
+      # ExportCatalogTests writes ios.json to TEST_RUNNER_SFH_EXPORT_DIR.
+      - name: Test the iOS edition
+        env:
+          TEST_RUNNER_SFH_EXPORT_DIR: ${{ github.workspace }}/agent/build
+        run: scripts/build.sh test-ios CODE_SIGNING_ALLOWED=NO
+
+      - name: Check the iOS catalog
+        run: |
+          if [[ ! -s agent/build/ios.json ]]; then
+            echo "::error::The iOS tests didn't write agent/build/ios.json."
+            exit 1
+          fi
+          jq -e '.pages | length > 0' agent/build/ios.json > /dev/null
+          echo "ios.json: $(jq '.pages | length' agent/build/ios.json) pages"
+
+      - name: Upload the iOS catalog
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: catalog-ios
+          path: agent/build/ios.json
+          retention-days: 7
+          if-no-files-found: error
+
+      # See test-mac: the iOS app is already built here, so only the snippet
+      # files compile.
+      - name: Write the agent snippets
+        run: python3 agent/src/snippet_check.py write
+
+      - name: Build the agent snippets for iOS
+        run: scripts/build.sh ios CODE_SIGNING_ALLOWED=NO
+
+      - name: Remove the agent snippets
+        if: always()
+        run: python3 agent/src/snippet_check.py clean
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: test-ios-results
+          path: .build/DerivedData/Logs/Test/*.xcresult
+          retention-days: 7
+          if-no-files-found: ignore
+
+  # Regenerates the agent pack from the catalogs the test jobs exported and
+  # fails if the committed output (agent/skills, agent/primer, website/agents,
+  # website/llms*.txt, mcp/data/corpus.json) is stale. Python standard library
+  # only, so it runs on Linux.
+  agent-pack:
+    name: agent-pack
+    needs: [test-ios, test-mac]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Download the catalogs
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: catalog-*
+          path: agent/build
+          merge-multiple: true
+
+      - name: Agent pack is up to date
+        run: python3 scripts/agent-build.py --check
+
+      - name: Linter rules pass their own examples
+        run: agent/src/check-swift.sh --self-test
+
+      - name: Deprecated APIs topic is up to date
+        run: python3 agent/src/make_deprecated_topic.py --check
+
+  mcp:
+    name: mcp
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: mcp
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: lts/*
+          cache: npm
+          cache-dependency-path: mcp/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test

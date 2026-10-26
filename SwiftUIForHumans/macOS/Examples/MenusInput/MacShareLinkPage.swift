@@ -57,7 +57,7 @@ private struct MacShareLinkConfig {
     var addsPreview = false
 }
 
-private let gardenGuideURL = URL(string: "https://developer.apple.com/xcode/swiftui/")!
+private let gardenGuideURL = URL(string: "https://developer.apple.com/swiftui/")!
 
 private struct MacShareLinkDemo: View {
     let page: ComponentPage
@@ -68,7 +68,7 @@ private struct MacShareLinkDemo: View {
             initial: MacShareLinkConfig(),
             previewHeight: 200,
             usage: """
-            ShareLink(item: URL(string: "https://developer.apple.com/xcode/swiftui/")!)
+            ShareLink(item: URL(string: "https://developer.apple.com/swiftui/")!)
             """,
             usageNote: Aside(.note, "`ShareLink` makes the button and shows the system's sharing services when people click it. You only supply what to share.")
         ) { $config in
@@ -90,7 +90,7 @@ private struct MacShareLinkDemo: View {
         } code: { config in
             var lines: [String] = []
             switch config.content {
-            case .link: lines.append("let item = URL(string: \"https://developer.apple.com/xcode/swiftui/\")!")
+            case .link: lines.append("let item = URL(string: \"https://developer.apple.com/swiftui/\")!")
             case .text: lines.append("let item = \"Plant tulip bulbs before the first frost.\"")
             case .photo: lines.append("let item = Image(\"photo\")")
             }

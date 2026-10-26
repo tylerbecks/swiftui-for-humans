@@ -1,0 +1,14 @@
+{
+  "name": "swiftui-lint-hook",
+  "displayName": "SwiftUI for Humans lint hook",
+  "version": "0.1.0",
+  "description": "Opt-in PostToolUse hook: after Claude writes or edits a .swift file, runs the SwiftUI for Humans linter on that file and shows Claude any deprecated APIs or HIG smells it finds.",
+  "author": {
+    "name": "Tyler Becks",
+    "url": "https://github.com/tylerbecks"
+  },
+  "homepage": "https://www.swiftuiforhumans.com",
+  "repository": "https://github.com/tylerbecks/swiftui-for-humans",
+  "license": "MIT AND CC-BY-4.0",
+  "keywords": ["swiftui", "lint", "hook"]
+}

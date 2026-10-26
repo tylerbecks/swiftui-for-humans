@@ -1,0 +1,19 @@
+id: glass-mini-player
+title: Mini player above the tab bar, iOS 26 style
+platform: ios
+category: liquid-glass
+prompt: >
+  Set up a tab-based music app with Listen Now, Library, and Search tabs. Add a
+  mini player that shows the current song and a play/pause button, floating
+  just above the tab bar the way Apple's own apps do it on iOS 26.
+checks:
+  require:
+    - label: Uses tabViewBottomAccessory or a glass effect
+      pattern: '\.tabViewBottomAccessory\b|\.glassEffect\b'
+    - label: Guards iOS 26 APIs with availability
+      pattern: '[#@]available\(\s*iOS\s+2[6-9]'
+rubric:
+  - On iOS 26 and later, the mini player uses tabViewBottomAccessory, so the system places it with the Liquid Glass tab bar.
+  - On iOS 18 to 25, it falls back to a safeAreaInset or overlay above the tab bar with a material background.
+  - Tabs use the Tab API, and Search uses Tab(role: .search).
+  - The play/pause button has an accessibility label that reflects its state.
