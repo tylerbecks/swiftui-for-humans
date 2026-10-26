@@ -60,3 +60,23 @@ setups:
     agent: codex
     skills_dir: agent/skills
     primer: agent/primer/AGENTS.snippet.md
+
+  # The same comparison with Sonnet as the agent, pinned to a full model id so
+  # results stay comparable after the alias moves.
+  sonnet-baseline:
+    agent: claude
+    model: claude-sonnet-5-5
+    skills_dir: null
+    primer: null
+
+  sonnet-ours:
+    agent: claude
+    model: claude-sonnet-5-5
+    skills_dir: agent/skills
+    primer: agent/primer/AGENTS.snippet.md
+
+  sonnet-ours-no-primer:
+    agent: claude
+    model: claude-sonnet-5-5
+    skills_dir: agent/skills
+    primer: null

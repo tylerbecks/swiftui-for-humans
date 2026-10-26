@@ -57,8 +57,13 @@ CLAUDE_TOOLS = "Bash,Edit,Read,Write,Glob,Grep,Skill,WebFetch,Task"
 CLAUDE_ALLOWED = [
     "Read", "Edit", "Write", "Glob", "Grep", "Skill",
     "Bash(./build.sh *)", "Bash(xcodegen *)",
-    "Bash(ls *)", "Bash(cat *)", "Bash(head *)", "Bash(grep *)", "Bash(mkdir *)",
-    "Bash(git status *)", "Bash(git diff *)",
+    "Bash(ls *)", "Bash(cat *)", "Bash(head *)", "Bash(tail *)", "Bash(wc *)", "Bash(grep *)",
+    "Bash(mkdir *)", "Bash(cd *)", "Bash(git status *)", "Bash(git diff *)",
+    # Skills ship scripts (ours tells the agent to lint with check_swift.py).
+    # Without these, a skill setup's `./build.sh ios && python3 …` is denied
+    # whole, and Claude Code then denies every later approval in the session.
+    "Bash(python3 .claude/skills/*)", "Bash(python3 */.claude/skills/*)",
+    "Bash(.claude/skills/*)", "Bash(*/.claude/skills/*)",
     "WebFetch(domain:developer.apple.com)",
 ]
 JUDGE_SCHEMA = {
@@ -85,6 +90,35 @@ JUDGE_SCHEMA = {
 def die(msg):
     print(f"error: {msg}", file=sys.stderr)
     sys.exit(1)
+
+
+class UsageLimit(Exception):
+    """The agent or judge hit the account's usage or rate limit. The job says
+    nothing about the setup, so it's discarded and the run stops; rerun with
+    the same --run-id once the limit resets."""
+
+
+LIMIT_TEXT = re.compile(r"usage limit|hit your limit|rate.?limit|limit reached|overloaded|\b429\b", re.I)
+
+
+def limit_hit(stdout, stderr=""):
+    """True when Claude Code's output says the session ended on a usage or rate
+    limit. Only error results, error events, and stderr count, so an agent that
+    merely writes about limits doesn't trip it."""
+    if LIMIT_TEXT.search(stderr or ""):
+        return True
+    for line in stdout.splitlines():
+        try:
+            e = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(e, dict):
+            continue
+        if e.get("error") in ("rate_limit", "overloaded") or e.get("api_error_status") == 429:
+            return True
+        if e.get("type") == "result" and e.get("is_error") and LIMIT_TEXT.search(str(e.get("result") or "")):
+            return True
+    return False
 
 
 def log(msg):
@@ -315,6 +349,8 @@ def run_agent(setup, prompt, project, out_dir, timeout):
             "seconds": round(time.time() - started, 1)}
     text = stdout_path.read_text()
     info.update(parse_claude(text) if setup["agent"] == "claude" else parse_codex(text))
+    if setup["agent"] == "claude" and limit_hit(text, (out_dir / "agent-stderr.txt").read_text()):
+        raise UsageLimit(f"agent stopped on a usage or rate limit after {info['seconds']}s")
     return info
 
 
@@ -554,6 +590,8 @@ def run_judge(task, diff, model):
            "--json-schema", json.dumps(JUDGE_SCHEMA)]
     with tempfile.TemporaryDirectory(prefix="sfh-judge-") as cwd:
         r = subprocess.run(cmd, input=prompt, cwd=cwd, capture_output=True, text=True, timeout=600)
+    if limit_hit(r.stdout, r.stderr) or (r.returncode and LIMIT_TEXT.search(r.stdout)):
+        raise UsageLimit("judge stopped on a usage or rate limit")
     try:
         d = json.loads(r.stdout)
     except json.JSONDecodeError:
@@ -703,6 +741,11 @@ def cmd_run(args):
             }
             (out_dir / "result.json").write_text(json.dumps(result, indent=2))
             log("    " + one_line(result))
+        except UsageLimit as e:
+            shutil.rmtree(out_dir, ignore_errors=True)
+            log(f"    {e}; discarded this job and stopped. Rerun with --run-id {run_id} once the limit resets.")
+            print(save_report(run_dir))
+            sys.exit(4)
         finally:
             if args.keep:
                 log(f"    kept {workdir}")
@@ -730,6 +773,8 @@ def cmd_score(args):
             diff = (out_dir / "changes.diff").read_text() if (out_dir / "changes.diff").exists() else ""
             scores = score_project(project, task, out_dir, targets,
                                    args.judge_model if args.judge else None, diff)
+        except UsageLimit as e:
+            die(f"{e}; stopped rescoring. Rerun `score` once the limit resets.")
         finally:
             shutil.rmtree(workdir, ignore_errors=True)
         if not args.judge and "judge" in result:
@@ -811,13 +856,18 @@ def cmd_self_test(args):
         if scores["checks"]["passed"] != 0 or scores["checks"]["total"] != 1:
             problems.append(f"task checks: expected the forbid check to fail, got {scores['checks']}")
 
+    limited = json.dumps({"type": "result", "is_error": True, "result": "Claude AI usage limit reached|1793000000"})
+    chatty = json.dumps({"type": "result", "is_error": False, "result": "Added a rate limit to the search field."})
+    if not limit_hit(limited) or not limit_hit("", "API Error: 429 rate_limit_error") or limit_hit(chatty):
+        problems.append("limit_hit: should catch limit errors and ignore an agent that mentions limits")
+
     if problems:
         print("self-test FAILED:")
         for p in problems:
             print(f"  {p}")
         sys.exit(1)
     print(f"self-test passed: {len(tasks)} tasks and {len(setups)} setups parse, agent commands are well formed, "
-          "and check-swift.sh scoring counts the right deprecated-API hits")
+          "check-swift.sh scoring counts the right deprecated-API hits, and usage limits are caught")
 
 
 def find_run(run):
