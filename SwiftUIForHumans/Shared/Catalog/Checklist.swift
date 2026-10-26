@@ -78,6 +78,7 @@ struct Checklist: View {
                     .strokeBorder(.separator)
             }
         }
+        .exportBlock { .checklist(items) }
         .onAppear {
             doneIDs = Set(items.map(\.id).filter {
                 UserDefaults.standard.bool(forKey: Self.key(pageID: pageID, itemID: $0))

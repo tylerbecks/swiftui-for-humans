@@ -96,8 +96,12 @@ struct DemoPage<Config, Preview: View, Controls: View, Examples: View>: View {
                     .controlSize(.large)
                 }
             }
+            // The live demo's code changes with the controls; the Usage
+            // block below exports it for the starting configuration.
+            .exportSkipped()
             if let about = page.about {
                 AboutSection(text: about)
+                    .exportSkipped()
             }
             VStack(alignment: .leading, spacing: 16) {
                 SectionTitle("Usage")
@@ -107,8 +111,10 @@ struct DemoPage<Config, Preview: View, Controls: View, Examples: View>: View {
                 }
             }
             .id("code")
+            .exportBlock { .usage(code: usage ?? code(initial), generatedCode: code(initial), note: usageNote) }
             if let composition = page.composition {
                 CompositionSection(tree: composition)
+                    .exportSkipped()
             }
             if Examples.self != EmptyView.self {
                 VStack(alignment: .leading, spacing: 16) {

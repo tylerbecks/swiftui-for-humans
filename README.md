@@ -21,6 +21,42 @@ Across the app:
 - **Checklists** to tick off before you submit, with links to Apple's sources and the date each page was last checked
 - **Search** that understands web terms: try "dropdown", "modal", or "flexbox", or a guideline number like "5.1.1"
 
+## For AI agents
+
+The same knowledge, packaged for coding agents: current SwiftUI for iOS and macOS 26–27, the HIG as decision rules, App Review rules with their guideline numbers, and a linter for deprecated APIs and HIG smells. It comes as four [Agent Skills](https://agentskills.io), which load only when a task needs them:
+
+- **swiftui-build:** components, layout, navigation, data flow, animation, and Mac windows and menus, each with default code, variants, and pitfalls
+- **apple-design:** color, type, Liquid Glass, accessibility, and patterns like modality and feedback, as rules with reasons
+- **app-store-ship:** App Review, App Store Connect forms, TestFlight, sign-in, purchases, and rating prompts
+- **swiftui-review:** a review checklist plus `check_swift.py`, a linter that needs only Python 3
+
+**Any agent** (Claude Code, Codex, Cursor, Copilot, Gemini CLI, and others), with the [skills CLI](https://github.com/vercel-labs/skills):
+
+```sh
+npx skills add tylerbecks/swiftui-for-humans
+```
+
+**Claude Code** plugin, which adds a `/swiftui-review` command and a `hig-reviewer` subagent:
+
+```
+/plugin marketplace add tylerbecks/swiftui-for-humans
+/plugin install swiftui-for-humans@swiftui-for-humans
+```
+
+To have Claude lint every `.swift` file it edits, also install the opt-in hook: `/plugin install swiftui-lint-hook@swiftui-for-humans`. It reports warnings and errors back to Claude after each edit. Set `SWIFTUI_LINT_TARGET` (like `"iOS 17"`) to match your deployment target. Uninstall or disable it in `/plugin` to turn it off.
+
+**Codex:** `codex plugin marketplace add tylerbecks/swiftui-for-humans`, then install **swiftui-for-humans** from `/plugins`. Or copy the skill folders into `.agents/skills/` in your project.
+
+**Cursor, Copilot, Gemini CLI, and other agents:** `npx skills add` above knows where each agent looks. To copy by hand, put the folders in [`agent/skills/`](agent/skills) into your project's `.agents/skills/` (Codex, Copilot) or `.github/skills/` (Copilot), or the folder your agent's docs name for skills.
+
+**Xcode 27's coding assistant:** copy the four folders into `~/Library/Developer/Xcode/CodingAssistant/ClaudeAgentConfig/skills/` for Claude or `~/Library/Developer/Xcode/CodingAssistant/codex/skills/` for Codex (create the `skills` folder if it's missing), then restart Xcode.
+
+**The primer (recommended).** Skills don't always trigger on their own. Paste [`agent/primer/AGENTS.snippet.md`](agent/primer/AGENTS.snippet.md) into your project's `AGENTS.md` or `CLAUDE.md`. It's under 8 KB: the target SDKs, the top corrections, and an index of the topic files, with an instruction to read them instead of relying on training data.
+
+**On the web:** every topic is also a Markdown file at `swiftuiforhumans.com/agents/<id>.md`, indexed by [`/llms.txt`](https://www.swiftuiforhumans.com/llms.txt), with all of them in `/llms-full.txt` and install steps at [`/agents`](https://www.swiftuiforhumans.com/agents). A remote MCP server for chat apps (`sfh_search`, `sfh_get_topic`, `sfh_review_checklist`) lives in [`mcp/`](mcp/README.md) and isn't deployed yet.
+
+How the pack is generated from the app's pages: [agent/README.md](agent/README.md).
+
 ## Running it
 
 You need Xcode 26 or later. The app targets iOS 26.
@@ -55,8 +91,14 @@ SwiftUIForHumans/
   Config/                   Info.plist additions per platform
 Tests/                      Swift Testing: Shared/ for the engine and registry, plus iOS/ and macOS/
 website/                    Marketing site, privacy policy, and support page (static HTML, deployed on Vercel)
+  agents/                   The agent install page and one Markdown file per topic (generated, like llms.txt)
+mcp/                        Remote MCP server for the agent topics (TypeScript, its own Vercel project)
 StoreKit/                   Tips.storekit, for trying the in-app tips in the simulator
-scripts/                    build.sh (builds and tests, one at a time), mac-shot.sh (Mac screenshots), hero-reel.sh (the website's hero tiles)
+scripts/                    build.sh (builds and tests, one at a time), mac-shot.sh (Mac screenshots), hero-reel.sh (the website's hero tiles),
+                            export-catalog.sh and agent-build.py (the agent pack)
+agent/                      Skills, primer, linter, and plugins for AI coding agents (see agent/README.md)
+  src/                      The hand-written agent sources; skills/ and primer/ are generated from them and the pages
+.claude-plugin/             Claude Code marketplace (.agents/plugins/ is the Codex one)
 docs/
   content-guide.md          How every page is written
   building-pages.md         How pages are built in code
