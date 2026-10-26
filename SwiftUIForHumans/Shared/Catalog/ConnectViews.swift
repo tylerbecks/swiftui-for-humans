@@ -21,6 +21,7 @@ struct ConnectSteps: View {
                 }
             }
         }
+        .exportBlock { .steps(steps) }
     }
 }
 
@@ -49,5 +50,6 @@ struct ConnectFacts: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 2)
         .cardStyle()
+        .exportBlock { .facts(rows) }
     }
 }

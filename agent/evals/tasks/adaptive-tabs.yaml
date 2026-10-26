@@ -1,0 +1,16 @@
+id: adaptive-tabs
+title: Main navigation for iPhone and iPad
+platform: ios
+category: hig
+prompt: >
+  The app has three sections: Library, Browse, and Search. Set up its main
+  navigation so it works well on both iPhone and iPad.
+checks:
+  require:
+    - label: Uses TabView or NavigationSplitView
+      pattern: '\bTabView\b|\bNavigationSplitView\b'
+rubric:
+  - Uses a TabView with the Tab API and the sidebarAdaptable style (or a NavigationSplitView on iPad) so iPad gets a sidebar and iPhone gets a tab bar.
+  - Search is a Tab with role .search, or uses .searchable in its own tab.
+  - Each tab has a title and an SF Symbol.
+  - Each tab has its own NavigationStack so navigation state stays per tab.

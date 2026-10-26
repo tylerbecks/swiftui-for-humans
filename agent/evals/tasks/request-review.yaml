@@ -1,0 +1,20 @@
+id: request-review
+title: Ask for an App Store rating the right way
+platform: ios
+category: app-review
+prompt: >
+  This is a habit tracker where people mark habits as done each day. Add a simple
+  habit list with a Done button per habit, and ask happy users to rate the app on
+  the App Store.
+checks:
+  require:
+    - label: Uses requestReview
+      pattern: '\brequestReview\b'
+  forbid:
+    - label: No SKStoreReviewController
+      pattern: '\bSKStoreReviewController\b'
+rubric:
+  - Uses @Environment(\.requestReview), the system prompt, not SKStoreReviewController or a custom review dialog.
+  - Asks after a positive moment (for example after several completed habits or a streak), not at launch or from a button tap.
+  - Limits how often it asks, for example once per app version, tracked with @AppStorage.
+  - Doesn't first ask the user whether they like the app before showing the system prompt.

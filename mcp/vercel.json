@@ -1,0 +1,15 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "api/mcp.ts": {
+      "includeFiles": "data/**",
+      "maxDuration": 10
+    }
+  },
+  "rewrites": [
+    { "source": "/mcp", "destination": "/api/mcp" }
+  ],
+  "redirects": [
+    { "source": "/", "destination": "https://www.swiftuiforhumans.com/agents", "permanent": false }
+  ]
+}

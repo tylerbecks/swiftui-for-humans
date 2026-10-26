@@ -1,0 +1,21 @@
+id: mac-toolbar
+title: Mac main window with sidebar, toolbar, and search
+platform: macos
+category: mac
+prompt: >
+  Build the main window of a Mac bookmarks app: a sidebar of folders, a list of
+  the bookmarks in the selected folder, and a toolbar with an Add Bookmark
+  button and a search field.
+checks:
+  require:
+    - label: Uses NavigationSplitView
+      pattern: '\bNavigationSplitView\b'
+    - label: Uses .toolbar
+      pattern: '\.toolbar\s*[({]'
+    - label: Uses .searchable
+      pattern: '\.searchable\('
+rubric:
+  - Uses NavigationSplitView with a selectable sidebar List of folders.
+  - The toolbar uses .toolbar with ToolbarItem placements and .searchable, not a hand-built row of buttons in the content.
+  - Doesn't paint custom backgrounds behind the toolbar or sidebar (they're Liquid Glass on macOS 26).
+  - The Add Bookmark button has a Label title or a .help tooltip.

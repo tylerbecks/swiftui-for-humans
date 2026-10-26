@@ -1,0 +1,19 @@
+id: glass-map-controls
+title: Liquid Glass floating controls over a map
+platform: ios
+category: liquid-glass
+prompt: >
+  Build a map screen (MapKit's Map, centered on San Francisco) with a column of
+  floating buttons in the bottom-trailing corner: locate me, map layers, and
+  search. Give the floating buttons the new Liquid Glass look.
+checks:
+  require:
+    - label: Uses a Liquid Glass API
+      pattern: '\.glassEffect\b|\bGlassEffectContainer\b|\.glass(Prominent)?\b'
+    - label: Guards iOS 26 APIs with availability
+      pattern: '[#@]available\(\s*iOS\s+2[6-9]'
+rubric:
+  - Uses the real Liquid Glass APIs (glassEffect, GlassEffectContainer, or the .glass button styles), not a hand-made blur or material imitation.
+  - The iOS 26 APIs are guarded with #available and fall back to a material or bordered look on iOS 18 to 25.
+  - Nearby glass shapes share a GlassEffectContainer, or each button uses a glass button style.
+  - The icon-only buttons have accessibility labels and comfortable tap targets.

@@ -144,6 +144,15 @@ enum DemoControlsPlacement {
 }
 
 enum CatalogPlatform {
+    /// The edition's name in the catalog export: "ios" or "macos".
+    static var editionName: String {
+        #if os(macOS)
+        "macos"
+        #else
+        "ios"
+        #endif
+    }
+
     static var demoControlsPlacement: DemoControlsPlacement {
         #if os(macOS)
         .attached
@@ -202,13 +211,16 @@ private struct ControlsPresentation<Panel: View>: ViewModifier {
     let isEnabled: Bool
     @ViewBuilder let panel: Panel
     @Environment(\.isCompactLayout) private var isCompact
+    @Environment(\.exportsCatalogText) private var isExporting
 
     /// Tall enough for about four rows, short enough to leave most of the
     /// preview visible above it.
     private static var compactDetent: PresentationDetent { .height(300) }
 
     func body(content: Content) -> some View {
-        if !isEnabled {
+        // The export renders pages offscreen, where the iPad inspector's
+        // UIKit container would hide the page from the renderer.
+        if !isEnabled || isExporting {
             content
         } else {
             presented(content)

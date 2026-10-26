@@ -1,0 +1,20 @@
+{
+  "name": "swiftui-for-humans",
+  "description": "SwiftUI, Apple design, and App Store skills for coding agents, from the SwiftUI for Humans app.",
+  "owner": {
+    "name": "Tyler Becks",
+    "url": "https://github.com/tylerbecks"
+  },
+  "plugins": [
+    {
+      "name": "swiftui-for-humans",
+      "source": "./agent",
+      "description": "Four skills (swiftui-build, apple-design, app-store-ship, swiftui-review), a /swiftui-review command, and a hig-reviewer subagent."
+    },
+    {
+      "name": "swiftui-lint-hook",
+      "source": "./agent/plugins/swiftui-lint-hook",
+      "description": "Opt-in: after Claude edits a .swift file, runs the SwiftUI for Humans linter on it and shows Claude what it found."
+    }
+  ]
+}

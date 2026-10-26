@@ -1,0 +1,29 @@
+{
+  "name": "swiftui-for-humans",
+  "version": "0.1.0",
+  "description": "Current SwiftUI for iOS and macOS 26–27, Apple's design guidelines as decision rules, App Store review rules, and a SwiftUI linter, as four skills.",
+  "author": {
+    "name": "Tyler Becks",
+    "url": "https://github.com/tylerbecks"
+  },
+  "homepage": "https://www.swiftuiforhumans.com",
+  "repository": "https://github.com/tylerbecks/swiftui-for-humans",
+  "license": "MIT AND CC-BY-4.0",
+  "keywords": ["swiftui", "ios", "macos", "hig", "app-store", "liquid-glass", "accessibility", "lint"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "SwiftUI for Humans",
+    "shortDescription": "Current SwiftUI, Apple design rules, and App Store review rules",
+    "longDescription": "Four skills from the SwiftUI for Humans app: swiftui-build (current SwiftUI APIs, default code, and pitfalls for iOS and macOS 26–27), apple-design (the Human Interface Guidelines as decision rules), app-store-ship (App Review guideline numbers and App Store Connect forms), and swiftui-review (a checklist plus a linter for deprecated APIs and HIG smells).",
+    "developerName": "Tyler Becks",
+    "category": "Developer Tools",
+    "capabilities": ["Read", "Write"],
+    "websiteURL": "https://www.swiftuiforhumans.com",
+    "privacyPolicyURL": "https://www.swiftuiforhumans.com/privacy",
+    "defaultPrompt": [
+      "Build a settings screen in SwiftUI for iOS 26",
+      "Review my SwiftUI views for deprecated APIs and HIG problems",
+      "Check this app against the App Review Guidelines before I submit"
+    ]
+  }
+}
