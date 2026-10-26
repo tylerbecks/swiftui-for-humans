@@ -26,7 +26,8 @@ Docs and HIG pages are fetched as markdown (Apple serves it when the URL ends
 in .md). Every other page is HTML, and only its main article text is kept.
 Before hashing, the text is normalized so noise doesn't count as change: the
 metadata comment keeps only title and availability, images are dropped (art
-refreshes often), and whitespace is collapsed. A page that moves, redirects,
+refreshes often), generated relationship lists (Conforms To and the like) are
+dropped, and whitespace is collapsed. A page that moves, redirects,
 or starts returning 404 or 410 counts as changed too, which catches link rot.
 
 Only 404 and 410 count as status changes. 403, 429, 5xx, timeouts, and
@@ -385,8 +386,15 @@ def is_noise(line: str) -> bool:
     return bool(COPYRIGHT_RE.match(line) or RULE_RE.match(line))
 
 
+# Generated relationship lists on symbol pages. Apple regenerates them across
+# the whole site (on 2026-10-26 one rebuild touched 46 cited pages at once),
+# and no page in the app discusses conformances, so they're left out.
+IGNORED_SECTIONS = {"Conforms To", "Conforming Types", "Inherits From", "Inherited By"}
+
+
 def split_sections(lines: list[str]) -> list[tuple[str, str]]:
-    """Splits markdown on ## and ### headings (outside code fences)."""
+    """Splits markdown on ## and ### headings (outside code fences), leaving
+    out IGNORED_SECTIONS."""
     sections: list[tuple[str, list[str]]] = [("(intro)", [])]
     in_fence = False
     for line in lines:
@@ -402,6 +410,8 @@ def split_sections(lines: list[str]) -> list[tuple[str, str]]:
     named: list[tuple[str, str]] = []
     seen: dict[str, int] = {}
     for name, body in sections:
+        if name in IGNORED_SECTIONS:
+            continue
         seen[name] = seen.get(name, 0) + 1
         if seen[name] > 1:
             name = f"{name} #{seen[name]}"
@@ -1011,6 +1021,12 @@ def self_test() -> int:
             code, report = run()
             check(code == 0 and report and [c["url"] for c in report["changes"]] == [urls[8]],
                   "--update-lock --from-changes refreshes only what the report listed")
+
+            # Relationship lists are generated noise; reordering them changes nothing.
+            symbol = "# Text\n\n## Overview\n\nShows text.\n\n### Conforms To\n\n[`{0}`](/a)\n\n[`{1}`](/b)\n\n### Topics\n\nMore.\n"
+            check(normalize_markdown(symbol.format("View", "Sendable")) == normalize_markdown(symbol.format("Equatable", "Copyable"))
+                  and "Conforms To" not in dict(normalize_markdown(symbol.format("View", "Sendable"))),
+                  "Conforms To and the other relationship lists are ignored")
 
             # Index pages: a link set, expanded one level, and new links reported by URL.
             check(page_links("<doc://com.apple.documentation/documentation/SwiftUI/Button> [p](/documentation/SwiftUI/View/padding(_:_:))",
