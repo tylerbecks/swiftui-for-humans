@@ -4,6 +4,10 @@
 #   scripts/export-catalog.sh          agent/build/ios.json and macos.json
 #   scripts/export-catalog.sh ios      only the iOS edition
 #   scripts/export-catalog.sh mac      only the Mac edition
+#   scripts/export-catalog.sh mac-results
+#                                      copy macos.json out of the newest Mac
+#                                      test results, without running the tests
+#                                      (CI's fallback after its own test-mac)
 #
 # It runs each edition's tests through scripts/build.sh (so it waits its
 # turn for the build lock) with SFH_EXPORT_DIR set, which makes
@@ -29,8 +33,11 @@ export_ios() {
 export_mac() {
     rm -f "$out/macos.json"
     TEST_RUNNER_SFH_EXPORT_DIR="$out" "$root/scripts/build.sh" test-mac
-    [[ -s $out/macos.json ]] && return
-    # Sandboxed: the file is attached to the newest Mac test results.
+    [[ -s $out/macos.json ]] || copy_mac_attachment
+}
+
+# Sandboxed: the file is attached to the newest Mac test results.
+copy_mac_attachment() {
     local results=( "$root/.build/DerivedData/Logs/Test/"*"(Mac)"*.xcresult(Nom[1]) )
     [[ -n ${results[1]:-} ]] || { echo "No Mac test results found." >&2; exit 1; }
     local attachments
@@ -48,8 +55,9 @@ case $which in
     all) export_ios; export_mac ;;
     ios) export_ios ;;
     mac) export_mac ;;
+    mac-results) copy_mac_attachment ;;
     *)
-        echo "usage: scripts/export-catalog.sh [ios|mac]" >&2
+        echo "usage: scripts/export-catalog.sh [ios|mac|mac-results]" >&2
         exit 64
         ;;
 esac

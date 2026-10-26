@@ -9,7 +9,10 @@ Thanks for helping. Changes reach `main` only through pull requests.
 
 ## What happens next
 
-- **CI must pass.** Every pull request builds and tests both apps. A first-time contributor's run starts after the maintainer approves it.
+- **CI must pass.** A first-time contributor's run starts after the maintainer approves it. Every pull request runs these checks:
+  - `test-ios` and `test-mac` test both apps, export each edition's page text to `agent/build/`, and build every Swift snippet in `agent/src` into the app.
+  - `agent-pack` regenerates the agent pack from that export and fails if the committed copy is stale. If it fails, run `scripts/export-catalog.sh` and `scripts/agent-build.py`, and commit the result. It also runs `agent/src/check-swift.sh --self-test` and `python3 agent/src/make_deprecated_topic.py --check`.
+  - `mcp` typechecks and tests the MCP server (`cd mcp && npm ci && npm run typecheck && npm test`).
 - **The maintainer reviews every pull request** before it merges.
 - **Keep pull requests small**, one change each, so they're quick to review.
 
