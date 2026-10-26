@@ -10,6 +10,7 @@ Hand-written content for the agent pack that doesn't come from the app's pages. 
 | `overlays/<id>.md` | Agent-only sections merged into a page's topic. See "Agent overlays" in docs/content-guide.md. |
 | `check-swift.sh`, `check_swift.py` | The linter shipped inside the review skill. Reads `corrections.yaml` plus built-in HIG checks. Python 3 standard library only. |
 | `make_deprecated_topic.py` | Regenerates `topics/deprecated-apis.md` from `corrections.yaml`. |
+| `web/agents.html` | The website's install page (`/agents`). The generator fills in the topic list and counts and writes `website/agents/index.html`. |
 | `snippet_check.py` | Writes every `example_new` and topic code block into temporary `_SnippetCheck` files so the app builds them. |
 
 ## After editing

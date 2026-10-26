@@ -17,6 +17,8 @@ Agents pay for every token they read, and anything they already know is wasted. 
 | `.codex-plugin/plugin.json` | The Codex plugin manifest (skills only) | Yes |
 | `plugins/swiftui-lint-hook/` | The opt-in Claude Code plugin that lints each edited `.swift` file | Yes, except `scripts/check_swift.py` and `corrections.yaml` (generated copies) |
 | `build/` | The catalog export, `ios.json` and `macos.json` (gitignored) | No |
+| `../website/agents/`, `../website/llms.txt`, `../website/llms-full.txt` | The web copy: an install page, one Markdown file per topic, and the llms.txt index and all-in-one file | Generated (the page's template is `src/web/agents.html`) |
+| `../mcp/data/corpus.json` | Every view of every topic for the remote MCP server (see [mcp/README.md](../mcp/README.md)) | Generated |
 
 The marketplaces that point at these live at the repo root: `.claude-plugin/marketplace.json` for Claude Code and `.agents/plugins/marketplace.json` for Codex. `npx skills add` finds `agent/skills/` on its own, since it's one of the folders the skills CLI searches.
 
@@ -26,7 +28,9 @@ The marketplaces that point at these live at the repo root: `.claude-plugin/mark
 App pages (Swift) ── scripts/export-catalog.sh ──▶ agent/build/{ios,macos}.json
 agent/src/ (skills, topics, overlays, corrections.yaml, linter) ──┐
                                                                   ▼
-                                          scripts/agent-build.py ──▶ agent/skills/, agent/primer/
+                                          scripts/agent-build.py ──▶ agent/skills/, agent/primer/,
+                                                                     website/agents/, website/llms*.txt,
+                                                                     mcp/data/corpus.json
 ```
 
 1. **Export.** `scripts/export-catalog.sh` renders every page offscreen in the tests and writes its text to `agent/build/` (see AGENTS.md, "Catalog export").
@@ -42,7 +46,7 @@ scripts/agent-build.py --check
 agent/src/check-swift.sh --self-test   # after editing corrections.yaml or the linter
 ```
 
-Commit the regenerated `agent/skills/` and `agent/primer/`. They're the product people install, straight from `main`.
+Commit the regenerated `agent/skills/`, `agent/primer/`, `website/agents/`, `website/llms*.txt`, and `mcp/data/corpus.json`. The skills are the product people install, straight from `main`, and a push to `main` redeploys the website.
 
 ## How a topic is built
 
@@ -69,8 +73,18 @@ Each page id becomes one file in the skill for its tab: Build → `swiftui-build
 
 **Skill intros** (`src/skills/<skill>.md`) hold the frontmatter, workflow, and top rules. `{{index}}` becomes the topic index and `{{corrections}}` the top corrections from `corrections.yaml`.
 
+## The web copy and the MCP corpus
+
+The same topics, rendered three more ways. Only the links differ from the skill files:
+
+- **`website/agents/<id>.md`**: one file per topic, linking to each other side by side (`menu.md`). `website/agents/index.html` is the install page, built from `src/web/agents.html` with the topic list filled in (placeholders: `{{topics}}`, `{{topic_count}}`, `{{ios_pages}}`, `{{mac_pages}}`, `{{llms_full_size}}`, `{{llms_full_tokens}}`).
+- **`website/llms.txt`**: the [llms.txt](https://llmstxt.org/) index: a title, a summary, install links, and every topic grouped by skill, agent-only topics first. At most 64 KB (about 30 KB now).
+- **`website/llms-full.txt`**: the primer and every topic in one file, each after a `<!-- topic: id -->` line, with links written as ids. It's about 850 KB (about 216,000 tokens), so `llms.txt` steers tools to single topics. The check fails past 2 MB.
+- **`mcp/data/corpus.json`**: for each topic, metadata for search (title, aliases, API names, related ids) plus a `full` and a `concise` view, and for a page in both editions, `ios` and `macos` views rendered from that edition's page alone. Concise keeps the summary, Use when, Don't use when, Default code, Rules, Pitfalls, Built from, Guide, and Key APIs, taking each section's first piece before filling in the rest, and ends by naming what it left out. The check fails if a concise view is over 800 tokens or a full view over 5,000. `checklist` holds `review-checklist` per platform with the top corrections, for `sfh_review_checklist`.
+
 ## Known gaps
 
 - Text a page draws with plain `Text` or its own views, rather than the shared reporting views, isn't exported (for example, the rejection guide's list of guidelines).
 - 40-odd topics leave some variants out to stay under budget. The file names them.
 - The pack isn't on any skills directory yet, and the evals (`agent/evals/`, if present) haven't been re-run against it.
+- The MCP server in `mcp/` isn't deployed, so the agents page says "coming soon".

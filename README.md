@@ -53,6 +53,8 @@ To have Claude lint every `.swift` file it edits, also install the opt-in hook: 
 
 **The primer (recommended).** Skills don't always trigger on their own. Paste [`agent/primer/AGENTS.snippet.md`](agent/primer/AGENTS.snippet.md) into your project's `AGENTS.md` or `CLAUDE.md`. It's under 8 KB: the target SDKs, the top corrections, and an index of the topic files, with an instruction to read them instead of relying on training data.
 
+**On the web:** every topic is also a Markdown file at `swiftuiforhumans.com/agents/<id>.md`, indexed by [`/llms.txt`](https://www.swiftuiforhumans.com/llms.txt), with all of them in `/llms-full.txt` and install steps at [`/agents`](https://www.swiftuiforhumans.com/agents). A remote MCP server for chat apps (`sfh_search`, `sfh_get_topic`, `sfh_review_checklist`) lives in [`mcp/`](mcp/README.md) and isn't deployed yet.
+
 How the pack is generated from the app's pages: [agent/README.md](agent/README.md).
 
 ## Running it
@@ -89,6 +91,8 @@ SwiftUIForHumans/
   Config/                   Info.plist additions per platform
 Tests/                      Swift Testing: Shared/ for the engine and registry, plus iOS/ and macOS/
 website/                    Marketing site, privacy policy, and support page (static HTML, deployed on Vercel)
+  agents/                   The agent install page and one Markdown file per topic (generated, like llms.txt)
+mcp/                        Remote MCP server for the agent topics (TypeScript, its own Vercel project)
 StoreKit/                   Tips.storekit, for trying the in-app tips in the simulator
 scripts/                    build.sh (builds and tests, one at a time), mac-shot.sh (Mac screenshots), hero-reel.sh (the website's hero tiles),
                             export-catalog.sh and agent-build.py (the agent pack)
