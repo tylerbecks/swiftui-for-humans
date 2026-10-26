@@ -4,3 +4,5 @@ DerivedData/
 xcuserdata/
 # ship: build products and logs
 .ship/
+# Catalog export output (scripts/export-catalog.sh)
+agent/build/
