@@ -1,0 +1,2 @@
+# Agents append papercuts from parallel branches; union keeps every line (scripts/papercuts.swift counts a duplicated line once).
+.papercuts.jsonl merge=union
