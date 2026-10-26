@@ -89,6 +89,18 @@ Read the page's HIG page (`higURL`) and pick the 2–5 best practices that matte
 
 A tree drawn with `├──` and `└──`, one item per line, short enough to fit on an iPhone without scrolling sideways (about 35 characters).
 
+## Agent overlays
+
+Every page also becomes a topic file in the agent skills (`agent/skills/`, see [agent/README.md](../agent/README.md)). The generator maps the page for you: Usage becomes Default code, guidelines become Rules, notes become Pitfalls, and examples become Variants. So the page stays the one source, and a better page makes a better topic.
+
+When an agent needs something a person doesn't, put it in an overlay rather than on the page: `agent/src/overlays/<page id>.md`, made of `## Section` blocks.
+
+- `## Use when` and `## Don't use when`: bullets naming the situation and the alternative (`Link`, not `Button`, to open a URL).
+- `## Rules` and `## Pitfalls`: bullets appended to the page's own, in the same "**Imperative.** Why." form.
+- Any other heading becomes its own section near the end of the topic.
+
+Keep overlays short and agent-only: the mistakes models make, APIs newer than their training, and decisions with a reason. Don't repeat the page, don't explain basics, and paraphrase Apple. Swift in an overlay follows the same rules as topics (` ```swift ` blocks must build, checked with `agent/src/snippet_check.py`). Then run `scripts/agent-build.py` and commit the regenerated files. For a subject with no page, write an agent-only topic in `agent/src/topics/` instead.
+
 ## Check before you're done
 
 - [ ] The page builds and every snippet compiles when pasted into a view.
@@ -97,3 +109,4 @@ A tree drawn with `├──` and `└──`, one item per line, short enough t
 - [ ] Guidelines are in our own words, and Do / Don't previews differ in one thing only.
 - [ ] Ship and Design pages list their `sources` and a `reviewed` month, and every URL returns 200.
 - [ ] Checked on an iPhone simulator in light and dark.
+- [ ] The agent pack is regenerated (`scripts/export-catalog.sh`, then `scripts/agent-build.py`), and `scripts/agent-build.py --check` passes.
