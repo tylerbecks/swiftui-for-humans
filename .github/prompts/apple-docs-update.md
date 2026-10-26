@@ -57,7 +57,12 @@ A WWDC drop can add hundreds of links at once. List at most 30 ideas, the most u
 Once all entries are handled:
 
 1. If you changed any Swift file or anything under `agent/src/`, run `scripts/export-catalog.sh && python3 scripts/agent-build.py`. The export runs both test suites (iOS and Mac) and writes the page text the generator reads; the generator then rebuilds the agent pack so it matches the edited pages. Both must pass. Fix what you broke; if a failure isn't yours, say so in the PR body.
-2. Run `python3 scripts/apple-watch.py --sources` (links may have changed), then `python3 scripts/apple-watch.py --update-lock`. Then run `python3 scripts/apple-watch.py` once more; it should print `changed: 0`. If a page still differs because it keeps changing between fetches, say so in the PR body. If a command exits 3, more than 20% of Apple's pages failed to load (throttling or an outage) and it wrote nothing; run it once more, and if it fails again, say so in the PR body.
+2. Refresh the hashes of exactly the pages you reviewed, and nothing else. A filtered run (see "Filter" at the end of this prompt) only looked at part of the catalog, and Apple may have changed other pages since the detector ran. Re-hashing those would mark them reviewed when nobody read them.
+   - Run `python3 scripts/apple-watch.py --sources` (links may have changed).
+   - Run `python3 scripts/apple-watch.py --update-lock --from-changes changes.json`. It re-hashes only the URLs `changes.json` lists.
+   - If you added a new Apple link to a page, baseline it with `python3 scripts/apple-watch.py --update-lock --only <that url>`.
+   - Never run `--update-lock` without `--from-changes` or `--only`.
+   - Then run `python3 scripts/apple-watch.py --from-changes changes.json` once more; it should print `changed: 0`. If a page still differs because it keeps changing between fetches, say so in the PR body. If a command exits 3, more than 20% of Apple's pages failed to load (throttling or an outage) and it wrote nothing; run it once more, and if it fails again, say so in the PR body.
 3. `git status` must show no `changes.json` and no `_SnippetCheck.swift` staged. `changes.json` is ignored; leave it alone.
 
 ### Open the PR

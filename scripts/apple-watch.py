@@ -3,6 +3,8 @@
 
     python3 scripts/apple-watch.py                  check every source, write changes.json
     python3 scripts/apple-watch.py --update-lock    re-fetch and record new hashes
+    python3 scripts/apple-watch.py --update-lock --from-changes changes.json
+                                                    record only what a check reported
     python3 scripts/apple-watch.py --only buttons   limit either mode to matching sources
     python3 scripts/apple-watch.py --sources        rebuild apple-sources.json from the sources
     python3 scripts/apple-watch.py --self-test      offline checks of fetch handling (no network)
@@ -728,6 +730,9 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--update-lock", action="store_true", help="re-fetch and write new hashes to the lockfile")
     parser.add_argument("--only", metavar="SUBSTR", help="only sources whose URL, citing file, or page id contains SUBSTR")
+    parser.add_argument("--from-changes", metavar="PATH",
+                        help="only the URLs a changes.json lists (changed or unbaselined), so a refresh records "
+                             "exactly what was reviewed")
     parser.add_argument("--sources", action="store_true", help="rebuild apple-sources.json from the Swift and agent sources")
     parser.add_argument("--sources-file", default=os.path.join(ROOT, SOURCES_FILE), help=argparse.SUPPRESS)
     parser.add_argument("--lock-file", default=os.path.join(ROOT, LOCK_FILE), help=argparse.SUPPRESS)
@@ -752,9 +757,21 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     all_sources = document["sources"]
     sources = select(all_sources, args.only)
+    if args.from_changes:
+        report = load_json(args.from_changes, None)
+        if report is None:
+            print(f"{args.from_changes} is missing", file=sys.stderr)
+            return 2
+        listed = {c["url"] for c in report.get("changes", [])} | set(report.get("unbaselined", []))
+        sources = {url: info for url, info in sources.items() if url in listed}
+        if not sources:
+            print(f"{args.from_changes} lists no sources to check; nothing to do")
+            github_output(changed=0, files=0, errors=0, hash="")
+            return 0
     if not sources:
         print(f"no sources match {args.only!r}", file=sys.stderr)
         return 2
+    partial = bool(args.only or args.from_changes)
 
     lock = load_json(args.lock_file, {"pages": {}})
     locked = lock.setdefault("pages", {})
@@ -790,7 +807,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.update_lock:
         for url, entry in snapshots.items():
             locked[url] = public(entry)
-        if not args.only:
+        if not partial:
             for url in [u for u in locked if u not in all_sources]:
                 del locked[url]
         lock["about"] = (
@@ -828,7 +845,7 @@ def main(argv: list[str] | None = None) -> int:
             })
 
     stale = False
-    if not args.only:
+    if not partial:
         stale = sweep_sources() != all_sources
 
     affected_files = sorted({f for c in changes for f in c["files"]})
@@ -985,6 +1002,15 @@ def self_test() -> int:
                   "flood hash is the same across runs")
             check(change_set_hash(gone) == change_set_hash(list(reversed(gone)) + gone),
                   "flood hash ignores order and duplicates")
+
+            # A filtered run reviews page5 only; refreshing from its report must leave page8 pending.
+            filtered = os.path.join(tmp, "filtered.json")
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                main([*common[:1], "page5", *common[2:-1], filtered])
+                main(["--update-lock", "--from-changes", filtered, *common[:-1], out])
+            code, report = run()
+            check(code == 0 and report and [c["url"] for c in report["changes"]] == [urls[8]],
+                  "--update-lock --from-changes refreshes only what the report listed")
 
             # Index pages: a link set, expanded one level, and new links reported by URL.
             check(page_links("<doc://com.apple.documentation/documentation/SwiftUI/Button> [p](/documentation/SwiftUI/View/padding(_:_:))",
