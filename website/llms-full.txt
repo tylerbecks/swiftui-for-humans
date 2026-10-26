@@ -2334,7 +2334,7 @@ A Share button that sends a link, text, or your own data to other apps.
 ### Default code
 
 ```swift
-ShareLink(item: URL(string: "https://developer.apple.com/xcode/swiftui/")!)
+ShareLink(item: URL(string: "https://developer.apple.com/swiftui/")!)
 ```
 
 **Note:** `ShareLink` makes the button and shows the system's sharing services when people click it. You only supply what to share.
