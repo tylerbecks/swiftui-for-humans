@@ -66,6 +66,8 @@ docs/
 
 ## Contributing
 
+Changes go through pull requests, and CI must pass; see [CONTRIBUTING.md](CONTRIBUTING.md). To report a security problem, see [SECURITY.md](SECURITY.md).
+
 To add or improve a page:
 
 1. Read [docs/content-guide.md](docs/content-guide.md) for what goes on a page.

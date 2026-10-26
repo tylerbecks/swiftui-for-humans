@@ -11,10 +11,16 @@
 # tests run on Catalog-laneb-iPhone (a dedicated test simulator) if this
 # Mac has one, and otherwise on the first available iPhone simulator.
 # Products land in .build/DerivedData inside this checkout.
+#
+# Anything after the action is passed to xcodebuild as extra build settings.
+# CI uses this to build without a signing certificate:
+#   scripts/build.sh test-mac CODE_SIGNING_ALLOWED=NO
 set -euo pipefail
 
 root=${0:A:h:h}
 action=${1:-ios}
+(( $# )) && shift
+extra=("$@")
 derived="$root/.build/DerivedData"
 lock=/tmp/swiftui-for-humans-build.lock
 
@@ -38,7 +44,7 @@ trap 'rm -rf "$lock"' EXIT
 cd "$root"
 [[ -d SwiftUIForHumans.xcodeproj ]] || xcodegen generate --quiet
 
-common=(-project SwiftUIForHumans.xcodeproj -derivedDataPath "$derived" -jobs 4 ARCHS=arm64)
+common=(-project SwiftUIForHumans.xcodeproj -derivedDataPath "$derived" -jobs 4 ARCHS=arm64 "${extra[@]}")
 
 case $action in
     ios)
@@ -73,7 +79,7 @@ case $action in
             -destination 'platform=macOS,arch=arm64' test -quiet
         ;;
     *)
-        echo "usage: scripts/build.sh ios|test-ios|mac|test-mac" >&2
+        echo "usage: scripts/build.sh ios|test-ios|mac|test-mac [SETTING=value ...]" >&2
         exit 64
         ;;
 esac

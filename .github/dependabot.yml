@@ -1,0 +1,13 @@
+# Keeps the pinned GitHub Actions in .github/workflows up to date. The app
+# itself has no package dependencies, so Actions is the only ecosystem.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: "🧹 chore"

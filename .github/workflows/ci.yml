@@ -1,0 +1,112 @@
+# Builds and tests both editions on every pull request and every push to main.
+# The job names (test-mac, test-ios, agent-pack) are the required status
+# checks in the main branch ruleset, so rename them there too if they change.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Read-only token. No job here needs to write to the repo, and this workflow
+# never uses pull_request_target, so a fork's PR can't reach secrets.
+permissions:
+  contents: read
+
+# A new push to a PR cancels that PR's older run. Runs on main always finish,
+# so every commit there gets a result.
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  # The xcode-27 image ships several Xcode 27 versions; pin the one the owner
+  # builds with locally so CI and the Mac agree.
+  DEVELOPER_DIR: /Applications/Xcode_27.1.app/Contents/Developer
+  HOMEBREW_NO_AUTO_UPDATE: "1"
+  HOMEBREW_NO_INSTALL_CLEANUP: "1"
+
+jobs:
+  test-mac:
+    name: test-mac
+    runs-on: xcode-27
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install XcodeGen
+        run: command -v xcodegen || brew install xcodegen
+
+      - name: Show toolchain
+        run: |
+          xcodebuild -version
+          xcodegen --version
+
+      # Hosted runners have no signing certificate, so build unsigned.
+      - name: Test the Mac edition
+        run: scripts/build.sh test-mac CODE_SIGNING_ALLOWED=NO
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: test-mac-results
+          path: .build/DerivedData/Logs/Test/*.xcresult
+          retention-days: 7
+          if-no-files-found: ignore
+
+  test-ios:
+    name: test-ios
+    runs-on: xcode-27
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install XcodeGen
+        run: command -v xcodegen || brew install xcodegen
+
+      - name: Show toolchain and simulators
+        run: |
+          xcodebuild -version
+          xcodegen --version
+          xcrun simctl list devices available
+
+      # SIMULATOR is left unset: build.sh falls back to the first available
+      # iPhone simulator on the image (an iPhone 17 on iOS 27.0 today).
+      - name: Test the iOS edition
+        run: scripts/build.sh test-ios CODE_SIGNING_ALLOWED=NO
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: test-ios-results
+          path: .build/DerivedData/Logs/Test/*.xcresult
+          retention-days: 7
+          if-no-files-found: ignore
+
+  agent-pack:
+    name: agent-pack
+    runs-on: xcode-27
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # PLACEHOLDER: the agent pack generator (Phase 2 of the agent plan) will
+      # add scripts/agent-build. Its --check mode regenerates the pack and
+      # fails if the committed output is stale. Until the script exists this
+      # step only prints a notice, so the job still passes and can already be
+      # a required check.
+      - name: Agent pack is up to date
+        run: |
+          if [[ -e scripts/agent-build ]]; then
+            scripts/agent-build --check
+          else
+            echo "::notice::scripts/agent-build doesn't exist yet; skipping the staleness check."
+          fi
