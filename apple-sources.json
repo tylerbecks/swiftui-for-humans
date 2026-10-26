@@ -112,7 +112,9 @@
         "SwiftUIForHumans/macOS/Examples/DesignPatterns/MacContrastTransparencyPage.swift",
         "SwiftUIForHumans/macOS/Examples/DesignPatterns/MacKeyboardAccessPage.swift",
         "SwiftUIForHumans/macOS/Examples/DesignPatterns/MacReduceMotionPage.swift",
-        "SwiftUIForHumans/macOS/Examples/DesignPatterns/MacVoiceOverPage.swift"
+        "SwiftUIForHumans/macOS/Examples/DesignPatterns/MacVoiceOverPage.swift",
+        "agent/src/topics/hig-decisions.md",
+        "agent/src/topics/review-checklist.md"
       ],
       "pages": [
         "accessibility",
@@ -154,7 +156,8 @@
         "SwiftUIForHumans/iOS/Examples/Patterns/PatternFeedbackPage.swift",
         "SwiftUIForHumans/iOS/Examples/Patterns/PatternLaunchingPage.swift",
         "SwiftUIForHumans/iOS/Examples/Patterns/PatternUndoRedoPage.swift",
-        "SwiftUIForHumans/macOS/Examples/MenusInput/MacAlertPage.swift"
+        "SwiftUIForHumans/macOS/Examples/MenusInput/MacAlertPage.swift",
+        "agent/src/topics/hig-decisions.md"
       ],
       "pages": [
         "alert",
@@ -196,7 +199,8 @@
         "SwiftUIForHumans/Shared/Catalog/SourceTitles.swift",
         "SwiftUIForHumans/iOS/Examples/Controls/ButtonExample.swift",
         "SwiftUIForHumans/macOS/Examples/Controls/MacButtonPage.swift",
-        "SwiftUIForHumans/macOS/Examples/Design/MacWritingPage.swift"
+        "SwiftUIForHumans/macOS/Examples/Design/MacWritingPage.swift",
+        "agent/src/topics/hig-decisions.md"
       ],
       "pages": [
         "button",
@@ -549,7 +553,8 @@
         "SwiftUIForHumans/iOS/Examples/Design/LiquidGlassPage.swift",
         "SwiftUIForHumans/iOS/Examples/Design/MaterialsPage.swift",
         "SwiftUIForHumans/macOS/Examples/Design/MacMaterialsPage.swift",
-        "SwiftUIForHumans/macOS/Examples/DesignPatterns/MacContrastTransparencyPage.swift"
+        "SwiftUIForHumans/macOS/Examples/DesignPatterns/MacContrastTransparencyPage.swift",
+        "agent/src/topics/liquid-glass.md"
       ],
       "pages": [
         "contrast-transparency",
@@ -573,7 +578,8 @@
     "https://developer.apple.com/design/human-interface-guidelines/modality": {
       "files": [
         "SwiftUIForHumans/Shared/Catalog/SourceTitles.swift",
-        "SwiftUIForHumans/iOS/Examples/Patterns/PatternModalityPage.swift"
+        "SwiftUIForHumans/iOS/Examples/Patterns/PatternModalityPage.swift",
+        "agent/src/topics/hig-decisions.md"
       ],
       "pages": [
         "modality"
@@ -785,7 +791,8 @@
         "SwiftUIForHumans/macOS/Examples/LayoutData/MacFormPage.swift",
         "SwiftUIForHumans/macOS/Examples/Ship/MacGreatMacAppPage.swift",
         "SwiftUIForHumans/macOS/Examples/Ship/MacNativeChecklistPage.swift",
-        "SwiftUIForHumans/macOS/Examples/WindowsNavigation/MacSettingsScenePage.swift"
+        "SwiftUIForHumans/macOS/Examples/WindowsNavigation/MacSettingsScenePage.swift",
+        "agent/src/topics/hig-decisions.md"
       ],
       "pages": [
         "form",
@@ -882,7 +889,8 @@
       "files": [
         "SwiftUIForHumans/Shared/Catalog/SourceTitles.swift",
         "SwiftUIForHumans/iOS/Examples/Navigation/TabViewPage.swift",
-        "SwiftUIForHumans/iOS/Examples/ShipNative/ShipNativeNotWebPage.swift"
+        "SwiftUIForHumans/iOS/Examples/ShipNative/ShipNativeNotWebPage.swift",
+        "agent/src/topics/hig-decisions.md"
       ],
       "pages": [
         "native-not-web",
@@ -923,7 +931,8 @@
         "SwiftUIForHumans/macOS/Examples/Ship/MacGreatMacAppPage.swift",
         "SwiftUIForHumans/macOS/Examples/Ship/MacNativeChecklistPage.swift",
         "SwiftUIForHumans/macOS/Examples/Ship/MacUpdatesOutsideStorePage.swift",
-        "SwiftUIForHumans/macOS/Examples/WindowsNavigation/MacMenuBarExtraPage.swift"
+        "SwiftUIForHumans/macOS/Examples/WindowsNavigation/MacMenuBarExtraPage.swift",
+        "agent/src/topics/hig-decisions.md"
       ],
       "pages": [
         "commands",
@@ -977,7 +986,8 @@
         "SwiftUIForHumans/iOS/Examples/Modifiers/FontPage.swift",
         "SwiftUIForHumans/iOS/Examples/ShipNative/ShipAppearanceCheckPage.swift",
         "SwiftUIForHumans/iOS/Examples/TextAndImages/TextPage.swift",
-        "SwiftUIForHumans/macOS/Examples/Design/MacTypographyPage.swift"
+        "SwiftUIForHumans/macOS/Examples/Design/MacTypographyPage.swift",
+        "agent/src/topics/hig-decisions.md"
       ],
       "pages": [
         "appearance-check",
@@ -1388,6 +1398,12 @@
         "map"
       ]
     },
+    "https://developer.apple.com/documentation/observation/observable()": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
+    },
     "https://developer.apple.com/documentation/photokit/selecting-photos-and-videos-in-ios": {
       "files": [
         "SwiftUIForHumans/Shared/Catalog/SourceTitles.swift",
@@ -1560,6 +1576,18 @@
         "paywall"
       ]
     },
+    "https://developer.apple.com/documentation/swift/task": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
+    },
+    "https://developer.apple.com/documentation/swift/task/sleep(for:tolerance:clock:)": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
+    },
     "https://developer.apple.com/documentation/swiftui/accessibilitychildbehavior": {
       "files": [
         "SwiftUIForHumans/Shared/Catalog/SourceTitles.swift",
@@ -1627,7 +1655,8 @@
       "files": [
         "SwiftUIForHumans/Shared/Catalog/SourceTitles.swift",
         "SwiftUIForHumans/iOS/Examples/Design/LiquidGlassPage.swift",
-        "SwiftUIForHumans/macOS/Examples/Design/MacMaterialsPage.swift"
+        "SwiftUIForHumans/macOS/Examples/Design/MacMaterialsPage.swift",
+        "agent/src/topics/liquid-glass.md"
       ],
       "pages": [
         "liquid-glass",
@@ -1643,6 +1672,12 @@
         "privacy-details"
       ]
     },
+    "https://developer.apple.com/documentation/swiftui/arrangementview": {
+      "files": [
+        "agent/src/topics/whats-new-27.md"
+      ],
+      "pages": []
+    },
     "https://developer.apple.com/documentation/swiftui/asyncimage": {
       "files": [
         "SwiftUIForHumans/iOS/Examples/TextAndImages/AsyncImagePage.swift",
@@ -1651,6 +1686,12 @@
       "pages": [
         "async-image"
       ]
+    },
+    "https://developer.apple.com/documentation/swiftui/bindable": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
     },
     "https://developer.apple.com/documentation/swiftui/binding": {
       "files": [
@@ -1732,6 +1773,12 @@
       "pages": [
         "color"
       ]
+    },
+    "https://developer.apple.com/documentation/swiftui/color/init(uicolor:)": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
     },
     "https://developer.apple.com/documentation/swiftui/colorpicker": {
       "files": [
@@ -1856,6 +1903,13 @@
         "date-picker"
       ]
     },
+    "https://developer.apple.com/documentation/swiftui/document": {
+      "files": [
+        "agent/src/corrections.yaml",
+        "agent/src/topics/whats-new-27.md"
+      ],
+      "pages": []
+    },
     "https://developer.apple.com/documentation/swiftui/documentgroup": {
       "files": [
         "SwiftUIForHumans/macOS/Examples/EssentialsBlocks/MacDocumentEditorPage.swift",
@@ -1887,7 +1941,8 @@
     },
     "https://developer.apple.com/documentation/swiftui/environment": {
       "files": [
-        "SwiftUIForHumans/iOS/Examples/DataFlow/EnvironmentPage.swift"
+        "SwiftUIForHumans/iOS/Examples/DataFlow/EnvironmentPage.swift",
+        "agent/src/corrections.yaml"
       ],
       "pages": [
         "environment"
@@ -1985,20 +2040,34 @@
     "https://developer.apple.com/documentation/swiftui/environmentvalues/dismiss": {
       "files": [
         "SwiftUIForHumans/Shared/Catalog/SourceTitles.swift",
-        "SwiftUIForHumans/iOS/Examples/Patterns/PatternModalityPage.swift"
+        "SwiftUIForHumans/iOS/Examples/Patterns/PatternModalityPage.swift",
+        "agent/src/corrections.yaml"
       ],
       "pages": [
         "modality"
       ]
     },
+    "https://developer.apple.com/documentation/swiftui/environmentvalues/dynamictypesize": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
+    },
     "https://developer.apple.com/documentation/swiftui/environmentvalues/horizontalsizeclass": {
       "files": [
         "SwiftUIForHumans/Shared/Catalog/SourceTitles.swift",
-        "SwiftUIForHumans/iOS/Examples/Foundations/FoundationsLayoutAdaptivityPage.swift"
+        "SwiftUIForHumans/iOS/Examples/Foundations/FoundationsLayoutAdaptivityPage.swift",
+        "agent/src/corrections.yaml"
       ],
       "pages": [
         "layout-adaptivity"
       ]
+    },
+    "https://developer.apple.com/documentation/swiftui/environmentvalues/openurl": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
     },
     "https://developer.apple.com/documentation/swiftui/environmentvalues/undomanager": {
       "files": [
@@ -2032,7 +2101,8 @@
     },
     "https://developer.apple.com/documentation/swiftui/focusstate": {
       "files": [
-        "SwiftUIForHumans/iOS/Examples/TextAndImages/FocusStatePage.swift"
+        "SwiftUIForHumans/iOS/Examples/TextAndImages/FocusStatePage.swift",
+        "agent/src/corrections.yaml"
       ],
       "pages": [
         "focus-state"
@@ -2066,6 +2136,12 @@
         "typography"
       ]
     },
+    "https://developer.apple.com/documentation/swiftui/foreach": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
+    },
     "https://developer.apple.com/documentation/swiftui/form": {
       "files": [
         "SwiftUIForHumans/iOS/Examples/Blocks/SettingsScreenPage.swift",
@@ -2096,7 +2172,8 @@
     "https://developer.apple.com/documentation/swiftui/glasseffectcontainer": {
       "files": [
         "SwiftUIForHumans/Shared/Catalog/SourceTitles.swift",
-        "SwiftUIForHumans/macOS/Examples/Design/MacMaterialsPage.swift"
+        "SwiftUIForHumans/macOS/Examples/Design/MacMaterialsPage.swift",
+        "agent/src/topics/liquid-glass.md"
       ],
       "pages": [
         "materials"
@@ -2233,7 +2310,8 @@
     },
     "https://developer.apple.com/documentation/swiftui/magnifygesture": {
       "files": [
-        "SwiftUIForHumans/macOS/Examples/MenusInput/MacTrackpadGesturesPage.swift"
+        "SwiftUIForHumans/macOS/Examples/MenusInput/MacTrackpadGesturesPage.swift",
+        "agent/src/corrections.yaml"
       ],
       "pages": [
         "trackpad-gestures"
@@ -2277,6 +2355,18 @@
         "menu-bar-utility"
       ]
     },
+    "https://developer.apple.com/documentation/swiftui/migrating-from-the-observable-object-protocol-to-the-observable-macro": {
+      "files": [
+        "agent/src/topics/deprecated-apis.md"
+      ],
+      "pages": []
+    },
+    "https://developer.apple.com/documentation/swiftui/migrating-to-new-navigation-types": {
+      "files": [
+        "agent/src/topics/deprecated-apis.md"
+      ],
+      "pages": []
+    },
     "https://developer.apple.com/documentation/swiftui/model-data": {
       "files": [
         "SwiftUIForHumans/iOS/Examples/DataFlow/ChoosingWrappersPage.swift",
@@ -2293,7 +2383,8 @@
         "SwiftUIForHumans/iOS/Examples/Navigation/NavigationSplitViewPage.swift",
         "SwiftUIForHumans/macOS/Examples/EssentialsBlocks/MacLibraryWindowPage.swift",
         "SwiftUIForHumans/macOS/Examples/Ship/MacIPadAppInWindowPage.swift",
-        "SwiftUIForHumans/macOS/Examples/WindowsNavigation/MacNavigationSplitViewPage.swift"
+        "SwiftUIForHumans/macOS/Examples/WindowsNavigation/MacNavigationSplitViewPage.swift",
+        "agent/src/corrections.yaml"
       ],
       "pages": [
         "ipad-app-in-window",
@@ -2304,7 +2395,8 @@
     "https://developer.apple.com/documentation/swiftui/navigationstack": {
       "files": [
         "SwiftUIForHumans/iOS/Examples/Navigation/NavigationStackPage.swift",
-        "SwiftUIForHumans/macOS/Examples/WindowsNavigation/MacNavigationStackPage.swift"
+        "SwiftUIForHumans/macOS/Examples/WindowsNavigation/MacNavigationStackPage.swift",
+        "agent/src/corrections.yaml"
       ],
       "pages": [
         "navigation-stack"
@@ -2353,6 +2445,12 @@
       "pages": [
         "picker"
       ]
+    },
+    "https://developer.apple.com/documentation/swiftui/previewable()": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
     },
     "https://developer.apple.com/documentation/swiftui/progressview": {
       "files": [
@@ -2451,6 +2549,12 @@
         "scroll-view"
       ]
     },
+    "https://developer.apple.com/documentation/swiftui/section": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
+    },
     "https://developer.apple.com/documentation/swiftui/securefield": {
       "files": [
         "SwiftUIForHumans/iOS/Examples/TextAndImages/SecureFieldPage.swift",
@@ -2544,7 +2648,8 @@
     "https://developer.apple.com/documentation/swiftui/state": {
       "files": [
         "SwiftUIForHumans/iOS/Examples/DataFlow/StatePage.swift",
-        "SwiftUIForHumans/macOS/Examples/EssentialsBlocks/MacStateBindingPage.swift"
+        "SwiftUIForHumans/macOS/Examples/EssentialsBlocks/MacStateBindingPage.swift",
+        "agent/src/corrections.yaml"
       ],
       "pages": [
         "state",
@@ -2559,6 +2664,12 @@
       "pages": [
         "stepper"
       ]
+    },
+    "https://developer.apple.com/documentation/swiftui/tab": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
     },
     "https://developer.apple.com/documentation/swiftui/table": {
       "files": [
@@ -2579,7 +2690,8 @@
     "https://developer.apple.com/documentation/swiftui/text": {
       "files": [
         "SwiftUIForHumans/iOS/Examples/TextAndImages/TextPage.swift",
-        "SwiftUIForHumans/macOS/Examples/Text/MacTextLabelPage.swift"
+        "SwiftUIForHumans/macOS/Examples/Text/MacTextLabelPage.swift",
+        "agent/src/corrections.yaml"
       ],
       "pages": [
         "text",
@@ -2669,6 +2781,18 @@
         "feedback"
       ]
     },
+    "https://developer.apple.com/documentation/swiftui/toolbaritemplacement/topbartrailing": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
+    },
+    "https://developer.apple.com/documentation/swiftui/toolbaroverflowmenu": {
+      "files": [
+        "agent/src/topics/whats-new-27.md"
+      ],
+      "pages": []
+    },
     "https://developer.apple.com/documentation/swiftui/toolbars": {
       "files": [
         "SwiftUIForHumans/Shared/Catalog/SourceTitles.swift",
@@ -2683,7 +2807,8 @@
     "https://developer.apple.com/documentation/swiftui/toolbarspacer": {
       "files": [
         "SwiftUIForHumans/Shared/Catalog/SourceTitles.swift",
-        "SwiftUIForHumans/macOS/Examples/DesignPatterns/MacToolbarsPatternPage.swift"
+        "SwiftUIForHumans/macOS/Examples/DesignPatterns/MacToolbarsPatternPage.swift",
+        "agent/src/topics/whats-new-26.md"
       ],
       "pages": [
         "toolbars-pattern"
@@ -2754,6 +2879,12 @@
         "voiceover"
       ]
     },
+    "https://developer.apple.com/documentation/swiftui/view/accessibilitylabel(_:)-1d7jv": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
+    },
     "https://developer.apple.com/documentation/swiftui/view/accessibilityrotor(_:entries:entrylabel:)": {
       "files": [
         "SwiftUIForHumans/Shared/Catalog/SourceTitles.swift",
@@ -2766,11 +2897,24 @@
     "https://developer.apple.com/documentation/swiftui/view/alert(_:ispresented:actions:message:)": {
       "files": [
         "SwiftUIForHumans/iOS/Examples/Navigation/AlertPage.swift",
-        "SwiftUIForHumans/macOS/Examples/MenusInput/MacAlertPage.swift"
+        "SwiftUIForHumans/macOS/Examples/MenusInput/MacAlertPage.swift",
+        "agent/src/corrections.yaml"
       ],
       "pages": [
         "alert"
       ]
+    },
+    "https://developer.apple.com/documentation/swiftui/view/animation(_:value:)": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
+    },
+    "https://developer.apple.com/documentation/swiftui/view/autocorrectiondisabled(_:)": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
     },
     "https://developer.apple.com/documentation/swiftui/view/background(alignment:content:)": {
       "files": [
@@ -2789,13 +2933,26 @@
         "windows-layout"
       ]
     },
+    "https://developer.apple.com/documentation/swiftui/view/buttonstyle(_:)-66fbx": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
+    },
     "https://developer.apple.com/documentation/swiftui/view/clipshape(_:style:)": {
       "files": [
-        "SwiftUIForHumans/iOS/Examples/Modifiers/ClipShapePage.swift"
+        "SwiftUIForHumans/iOS/Examples/Modifiers/ClipShapePage.swift",
+        "agent/src/corrections.yaml"
       ],
       "pages": [
         "clip-shape"
       ]
+    },
+    "https://developer.apple.com/documentation/swiftui/view/confirmationdialog(_:ispresented:titlevisibility:actions:)": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
     },
     "https://developer.apple.com/documentation/swiftui/view/confirmationdialog(_:ispresented:titlevisibility:actions:message:)": {
       "files": [
@@ -2808,7 +2965,8 @@
     "https://developer.apple.com/documentation/swiftui/view/containerrelativeframe(_:alignment:)": {
       "files": [
         "SwiftUIForHumans/Shared/Catalog/SourceTitles.swift",
-        "SwiftUIForHumans/iOS/Examples/Foundations/FoundationsLayoutAdaptivityPage.swift"
+        "SwiftUIForHumans/iOS/Examples/Foundations/FoundationsLayoutAdaptivityPage.swift",
+        "agent/src/corrections.yaml"
       ],
       "pages": [
         "layout-adaptivity"
@@ -2859,6 +3017,12 @@
         "great-mac-app"
       ]
     },
+    "https://developer.apple.com/documentation/swiftui/view/environment(_:)": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
+    },
     "https://developer.apple.com/documentation/swiftui/view/fileimporter(ispresented:allowedcontenttypes:oncompletion:)": {
       "files": [
         "SwiftUIForHumans/macOS/Examples/MenusInput/MacFileImportExportPage.swift"
@@ -2904,7 +3068,8 @@
     },
     "https://developer.apple.com/documentation/swiftui/view/foregroundstyle(_:)": {
       "files": [
-        "SwiftUIForHumans/iOS/Examples/Modifiers/ForegroundStylePage.swift"
+        "SwiftUIForHumans/iOS/Examples/Modifiers/ForegroundStylePage.swift",
+        "agent/src/corrections.yaml"
       ],
       "pages": [
         "foreground-style"
@@ -2931,7 +3096,8 @@
       "files": [
         "SwiftUIForHumans/Shared/Catalog/SourceTitles.swift",
         "SwiftUIForHumans/iOS/Examples/Blocks/DetailScreenPage.swift",
-        "SwiftUIForHumans/macOS/Examples/Design/MacMaterialsPage.swift"
+        "SwiftUIForHumans/macOS/Examples/Design/MacMaterialsPage.swift",
+        "agent/src/topics/liquid-glass.md"
       ],
       "pages": [
         "detail-screen",
@@ -2948,7 +3114,8 @@
     },
     "https://developer.apple.com/documentation/swiftui/view/ignoressafearea(_:edges:)": {
       "files": [
-        "SwiftUIForHumans/iOS/Examples/Layout/SafeAreaPage.swift"
+        "SwiftUIForHumans/iOS/Examples/Layout/SafeAreaPage.swift",
+        "agent/src/corrections.yaml"
       ],
       "pages": [
         "safe-area"
@@ -3032,6 +3199,18 @@
         "typography"
       ]
     },
+    "https://developer.apple.com/documentation/swiftui/view/navigationdestination(ispresented:destination:)": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
+    },
+    "https://developer.apple.com/documentation/swiftui/view/navigationtitle(_:)": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
+    },
     "https://developer.apple.com/documentation/swiftui/view/onappear(perform:)": {
       "files": [
         "SwiftUIForHumans/iOS/Examples/DataFlow/LifecyclePage.swift"
@@ -3039,6 +3218,18 @@
       "pages": [
         "lifecycle"
       ]
+    },
+    "https://developer.apple.com/documentation/swiftui/view/onchange(of:initial:_:)": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
+    },
+    "https://developer.apple.com/documentation/swiftui/view/ongeometrychange(for:of:action:)": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
     },
     "https://developer.apple.com/documentation/swiftui/view/onhover(perform:)": {
       "files": [
@@ -3056,6 +3247,18 @@
       "pages": [
         "keyboard-access"
       ]
+    },
+    "https://developer.apple.com/documentation/swiftui/view/onsubmit(of:_:)": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
+    },
+    "https://developer.apple.com/documentation/swiftui/view/overlay(alignment:content:)": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
     },
     "https://developer.apple.com/documentation/swiftui/view/padding(_:_:)": {
       "files": [
@@ -3104,6 +3307,12 @@
       "pages": [
         "loading"
       ]
+    },
+    "https://developer.apple.com/documentation/swiftui/view/reordercontainer(for:isenabled:move:)": {
+      "files": [
+        "agent/src/topics/whats-new-27.md"
+      ],
+      "pages": []
     },
     "https://developer.apple.com/documentation/swiftui/view/scenepadding(_:)": {
       "files": [
@@ -3189,6 +3398,12 @@
         "sf-symbols"
       ]
     },
+    "https://developer.apple.com/documentation/swiftui/view/tabviewbottomaccessory(content:)": {
+      "files": [
+        "agent/src/topics/whats-new-26.md"
+      ],
+      "pages": []
+    },
     "https://developer.apple.com/documentation/swiftui/view/task(id:name:priority:file:line:_:)": {
       "files": [
         "SwiftUIForHumans/Shared/Catalog/SourceTitles.swift",
@@ -3198,19 +3413,33 @@
         "loading"
       ]
     },
+    "https://developer.apple.com/documentation/swiftui/view/task(name:priority:file:line:_:)": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
+    },
     "https://developer.apple.com/documentation/swiftui/view/textinputautocapitalization(_:)": {
       "files": [
         "SwiftUIForHumans/Shared/Catalog/SourceTitles.swift",
-        "SwiftUIForHumans/iOS/Examples/Patterns/PatternEnteringDataPage.swift"
+        "SwiftUIForHumans/iOS/Examples/Patterns/PatternEnteringDataPage.swift",
+        "agent/src/corrections.yaml"
       ],
       "pages": [
         "entering-data"
       ]
     },
+    "https://developer.apple.com/documentation/swiftui/view/textinputbordershape(_:)": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
+    },
     "https://developer.apple.com/documentation/swiftui/view/tint(_:)": {
       "files": [
         "SwiftUIForHumans/Shared/Catalog/SourceTitles.swift",
-        "SwiftUIForHumans/macOS/Examples/Design/MacColorPage.swift"
+        "SwiftUIForHumans/macOS/Examples/Design/MacColorPage.swift",
+        "agent/src/corrections.yaml"
       ],
       "pages": [
         "color"
@@ -3224,6 +3453,12 @@
         "toolbar"
       ]
     },
+    "https://developer.apple.com/documentation/swiftui/view/toolbar(content:)-5w0tj": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
+    },
     "https://developer.apple.com/documentation/swiftui/view/toolbar(id:content:)": {
       "files": [
         "SwiftUIForHumans/Shared/Catalog/SourceTitles.swift",
@@ -3232,6 +3467,12 @@
       "pages": [
         "toolbars-pattern"
       ]
+    },
+    "https://developer.apple.com/documentation/swiftui/view/toolbarvisibility(_:for:)": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
     },
     "https://developer.apple.com/documentation/swiftui/view/windowfullscreenbehavior(_:)": {
       "files": [
@@ -3250,6 +3491,12 @@
       "pages": [
         "full-screen"
       ]
+    },
+    "https://developer.apple.com/documentation/swiftui/viewbuilder": {
+      "files": [
+        "agent/src/corrections.yaml"
+      ],
+      "pages": []
     },
     "https://developer.apple.com/documentation/swiftui/viewmodifier": {
       "files": [
@@ -3312,6 +3559,12 @@
       "pages": [
         "full-screen"
       ]
+    },
+    "https://developer.apple.com/documentation/technologyoverviews/adopting-liquid-glass": {
+      "files": [
+        "agent/src/topics/liquid-glass.md"
+      ],
+      "pages": []
     },
     "https://developer.apple.com/documentation/technotes/tn3192-migrating-your-app-from-the-deprecated-uirequiresfullscreen-key": {
       "files": [
@@ -3467,7 +3720,11 @@
       "signal": true
     },
     "https://developer.apple.com/documentation/updates/swiftui": {
-      "files": [],
+      "files": [
+        "agent/src/topics/deprecated-apis.md",
+        "agent/src/topics/whats-new-26.md",
+        "agent/src/topics/whats-new-27.md"
+      ],
       "pages": [],
       "signal": true
     },
@@ -3485,6 +3742,12 @@
       "files": [],
       "pages": [],
       "signal": true
+    },
+    "https://developer.apple.com/documentation/webkit/webview-swift.struct": {
+      "files": [
+        "agent/src/topics/whats-new-26.md"
+      ],
+      "pages": []
     },
     "https://developer.apple.com/documentation/xcode/build-settings-reference": {
       "files": [
@@ -4085,7 +4348,8 @@
     },
     "https://developer.apple.com/swiftui/": {
       "files": [
-        "SwiftUIForHumans/iOS/Examples/Controls/ShareLinkPage.swift"
+        "SwiftUIForHumans/iOS/Examples/Controls/ShareLinkPage.swift",
+        "SwiftUIForHumans/macOS/Examples/MenusInput/MacShareLinkPage.swift"
       ],
       "pages": [
         "share-link"
@@ -4109,14 +4373,6 @@
       ],
       "pages": [
         "motion"
-      ]
-    },
-    "https://developer.apple.com/xcode/swiftui/": {
-      "files": [
-        "SwiftUIForHumans/macOS/Examples/MenusInput/MacShareLinkPage.swift"
-      ],
-      "pages": [
-        "share-link"
       ]
     },
     "https://support.apple.com/guide/mac-help/change-privacy-security-settings-on-mac-mchl211c911f/mac": {
