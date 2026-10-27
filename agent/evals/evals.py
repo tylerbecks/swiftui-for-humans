@@ -259,7 +259,11 @@ class BuildBroker(threading.Thread):
     """Builds for the agent while it runs. The project's ./build.sh drops
     `<id>.req` (holding ios or mac) into .build/requests/ and waits; the broker
     builds outside the agent's sandbox, then writes `<id>.out` and `<id>.done`
-    (the exit code). `build` is injectable for the self-test."""
+    (the exit code). `build` is injectable for the self-test.
+
+    Leaving the context kills a build still running (each build reports its
+    subprocesses through `started`) and waits for the thread, so no xcodebuild
+    outlives the job, holds the build lock, or writes into a deleted project."""
 
     def __init__(self, project, build=None):
         super().__init__(daemon=True)
@@ -267,6 +271,8 @@ class BuildBroker(threading.Thread):
         self.project = project
         self.build = build or agent_build
         self.stopping = threading.Event()
+        self.guard = threading.Lock()
+        self.active = None
         self.builds = 0
 
     def __enter__(self):
@@ -276,12 +282,27 @@ class BuildBroker(threading.Thread):
         return self
 
     def __exit__(self, *exc):
-        self.stopping.set()
-        self.join(timeout=5)
+        with self.guard:
+            self.stopping.set()
+            proc = self.active
+        if proc:
+            kill_group(proc)
+        self.join()
+
+    def started(self, proc):
+        """Called by a build for each subprocess, which runs in its own process
+        group; killed at once if the broker is already stopping."""
+        with self.guard:
+            self.active = proc
+            stopping = self.stopping.is_set()
+        if stopping:
+            kill_group(proc)
 
     def run(self):
         while not self.stopping.is_set():
             for req in sorted(self.dir.glob("*.req")):
+                if self.stopping.is_set():
+                    break
                 work = req.with_suffix(".work")
                 try:
                     req.rename(work)
@@ -289,9 +310,12 @@ class BuildBroker(threading.Thread):
                 except OSError:
                     continue
                 try:
-                    output, code = self.build(self.project, platform)
+                    output, code = self.build(self.project, platform, self.started)
                 except Exception as e:  # report it to the agent rather than hang it
                     output, code = f"build service error: {e}\n", 70
+                finally:
+                    with self.guard:
+                        self.active = None
                 self.builds += 1
                 (work.with_suffix(".out")).write_text(output)
                 tmp = work.with_suffix(".done-tmp")
@@ -301,22 +325,35 @@ class BuildBroker(threading.Thread):
             self.stopping.wait(0.5)
 
 
-def agent_build(project, platform):
+def kill_group(proc):
+    try:
+        os.killpg(proc.pid, signal.SIGKILL)
+    except (ProcessLookupError, PermissionError):
+        pass
+
+
+def agent_build(project, platform, started=lambda proc: None):
     """What the template's build.sh used to run itself: an incremental build in
     the project's own DerivedData, behind the machine-wide lock."""
     scheme, destination, _ = PLATFORMS[platform]
+
+    def run(cmd):
+        proc = subprocess.Popen(cmd, cwd=project, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                text=True, start_new_session=True)
+        started(proc)
+        out, err = proc.communicate()
+        return out + err, proc.returncode
+
     with build_lock():
-        gen = subprocess.run(["xcodegen", "generate", "--quiet"], cwd=project, capture_output=True, text=True)
-        if gen.returncode != 0:
-            return gen.stdout + gen.stderr, gen.returncode
-        r = subprocess.run(["xcodebuild", "-project", "EvalApp.xcodeproj", "-scheme", scheme,
+        output, code = run(["xcodegen", "generate", "--quiet"])
+        if code != 0:
+            return output, code
+        output, code = run(["xcodebuild", "-project", "EvalApp.xcodeproj", "-scheme", scheme,
                             "-destination", destination, "-derivedDataPath", ".build/DerivedData",
-                            "-jobs", "4", "ARCHS=arm64", "CODE_SIGNING_ALLOWED=NO", "build", "-quiet"],
-                           cwd=project, capture_output=True, text=True)
-    output = r.stdout + r.stderr
-    if r.returncode == 0:
+                            "-jobs", "4", "ARCHS=arm64", "CODE_SIGNING_ALLOWED=NO", "build", "-quiet"])
+    if code == 0:
         output += "Build succeeded.\n"
-    return output, r.returncode
+    return output, code
 
 
 # ---------------------------------------------------------------- project setup
@@ -932,7 +969,7 @@ def cmd_self_test(args):
     with tempfile.TemporaryDirectory(prefix="sfh-eval-selftest-") as tmp:
         project = Path(tmp) / "EvalApp"
         copy_template(project)
-        stub = lambda proj, platform: (f"built {platform} in {proj.name}\n", 0 if platform == "ios" else 65)
+        stub = lambda proj, platform, started: (f"built {platform} in {proj.name}\n", 0 if platform == "ios" else 65)
         with BuildBroker(project, build=stub) as broker:
             ios = subprocess.run(["./build.sh", "ios"], cwd=project, capture_output=True, text=True, timeout=30)
             mac = subprocess.run(["./build.sh", "mac"], cwd=project, capture_output=True, text=True, timeout=30)
@@ -943,6 +980,30 @@ def cmd_self_test(args):
         leftovers = sorted(p.name for p in (project / ".build" / "requests").iterdir() if p.name != "broker")
         if leftovers:
             problems.append(f"build broker: request files left behind: {leftovers}")
+
+        # A job that ends mid-build must not leave the build running.
+        running = []
+
+        def slow(proj, platform, started):
+            proc = subprocess.Popen(["sleep", "60"], start_new_session=True)
+            running.append(proc)
+            started(proc)
+            proc.wait()
+            return "", proc.returncode
+
+        client = None
+        began = time.time()
+        with BuildBroker(project, build=slow):
+            client = subprocess.Popen(["./build.sh", "ios"], cwd=project,
+                                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            while not running and time.time() - began < 10:
+                time.sleep(0.1)
+        client.kill()
+        client.wait()
+        if not running or running[0].poll() is None or time.time() - began > 15:
+            if running and running[0].poll() is None:
+                running[0].kill()
+            problems.append("build broker: leaving the broker should kill a build that's still running")
 
     limited = json.dumps({"type": "result", "is_error": True, "result": "Claude AI usage limit reached|1793000000"})
     chatty = json.dumps({"type": "result", "is_error": False, "result": "Added a rate limit to the search field."})
