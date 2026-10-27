@@ -191,18 +191,28 @@ jobs:
             --description "Apple docs watch: too many changed pages for one PR" 2>/dev/null ||
             echo "The $FLOOD_LABEL label already exists."
 
+      # Claude saves the pages it reads here. Paths outside the checkout are
+      # blocked unless they're added with --add-dir, which needs the folder.
+      - name: Make the page folder
+        run: mkdir -p /tmp/apple
+
       # --disallowedTools wins over --allowedTools: Claude can't edit the
       # workflows, scripts, build config, owners, or the generated source map
       # (apple-watch.py --sources rewrites that one). The scope guard below
       # backs this up for anything a Bash command might write.
-      - uses: anthropics/claude-code-action@925afb53776cf1a2b738c6bdbed37b4d4000ef13 # v1.0.262
+      #
+      # A `:*` or ` *` at the end of a Bash rule needs a space after the
+      # prefix, so `Bash(curl -sL https://developer.apple.com/:*)` never
+      # matches a real URL. URL and branch prefixes end in a bare `*`.
+      - uses:anthropics/claude-code-action@925afb53776cf1a2b738c6bdbed37b4d4000ef13 # v1.0.262
         id: claude
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           prompt: ${{ steps.prompt.outputs.prompt }}
           claude_args: |
             --max-turns 250
-            --allowedTools "Read,Edit,Write,Glob,Grep,WebFetch(domain:developer.apple.com),WebFetch(domain:support.apple.com),WebFetch(domain:www.apple.com),Bash(scripts/build.sh:*),Bash(scripts/export-catalog.sh:*),Bash(python3 scripts/apple-watch.py:*),Bash(python3 scripts/agent-build.py:*),Bash(curl -sI https://developer.apple.com/:*),Bash(curl -sI https://support.apple.com/:*),Bash(curl -sI https://www.apple.com/:*),Bash(curl -sL https://developer.apple.com/:*),Bash(curl -s https://developer.apple.com/:*),Bash(curl -sL https://support.apple.com/:*),Bash(curl -sL https://www.apple.com/:*),Bash(mkdir -p /tmp/apple),Bash(grep:*),Bash(head:*),Bash(tail:*),Bash(wc:*),Bash(sort:*),Bash(jq:*),Bash(ls:*),Bash(date:*),Bash(git branch:*),Bash(git rev-parse:*),Bash(gh pr view:*),Bash(gh issue view:*),Bash(find SwiftUIForHumans -name _SnippetCheck.swift -delete),Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git switch -c apple-docs/:*),Bash(git add:*),Bash(git commit:*),Bash(git push -u origin HEAD),Bash(gh pr create:*),Bash(gh pr list:*),Bash(gh issue list:*),Bash(gh issue create:*),Bash(gh issue comment:*)"
+            --add-dir /tmp/apple
+            --allowedTools "Read,Edit,Write,Glob,Grep,WebFetch(domain:developer.apple.com),WebFetch(domain:support.apple.com),WebFetch(domain:www.apple.com),Bash(scripts/build.sh:*),Bash(scripts/export-catalog.sh:*),Bash(python3 scripts/apple-watch.py:*),Bash(python3 scripts/agent-build.py:*),Bash(curl -sI https://developer.apple.com/*),Bash(curl -sI https://support.apple.com/*),Bash(curl -sI https://www.apple.com/*),Bash(curl -sL https://developer.apple.com/*),Bash(curl -s https://developer.apple.com/*),Bash(curl -sL https://support.apple.com/*),Bash(curl -sL https://www.apple.com/*),Bash(grep:*),Bash(head:*),Bash(tail:*),Bash(wc:*),Bash(sort:*),Bash(jq:*),Bash(ls:*),Bash(date:*),Bash(git branch:*),Bash(git rev-parse:*),Bash(gh pr view:*),Bash(gh issue view:*),Bash(find SwiftUIForHumans -name _SnippetCheck.swift -delete),Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git switch -c apple-docs/*),Bash(git add:*),Bash(git commit:*),Bash(git push -u origin HEAD),Bash(git push -u origin apple-docs/*),Bash(gh pr create:*),Bash(gh pr list:*),Bash(gh issue list:*),Bash(gh issue create:*),Bash(gh issue comment:*)"
             --disallowedTools "Edit(.github/**),Write(.github/**),Edit(project.yml),Write(project.yml),Edit(CODEOWNERS),Write(CODEOWNERS),Edit(scripts/**),Write(scripts/**),Edit(apple-sources.json),Write(apple-sources.json)"
 
       # A run where Claude gives up looks like success to the action. Log
