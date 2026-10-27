@@ -204,7 +204,7 @@ jobs:
       # A `:*` or ` *` at the end of a Bash rule needs a space after the
       # prefix, so `Bash(curl -sL https://developer.apple.com/:*)` never
       # matches a real URL. URL and branch prefixes end in a bare `*`.
-      - uses:anthropics/claude-code-action@925afb53776cf1a2b738c6bdbed37b4d4000ef13 # v1.0.262
+      - uses: anthropics/claude-code-action@925afb53776cf1a2b738c6bdbed37b4d4000ef13 # v1.0.262
         id: claude
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
