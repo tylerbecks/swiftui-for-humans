@@ -9,7 +9,7 @@ prompt: >
 checks:
   require:
     - label: Uses tabViewBottomAccessory or a glass effect
-      pattern: '\.tabViewBottomAccessory\b|\.glassEffect\b'
+      pattern: '\btabViewBottomAccessory\s*[({]|\bglassEffect\s*\('
     - label: Guards iOS 26 APIs with availability
       pattern: '[#@]available\(\s*iOS\s+2[6-9]'
 rubric:

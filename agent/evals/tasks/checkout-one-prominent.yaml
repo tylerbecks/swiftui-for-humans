@@ -7,8 +7,13 @@ prompt: >
   and total, with buttons to Place Order, Apply Coupon, and Edit Cart.
 checks:
   max:
-    - label: At most one prominent button style
-      pattern: '\.borderedProminent\b|\.glassProminent\b|BorderedProminentButtonStyle'
+    # Counted per style, so `.glassProminent` with a `.borderedProminent`
+    # fallback for iOS 18 is one prominent button, not two.
+    - label: At most one bordered prominent button
+      pattern: '\.borderedProminent\b|BorderedProminentButtonStyle'
+      count: 1
+    - label: At most one glass prominent button
+      pattern: '\.glassProminent\b|GlassProminentButtonStyle'
       count: 1
 rubric:
   - Place Order is the only prominent (filled) button; Apply Coupon and Edit Cart look secondary.
