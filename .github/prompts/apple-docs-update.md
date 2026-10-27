@@ -32,7 +32,11 @@ Then stop.
 
 ### Mode: update
 
-Work through every entry in `changes`. For each one, fetch the live page (`curl -sL <fetched>` for docs and HIG pages, or WebFetch for help pages and the Review Guidelines), read the changed sections, and compare them with what our page says. Then decide:
+Work through every entry in `changes`. For each one, fetch the live page, read the changed sections, and compare them with what our page says.
+
+How to fetch: run `mkdir -p /tmp/apple` once, then save each page with `curl -sL <fetched> -o /tmp/apple/<short-name>.md` (docs and HIG pages) and read it with the Read or Grep tool. For help pages and the Review Guidelines, use WebFetch. Don't pipe `curl` into other commands, and don't use `$(...)`: only the commands this run allows can run, and a pipe or substitution with anything else is denied. Plain `grep`, `head`, `tail`, `wc`, `sort`, `jq`, `ls`, and `date` are allowed on their own. The date and run id for the branch name are at the end of this prompt.
+
+Then decide:
 
 - **(a) No impact.** A typo fix, rewording, reordering, or anything our page doesn't cover. Change nothing; the lockfile refresh at the end records the new hash.
 - **(b) Real change.** Our page is now wrong or missing something within its scope: a renamed or deprecated API, new availability, a changed rule or guideline number, a moved page. Edit the page:
@@ -44,7 +48,7 @@ Work through every entry in `changes`. For each one, fetch the live page (`curl 
   - When an entry's `files` include agent pack sources under `agent/src/` (topics, overlays, skill sources, `corrections.yaml`), fix those the same way. Never hand-edit the generated agent pack (`agent/skills/`, `agent/primer/`, `website/agents/`, `website/llms*.txt`, `mcp/data/`); the verify step regenerates it.
 - **(c) Worth a new page.** A new API, component, or guideline that fits the app (often found on signal pages). Don't create pages. List each one in the PR body with its link and a sentence on why it fits.
 
-For an `index` entry, read each URL in `new_pages` (`curl -sL <url>.md` for docs and HIG pages) and sort it:
+For an `index` entry, read each URL in `new_pages` (save `<url>.md` with `curl -sL` as above) and sort it:
 
 - **Page idea:** a new HIG guideline, or a new SwiftUI view, modifier, or concept that a beginner building an iOS or Mac app would use (the content guide's bar). List it under (c) with a sentence on which tab and category it would go in.
 - **Fold into an existing page:** a new initializer, style, or option for something the app already covers. Name the page id. If it's small and clearly in scope, treat it as (b) and add it to that page now.
