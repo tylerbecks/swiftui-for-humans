@@ -34,7 +34,7 @@ Then stop.
 
 Work through every entry in `changes`. For each one, fetch the live page, read the changed sections, and compare them with what our page says.
 
-How to fetch: run `mkdir -p /tmp/apple` once, then save each page with `curl -sL <fetched> -o /tmp/apple/<short-name>.md` (docs and HIG pages) and read it with the Read or Grep tool. For help pages and the Review Guidelines, use WebFetch. Don't pipe `curl` into other commands, and don't use `$(...)`: only the commands this run allows can run, and a pipe or substitution with anything else is denied. Plain `grep`, `head`, `tail`, `wc`, `sort`, `jq`, `ls`, and `date` are allowed on their own. The date and run id for the branch name are at the end of this prompt.
+How to fetch: save each page with `curl -sL <fetched> -o /tmp/apple/<short-name>.md` (docs and HIG pages; `/tmp/apple` already exists) and read it with the Read or Grep tool. For help pages and the Review Guidelines, use WebFetch. Don't pipe `curl` into other commands, and don't use `$(...)`: only the commands this run allows can run, and a pipe or substitution with anything else is denied. Plain `grep`, `head`, `tail`, `wc`, `sort`, `jq`, `ls`, and `date` are allowed on their own. The date and run id for the branch name are at the end of this prompt.
 
 Then decide:
 
@@ -71,7 +71,7 @@ Once all entries are handled:
 
 ### Open the PR
 
-1. `git switch -c apple-docs/<YYYY-MM-DD>-<run id>`, then commit with conventional emoji commits: `🐛 fix:` for corrected pages, `🧹 chore: refresh Apple docs hashes` for the lockfile alone. End each commit message with `Co-Authored-By: Claude <noreply@anthropic.com>`.
+1. `git switch -c apple-docs/<YYYY-MM-DD>-<run id>`, then commit with conventional emoji commits: `🐛 fix:` for corrected pages, `🧹 chore: refresh Apple docs hashes` for the lockfile alone.
 2. `git push -u origin HEAD`, then `gh pr create --base main` with the title `Apple docs: <short summary>`. In the body:
    - a table of every entry with its decision: (a) no impact, (b) changed, or (c) new page idea, and one line on why
    - for (b), the files changed and what changed, in a sentence each
