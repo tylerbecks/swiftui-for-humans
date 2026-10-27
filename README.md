@@ -51,9 +51,20 @@ To have Claude lint every `.swift` file it edits, also install the opt-in hook: 
 
 **Xcode 27's coding assistant:** copy the four folders into `~/Library/Developer/Xcode/CodingAssistant/ClaudeAgentConfig/skills/` for Claude or `~/Library/Developer/Xcode/CodingAssistant/codex/skills/` for Codex (create the `skills` folder if it's missing), then restart Xcode.
 
-**The primer (recommended).** Skills don't always trigger on their own. Paste [`agent/primer/AGENTS.snippet.md`](agent/primer/AGENTS.snippet.md) into your project's `AGENTS.md` or `CLAUDE.md`. It's under 8 KB: the target SDKs, the top corrections, and an index of the topic files, with an instruction to read them instead of relying on training data.
+**The primer (recommended).** In our evals, agents opened the skills either way, but only ran the linter when the primer told them to, and Sonnet scored higher with it. Paste [`agent/primer/AGENTS.snippet.md`](agent/primer/AGENTS.snippet.md) into your project's `AGENTS.md` or `CLAUDE.md`. It's under 8 KB: the target SDKs, the top corrections, and an index of the topic files, with an instruction to read them instead of relying on training data.
 
 **On the web:** every topic is also a Markdown file at `swiftuiforhumans.com/agents/<id>.md`, indexed by [`/llms.txt`](https://www.swiftuiforhumans.com/llms.txt), with all of them in `/llms-full.txt` and install steps at [`/agents`](https://www.swiftuiforhumans.com/agents). A remote MCP server for chat apps (`sfh_search`, `sfh_get_topic`, `sfh_review_checklist`) lives in [`mcp/`](mcp/README.md) and isn't deployed yet.
+
+### Does it help?
+
+We gave Claude Code 23 SwiftUI tasks in a fresh Xcode project, twice each, and an LLM judge scored the code against a rubric for each task (October 2026):
+
+| Agent | Without the pack | With the skills and primer |
+|---|---|---|
+| Claude Sonnet 5.5 | 7.2 / 10, 88% of criteria met | 8.4 / 10, 97% |
+| Claude Opus 5.5 | 8.3 / 10, 96% | 8.6 / 10, 98% |
+
+With the pack, Sonnet does about as well as Opus without it. The gains come from Apple's design and App Review rules more than from deprecated APIs, which neither model used much. Without the pack, Sonnet never offered the in-app account deletion App Review requires. Opus gains less, since it already got most of it right. Method, per-task results, and limits: [agent/evals](agent/evals/README.md#results).
 
 How the pack is generated from the app's pages: [agent/README.md](agent/README.md).
 
