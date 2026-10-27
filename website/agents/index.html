@@ -33,8 +33,19 @@
     <p class="updated">The app's 117 iPhone and iPad pages and 98 Mac pages, rewritten as 183 short topics for coding agents. Free and open source.</p>
 
     <div class="summary">
-      <p>Models still write <code>NavigationView</code> and <code>foregroundColor</code>, and they don't know Liquid Glass. This pack gives your agent what it gets wrong or doesn't know yet: current SwiftUI for iOS and macOS 26 and 27, Apple's design guidelines as rules with reasons, App Review rules with their guideline numbers, and a linter. Topics load only when a task needs them, and they link to Apple's own docs instead of copying them.</p>
+      <p>Coding agents write SwiftUI that builds, but they miss Apple's design and App Review rules, and their training predates the newest APIs. This pack gives your agent what it gets wrong or doesn't know yet: current SwiftUI for iOS and macOS 26 and 27, Apple's design guidelines as rules with reasons, App Review rules with their guideline numbers, and a linter. Topics load only when a task needs them, and they link to Apple's own docs instead of copying them.</p>
     </div>
+
+    <h2>Does it help?</h2>
+    <p>We gave Claude Code 23 SwiftUI tasks in a fresh Xcode project, twice each, and an LLM judge scored the code against a rubric for each task (October 2026).</p>
+    <table class="results">
+      <thead><tr><th>Agent</th><th>Without the pack</th><th>With the skills and primer</th></tr></thead>
+      <tbody>
+        <tr><td>Claude Sonnet 5.5</td><td>7.2 / 10<span>88% of criteria met</span></td><td>8.4 / 10<span>97%</span></td></tr>
+        <tr><td>Claude Opus 5.5</td><td>8.3 / 10<span>96%</span></td><td>8.6 / 10<span>98%</span></td></tr>
+      </tbody>
+    </table>
+    <p>With the pack, Sonnet does about as well as Opus without it. The gains come from Apple's design and App Review rules more than from deprecated APIs, which neither model used much. Without the pack, Sonnet never offered the in-app account deletion App Review requires. Opus gains less, since it already got most of it right. <a href="https://github.com/tylerbecks/swiftui-for-humans/blob/main/agent/evals/README.md#results">Method, per-task results, and limits</a>.</p>
 
     <h2>Four skills</h2>
     <ul>
@@ -64,7 +75,7 @@
     <p>Copy the four folders from <a href="https://github.com/tylerbecks/swiftui-for-humans/tree/main/agent/skills"><code>agent/skills</code></a> into <code>~/Library/Developer/Xcode/CodingAssistant/ClaudeAgentConfig/skills/</code> for Claude, or <code>~/Library/Developer/Xcode/CodingAssistant/codex/skills/</code> for Codex. Create the <code>skills</code> folder if it's missing, then restart Xcode.</p>
 
     <h3>The primer (recommended)</h3>
-    <p>Skills don't always trigger on their own. Paste <a href="https://github.com/tylerbecks/swiftui-for-humans/blob/main/agent/primer/AGENTS.snippet.md"><code>AGENTS.snippet.md</code></a> into your project's <code>AGENTS.md</code> or <code>CLAUDE.md</code>. It's under 8 KB: the target SDKs, the top corrections, and an index of the topic files, with an instruction to read them instead of relying on training data.</p>
+    <p>In our evals, agents opened the skills either way, but only ran the linter when the primer told them to, and Sonnet scored higher with it. Paste <a href="https://github.com/tylerbecks/swiftui-for-humans/blob/main/agent/primer/AGENTS.snippet.md"><code>AGENTS.snippet.md</code></a> into your project's <code>AGENTS.md</code> or <code>CLAUDE.md</code>. It's under 8 KB: the target SDKs, the top corrections, and an index of the topic files, with an instruction to read them instead of relying on training data.</p>
 
     <h3>Chat apps and other tools</h3>
     <p>Every topic is a plain Markdown file on this site, listed below. <a href="/llms.txt"><code>llms.txt</code></a> indexes them, and <a href="/llms-full.txt"><code>llms-full.txt</code></a> has all of them in one file (790 KB, about 202,000 tokens, so most tools are better off fetching single topics). A remote MCP server for Claude and other chat apps is coming soon.</p>
