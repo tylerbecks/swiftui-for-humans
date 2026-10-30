@@ -60,7 +60,7 @@ A WWDC drop can add hundreds of links at once. List at most 30 ideas, the most u
 
 Once all entries are handled:
 
-1. If you changed any Swift file or anything under `agent/src/`, run `scripts/export-catalog.sh && python3 scripts/agent-build.py`. The export runs both test suites (iOS and Mac) and writes the page text the generator reads; the generator then rebuilds the agent pack so it matches the edited pages. Both must pass. Fix what you broke; if a failure isn't yours, say so in the PR body.
+1. If you changed any Swift file or anything under `agent/src/`, run `scripts/export-catalog.sh && python3 scripts/agent-build.py`. The export runs both test suites (iOS and Mac) and writes the page text the generator reads; the generator then rebuilds the agent pack so it matches the edited pages. The export takes about 10 minutes; run it exactly as written, from the repository root, in the foreground. A `cd`, an absolute path, or a redirect to a file makes the command a different one, and it's denied. Both must pass. Fix what you broke; if a failure isn't yours, or the export can't run, still open the PR and say what failed in its body.
 2. Refresh the hashes of exactly the pages you reviewed, and nothing else. A filtered run (see "Filter" at the end of this prompt) only looked at part of the catalog, and Apple may have changed other pages since the detector ran. Re-hashing those would mark them reviewed when nobody read them.
    - Run `python3 scripts/apple-watch.py --sources` (links may have changed).
    - Run `python3 scripts/apple-watch.py --update-lock --from-changes changes.json`. It re-hashes only the URLs `changes.json` lists.
