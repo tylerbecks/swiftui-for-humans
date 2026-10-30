@@ -45,7 +45,7 @@ Image("photo")
 
 ## Rules
 
-- **Give mouse users another way.** Pinching and rotating need a trackpad. Add buttons or menu commands that zoom and rotate, so everyone can reach the same result.
+- **Give mouse users another way.** Pinching and rotating need a trackpad or a touch display. Add buttons or menu commands that zoom and rotate, so everyone can reach the same result.
 - **Don't take over system gestures.** People expect gestures like swiping up for Mission Control to work in every app, and they can customize them in System Settings.
 - **Make gestures behave as they do elsewhere.** People expect a gesture to do the same thing in every app, like swiping between pages. A familiar gesture with a new meaning surprises them.
 

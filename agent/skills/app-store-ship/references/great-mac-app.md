@@ -11,20 +11,13 @@ reviewed: October 2026
 
 Menus, the keyboard, windows, Settings, and drag and drop: what people expect on a Mac.
 
-## Contents
-
-- Rules
-- Pitfalls
-- Guide
-- Variants
-- Related
-
 ## Rules
 
 - **Disable menu items instead of hiding them.** A menu that always shows the same items teaches people what your app can do, even when an item doesn't apply right now.
 - **Use the big display.** Show more content with fewer nested levels and fewer modal steps, while keeping the density comfortable to read.
 - **Let people shape their windows.** People resize, hide, show, and move windows to fit how they work, and expect full screen for focused work.
 - **Reward precise input.** A pointer allows exact selection and editing, so support it alongside the keyboard.
+- **Support touch without resizing everything.** Some Macs have touch displays, but touch stays secondary. Keep controls the same size and density, and let standard controls handle bigger tap targets.
 - **Let people personalize.** Customizable toolbars, windows that show the views people use most, and their choice of colors and fonts all help.
 
 ## Pitfalls
@@ -94,28 +87,7 @@ Button("Add Stop") { stops += 1 }
     .keyboardShortcut("k", modifiers: [.option, .command])
 ```
 
-### Drag a stop onto the trip
-
-`.draggable(_:)` makes a view a drag source, and `.dropDestination(for:)` accepts what people drop on a view.
-
-```swift
-@State private var trip: [String] = []
-
-HStack {
-    ForEach(["Lisbon", "Porto", "Faro"], id: \.self) { city in
-        Text(city)
-            .padding(8)
-            .background(.fill.tertiary, in: .capsule)
-            .draggable(city)
-    }
-}
-Text(trip.isEmpty ? "Drop stops here" : trip.joined(separator: " → "))
-    .frame(maxWidth: .infinity, minHeight: 60)
-    .background(.fill.quaternary, in: .rect(cornerRadius: 10))
-    .dropDestination(for: String.self) { cities, _ in
-        trip.append(contentsOf: cities)
-    }
-```
+More variants, left out to keep this file short: Drag a stop onto the trip. Apple's docs: https://developer.apple.com/documentation/swiftui/commands.md
 
 ## Related
 

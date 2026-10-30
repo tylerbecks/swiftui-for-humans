@@ -126,7 +126,7 @@
       "status": 200
     },
     "https://developer.apple.com/design/human-interface-guidelines": {
-      "hash": "ffb1c8b3b4a5d324",
+      "hash": "c0d810c61c5adfed",
       "links": [
         "02a9f2a05d02609a",
         "02b0640d2f882f00",
@@ -144,6 +144,7 @@
         "217dbacf9f24279d",
         "241ae21f096d1760",
         "24d1615d1ef62622",
+        "2aca939057a624e7",
         "2c3c67060003d332",
         "2cdd93ebca52a673",
         "2de6f1c467f1139a",
@@ -174,7 +175,6 @@
         "662d432274a82695",
         "6b21ac4981616de5",
         "6b6f51ae70f64018",
-        "6ca7a3cfb12d99aa",
         "6cfacf68574cc623",
         "6dfed50c75f5be42",
         "70eee242e82f9e36",
@@ -192,7 +192,7 @@
         "85daf7e5cd27c8aa",
         "86676f5db9571523",
         "880bc4a9b1cf65ff",
-        "88bc8630d88f0047",
+        "8923df0de499e9ff",
         "8d1a026e39c9a596",
         "8e14dd37faf409d8",
         "8f1aba3dc97b644f",
@@ -203,25 +203,23 @@
         "94826269a498fe9a",
         "97c761d9ffdda7eb",
         "a26d9d416082c847",
+        "a3bfc7a2c4bfbf77",
         "a5219500d15a5735",
-        "a633b830b7bbff96",
         "a97c921a958044a7",
         "aae74305cb2f6269",
         "aba63bb3d897f70d",
         "ac5307095e194b11",
         "ad3720262aa06f9b",
-        "ad646dcef80b3a47",
         "ad676b2f904abe81",
         "ae8d7e5f34f1c05d",
+        "b2cc7b36fa9e8122",
         "b370efd28d95e6ef",
         "b4a25554e886e18d",
         "b5ffb926a63838f7",
-        "b611bea7703400d8",
         "b61edf58d444ef1a",
         "b699cd1c13aef6ac",
         "b749603b8cbe5d98",
         "b77a770e850cc844",
-        "b7ca7ac086f65036",
         "b80ce810cec319ad",
         "baf1d5d2afaab0a7",
         "bc247dc906fb6904",
@@ -238,6 +236,7 @@
         "d6b029bf98bc1691",
         "d839adf3c6596b6b",
         "de2885c2031d1092",
+        "dfb7ce7a4d9596ca",
         "e0217e9448208174",
         "e1b400557a3b5ad7",
         "e5c129a2c045d6c7",
@@ -256,9 +255,9 @@
         "ffdf2d62067cb73e"
       ],
       "sections": {
-        "1fb926eb65da52ab": "db4a3f5e0faf0c72",
+        "1fb926eb65da52ab": "33aecb5023e8839a",
         "5422b901abba3f9e": "717a29832beadc47",
-        "55712013a64f70c1": "f6e43e21be1f7733",
+        "55712013a64f70c1": "23fddf46c08d04ea",
         "84e2087bf9730ec9": "ead3a6ed6dc2f039",
         "d9da43a406160d9a": "6053395ebb5ed1c4",
         "e22820fcf5cd90e3": "675bff857e5d9d06"
@@ -330,19 +329,20 @@
       "status": 200
     },
     "https://developer.apple.com/design/human-interface-guidelines/app-icons": {
-      "hash": "e68c7a1ef03df947",
+      "hash": "29aaa6e2d0369229",
       "sections": {
         "0072e6b934945d5b": "cebece0c08ed331f",
         "015b4e0a76e50458": "976c91619c2b493a",
         "155d98fa417f1055": "e55878d39320a759",
+        "4943a01582218a13": "9275cd2e6c078cee",
         "530718c716900f62": "ee210742c4c6f8c9",
         "5422b901abba3f9e": "0cf8d8a48663e70f",
         "5eb6cf647d2c5d14": "8bc3ac9b25663fbe",
         "7b0c7fb792dfc0ff": "22f36b90cefd3a09",
         "8b52d389cdbf129b": "0b60e1a931595ec9",
-        "9d62609546480213": "323f82acce578f0b",
+        "9d62609546480213": "0ac754500eb26497",
         "a326b7c29601eaf0": "7e6450fb3a229711",
-        "cc32fa4d4258e316": "59d6c457d6627adc",
+        "cc32fa4d4258e316": "d4ce741a521ee622",
         "d9da43a406160d9a": "013759f24c39e381",
         "e89b30aa1dc30a6a": "f7ebd9ba746aa5cf",
         "e8d0d36445955393": "709e36cf4b0f8e61",
@@ -523,24 +523,25 @@
       "status": 200
     },
     "https://developer.apple.com/design/human-interface-guidelines/designing-for-macos": {
-      "hash": "45c1981fc2402498",
+      "hash": "d473aa106e5c81d2",
       "sections": {
         "5422b901abba3f9e": "f91221fa1cd4ca8a",
-        "5eb6cf647d2c5d14": "e689339874e2f82e",
-        "bfb6cf2330e2f313": "b56083bf84c1834f",
+        "5eb6cf647d2c5d14": "1cc8fae04cfffa09",
+        "9d62609546480213": "9a50ddded0e8383d",
+        "bfb6cf2330e2f313": "903f0b5861cb5b09",
         "d9da43a406160d9a": "f370f7b987725055",
         "e89b30aa1dc30a6a": "5e31a06ad51ea464"
       },
       "status": 200
     },
     "https://developer.apple.com/design/human-interface-guidelines/drag-and-drop": {
-      "hash": "78ebb1bb5c61354c",
+      "hash": "beb0f0f99622131d",
       "sections": {
         "155d98fa417f1055": "3d7c3333cc2bc3d1",
         "40a08bdbefb63ef4": "4d712bfa6071b505",
         "530718c716900f62": "132052d4a4a0d3b1",
         "5422b901abba3f9e": "3d431208da3aae9c",
-        "5eb6cf647d2c5d14": "c8d9c3b048e6fa75",
+        "5eb6cf647d2c5d14": "cd88698b25b004db",
         "7713eae8b2be7b13": "5e25465557aaf2a3",
         "9d62609546480213": "dfe88559b160c7a7",
         "aea7203623b032ae": "c9db195be7fb0517",
@@ -643,22 +644,23 @@
       "status": 200
     },
     "https://developer.apple.com/design/human-interface-guidelines/gestures": {
-      "hash": "be8a236dcf4130f1",
+      "hash": "f9ac8e6a5064cd9b",
       "sections": {
         "015b4e0a76e50458": "e3b0c44298fc1c14",
         "155d98fa417f1055": "e3b0c44298fc1c14",
-        "44df3bb53bed1c8f": "c4c61be6919391e9",
+        "44df3bb53bed1c8f": "90d9fdc6c900d530",
         "530718c716900f62": "4788894aef1d4cf6",
         "5422b901abba3f9e": "ba25232b50190965",
         "5eb6cf647d2c5d14": "f5be36133cc19e88",
         "8b52d389cdbf129b": "872c45d35ae86590",
-        "9d62609546480213": "6f63410a03c29aca",
+        "9d62609546480213": "099dbc927cadd463",
         "aea7203623b032ae": "84dd8f464f4ecb33",
-        "aed6b7aa2a0511a9": "86bd67b4c77a7263",
+        "aed6b7aa2a0511a9": "8194784cc009523c",
+        "b02dd3f78a8ce513": "f84cbdc9436adda8",
         "b39cfdd243a05a9b": "e50fbb47c38faaba",
         "bfb6cf2330e2f313": "a19e56a529dba49b",
         "d9da43a406160d9a": "c7c9a250e2103a53",
-        "e89b30aa1dc30a6a": "30f925433cc141c7",
+        "e89b30aa1dc30a6a": "695191d250a6af1c",
         "f197015981850bc5": "afef31191e92477d"
       },
       "status": 200
@@ -987,11 +989,11 @@
       "status": 200
     },
     "https://developer.apple.com/design/human-interface-guidelines/outline-views": {
-      "hash": "e32c2f08c2b7e528",
+      "hash": "35dd97e48af425cc",
       "sections": {
         "155d98fa417f1055": "d54c5e01c005bcf9",
         "5422b901abba3f9e": "9fa92d86494a66bd",
-        "5eb6cf647d2c5d14": "2d1a40dc9c13055f",
+        "5eb6cf647d2c5d14": "6823436b5f913add",
         "bfb6cf2330e2f313": "c5960084b850fc9c",
         "d9da43a406160d9a": "e920e129e578815b",
         "e89b30aa1dc30a6a": "749fd62ab7276507"
@@ -1046,18 +1048,18 @@
       "status": 200
     },
     "https://developer.apple.com/design/human-interface-guidelines/pointing-devices": {
-      "hash": "62351b25ce4768c9",
+      "hash": "4395e2984321088d",
       "sections": {
         "155d98fa417f1055": "dcae0534a9414a34",
         "530718c716900f62": "369242dbbaa4d461",
         "5422b901abba3f9e": "a589e8510bed9174",
         "5eb6cf647d2c5d14": "80239ba8339b7253",
-        "5ff00c3f6b5fb755": "0b82320b4be7cbce",
-        "9d62609546480213": "1e56f40b2d2d53f2",
-        "aed6b7aa2a0511a9": "7ebfb2feb249caba",
+        "5ff00c3f6b5fb755": "7c5d7d9ae26defb1",
+        "9d62609546480213": "5ad9eadd7a418bd6",
+        "aed6b7aa2a0511a9": "503229208a98cc49",
         "bfb6cf2330e2f313": "2212cdfff6f4652c",
         "d9da43a406160d9a": "948f50f0bc73e2d9",
-        "e89b30aa1dc30a6a": "2a8539f73bfb7781"
+        "e89b30aa1dc30a6a": "43b32d7e0843f4fd"
       },
       "status": 200
     },
@@ -1545,7 +1547,7 @@
       "status": 200
     },
     "https://developer.apple.com/design/whats-new/": {
-      "hash": "3b595f705be0ea2e",
+      "hash": "fe2e736bec6e150c",
       "links": [
         "02792ff7a442ab02",
         "02a9f2a05d02609a",
@@ -1568,6 +1570,7 @@
         "2cdd93ebca52a673",
         "2de6f1c467f1139a",
         "2e37cc76947bc4a5",
+        "2f159954d409bda3",
         "339e0fc6b9cf5d4a",
         "346d9fa756fb831d",
         "36d19c38d98137e9",
@@ -1668,7 +1671,7 @@
         "ffdf2d62067cb73e"
       ],
       "sections": {
-        "5422b901abba3f9e": "e23e7b2707378440",
+        "5422b901abba3f9e": "3cebe9b3a3fca26f",
         "d9da43a406160d9a": "f38d4222080f3b2d"
       },
       "status": 200
@@ -7315,10 +7318,10 @@
       "status": 200
     },
     "https://developer.apple.com/documentation/uikit/uiapplication/opensettingsurlstring": {
-      "hash": "7e6d91e8ac70e3c1",
+      "hash": "e14d1a64b2d3eb38",
       "sections": {
         "5422b901abba3f9e": "3ff7a3254bb4e9cd",
-        "5eb6cf647d2c5d14": "d18c8aa0a8485139",
+        "5eb6cf647d2c5d14": "8220fb0c2f559933",
         "d9da43a406160d9a": "9caa6d6b3d0dba00"
       },
       "status": 200
@@ -9220,7 +9223,7 @@
       "status": 200
     },
     "https://developer.apple.com/help/app-store-connect/release-notes/": {
-      "hash": "e15ba8f52d782072",
+      "hash": "de03367de9d143a1",
       "sections": {
         "1815a642f28f5c83": "271d9f7379354f48",
         "219e2b5f96e2f583": "216d9ff1be47ca95",
@@ -9228,7 +9231,7 @@
         "46e1c39685e57ab8": "099fca99326a30ea",
         "4dd3bbbeabc01a7d": "c77c45d1b507574a",
         "508e165514365c46": "b0c255d629645c76",
-        "5422b901abba3f9e": "c28f8ea4beb64057",
+        "5422b901abba3f9e": "a227679474be16a5",
         "5869a5230af8ef42": "f99220945b8fa181",
         "5db636d28b6993fe": "05e57368442fb4d4",
         "61d0ba2b594e6d45": "7a0bfb4d61031ada",

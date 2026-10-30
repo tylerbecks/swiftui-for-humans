@@ -385,9 +385,11 @@
     "https://developer.apple.com/design/human-interface-guidelines/gestures": {
       "files": [
         "SwiftUIForHumans/Shared/Catalog/SourceTitles.swift",
-        "SwiftUIForHumans/iOS/Examples/ShipNative/ShipNativeNotWebPage.swift"
+        "SwiftUIForHumans/iOS/Examples/ShipNative/ShipNativeNotWebPage.swift",
+        "SwiftUIForHumans/macOS/Examples/Ship/MacNativeChecklistPage.swift"
       ],
       "pages": [
+        "mac-native-checklist",
         "native-not-web"
       ]
     },

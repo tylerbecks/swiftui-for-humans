@@ -57,6 +57,10 @@ extension ComponentPage {
                 "A pointer allows exact selection and editing, so support it alongside the keyboard."
             ),
             Guideline(
+                "Support touch without resizing everything.",
+                "Some Macs have touch displays, but touch stays secondary. Keep controls the same size and density, and let standard controls handle bigger tap targets."
+            ),
+            Guideline(
                 "Let people personalize.",
                 "Customizable toolbars, windows that show the views people use most, and their choice of colors and fonts all help."
             ),

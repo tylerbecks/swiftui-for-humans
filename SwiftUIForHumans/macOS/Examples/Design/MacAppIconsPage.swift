@@ -16,6 +16,7 @@ extension ComponentPage {
         notes: [
             "**One Icon Composer file covers every size.** The system scales your icon down for small places, so you don't export a set of sizes anymore.",
             "**SF Symbols can't be part of your icon.** Apple's terms for SF Symbols don't allow them, or look-alikes, in app icons and logos. Draw your own shapes.",
+            "**A flat PNG still works, with less control.** The system splits it into a background and a foreground for the other appearances, but only large, simple shapes get glass, not text or thin lines.",
         ],
         guidelines: [
             Guideline(

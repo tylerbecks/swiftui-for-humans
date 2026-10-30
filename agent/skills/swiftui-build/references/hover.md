@@ -40,6 +40,7 @@ ProjectRow(project)
 
 - **Show the pointer that matches what happens.** Each pointer has a meaning people know: a pointing hand for a link, an open hand for content they can pan, like a map, and a crosshair for precise selection. Don't use one for anything else.
 - **Let the pointer bring back controls that fade away.** Controls that hide to keep the view calm, like playback controls over a video, should reappear when the pointer moves over them.
+- **Give hover-only controls a way in with touch.** On a Mac with a touch display there's no pointer to hover. Show an essential hidden control when someone taps where it lives, and put it in a context menu too.
 - **Keep every way of working consistent.** People switch between the pointer, the keyboard, and gestures without thinking. An action shouldn't work differently, or only work, with one of them.
 
 ## Pitfalls
