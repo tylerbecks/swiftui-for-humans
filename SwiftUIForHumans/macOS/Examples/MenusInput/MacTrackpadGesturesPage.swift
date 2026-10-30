@@ -28,7 +28,7 @@ extension ComponentPage {
         guidelines: [
             Guideline(
                 "Give mouse users another way.",
-                "Pinching and rotating need a trackpad. Add buttons or menu commands that zoom and rotate, so everyone can reach the same result."
+                "Pinching and rotating need a trackpad or a touch display. Add buttons or menu commands that zoom and rotate, so everyone can reach the same result."
             ),
             Guideline(
                 "Don't take over system gestures.",

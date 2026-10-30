@@ -52,6 +52,7 @@ Each item comes from the macOS Human Interface Guidelines. None of them is an Ap
 - **Drag and drop works, including to the Finder**: With another way to do the same thing. (`drag-drop` (swiftui-build skill))
 - **Undo and Redo in the Edit menu**: With the action's name, like Undo Paste. (`undo-redo` (apple-design skill))
 - **Buttons sit near the content, not at screen edges**: Ergonomic bottom bars from the iPad don't apply on a Mac.
+- **Hover-only controls also work with touch**: On a touch display, a tap reveals them, or a context menu offers them. (`hover` (swiftui-build skill))
 
 ### Settings and system
 

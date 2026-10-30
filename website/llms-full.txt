@@ -11974,6 +11974,7 @@ Also called: app icon, icon, favicon, Icon Composer, .icon file, AppIcon, home s
 
 - **Older iOS versions are covered.** When your app supports releases before the Liquid Glass icon style, Xcode builds matching images for them from the same Icon Composer file at build time.
 - **The `.icon` file replaces the asset catalog icon.** Once it's in your project, Xcode uses it instead of an `AppIcon` image set. Keep the asset catalog only if you want the old artwork on older releases.
+- **A flat PNG still works, with less control.** The system splits it into a background and a foreground for the other appearances, but only large, simple shapes get glass, not text or thin lines.
 
 ## Guide
 
@@ -18650,6 +18651,7 @@ ProjectRow(project)
 
 - **Show the pointer that matches what happens.** Each pointer has a meaning people know: a pointing hand for a link, an open hand for content they can pan, like a map, and a crosshair for precise selection. Don't use one for anything else.
 - **Let the pointer bring back controls that fade away.** Controls that hide to keep the view calm, like playback controls over a video, should reappear when the pointer moves over them.
+- **Give hover-only controls a way in with touch.** On a Mac with a touch display there's no pointer to hover. Show an essential hidden control when someone taps where it lives, and put it in a context menu too.
 - **Keep every way of working consistent.** People switch between the pointer, the keyboard, and gestures without thinking. An action shouldn't work differently, or only work, with one of them.
 
 ## Pitfalls
@@ -19046,7 +19048,7 @@ Image("photo")
 
 ## Rules
 
-- **Give mouse users another way.** Pinching and rotating need a trackpad. Add buttons or menu commands that zoom and rotate, so everyone can reach the same result.
+- **Give mouse users another way.** Pinching and rotating need a trackpad or a touch display. Add buttons or menu commands that zoom and rotate, so everyone can reach the same result.
 - **Don't take over system gestures.** People expect gestures like swiping up for Mission Control to work in every app, and they can customize them in System Settings.
 - **Make gestures behave as they do elsewhere.** People expect a gesture to do the same thing in every app, like swiping between pages. A familiar gesture with a new meaning surprises them.
 
@@ -21624,6 +21626,7 @@ Also called: Mac-like, mac assed, feels native, menu bar, keyboard shortcuts, mu
 - **Use the big display.** Show more content with fewer nested levels and fewer modal steps, while keeping the density comfortable to read.
 - **Let people shape their windows.** People resize, hide, show, and move windows to fit how they work, and expect full screen for focused work.
 - **Reward precise input.** A pointer allows exact selection and editing, so support it alongside the keyboard.
+- **Support touch without resizing everything.** Some Macs have touch displays, but touch stays secondary. Keep controls the same size and density, and let standard controls handle bigger tap targets.
 - **Let people personalize.** Customizable toolbars, windows that show the views people use most, and their choice of colors and fonts all help.
 
 ## Pitfalls
@@ -21776,6 +21779,7 @@ Each item comes from the macOS Human Interface Guidelines. None of them is an Ap
 - **Drag and drop works, including to the Finder**: With another way to do the same thing. (`drag-drop`)
 - **Undo and Redo in the Edit menu**: With the action's name, like Undo Paste. (`undo-redo`)
 - **Buttons sit near the content, not at screen edges**: Ergonomic bottom bars from the iPad don't apply on a Mac.
+- **Hover-only controls also work with touch**: On a touch display, a tap reveals them, or a context menu offers them. (`hover`)
 
 ### Settings and system
 

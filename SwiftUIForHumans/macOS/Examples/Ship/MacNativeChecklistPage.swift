@@ -29,6 +29,7 @@ extension ComponentPage {
             "https://developer.apple.com/design/human-interface-guidelines/keyboards",
             "https://developer.apple.com/design/human-interface-guidelines/windows",
             "https://developer.apple.com/design/human-interface-guidelines/drag-and-drop",
+            "https://developer.apple.com/design/human-interface-guidelines/gestures",
             "https://developer.apple.com/design/human-interface-guidelines/settings",
             "https://developer.apple.com/design/human-interface-guidelines/privacy",
             "https://developer.apple.com/design/human-interface-guidelines/mac-catalyst",
@@ -91,6 +92,7 @@ private struct MacNativeChecklistArticle: View {
                 ChecklistItem("drag-drop", "Drag and drop works, including to the Finder", "With another way to do the same thing.", page: "drag-drop"),
                 ChecklistItem("undo", "Undo and Redo in the Edit menu", "With the action's name, like Undo Paste.", page: "undo-redo"),
                 ChecklistItem("pointer", "Buttons sit near the content, not at screen edges", "Ergonomic bottom bars from the iPad don't apply on a Mac."),
+                ChecklistItem("touch", "Hover-only controls also work with touch", "On a touch display, a tap reveals them, or a context menu offers them.", page: "hover"),
             ])
 
             SectionTitle("Settings and system")

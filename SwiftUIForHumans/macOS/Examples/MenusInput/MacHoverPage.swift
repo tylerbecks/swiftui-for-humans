@@ -34,6 +34,10 @@ extension ComponentPage {
                 "Controls that hide to keep the view calm, like playback controls over a video, should reappear when the pointer moves over them."
             ),
             Guideline(
+                "Give hover-only controls a way in with touch.",
+                "On a Mac with a touch display there's no pointer to hover. Show an essential hidden control when someone taps where it lives, and put it in a context menu too."
+            ),
+            Guideline(
                 "Keep every way of working consistent.",
                 "People switch between the pointer, the keyboard, and gestures without thinking. An action shouldn't work differently, or only work, with one of them."
             ),

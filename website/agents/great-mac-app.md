@@ -11,8 +11,6 @@ reviewed: October 2026
 
 Menus, the keyboard, windows, Settings, and drag and drop: what people expect on a Mac.
 
-Also called: Mac-like, mac assed, feels native, menu bar, keyboard shortcuts, multiple windows, drag and drop, preferences, settings, full keyboard access.
-
 ## Contents
 
 - Rules
@@ -27,6 +25,7 @@ Also called: Mac-like, mac assed, feels native, menu bar, keyboard shortcuts, mu
 - **Use the big display.** Show more content with fewer nested levels and fewer modal steps, while keeping the density comfortable to read.
 - **Let people shape their windows.** People resize, hide, show, and move windows to fit how they work, and expect full screen for focused work.
 - **Reward precise input.** A pointer allows exact selection and editing, so support it alongside the keyboard.
+- **Support touch without resizing everything.** Some Macs have touch displays, but touch stays secondary. Keep controls the same size and density, and let standard controls handle bigger tap targets.
 - **Let people personalize.** Customizable toolbars, windows that show the views people use most, and their choice of colors and fonts all help.
 
 ## Pitfalls

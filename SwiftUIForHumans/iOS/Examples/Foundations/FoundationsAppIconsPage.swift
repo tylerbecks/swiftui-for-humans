@@ -17,6 +17,7 @@ extension ComponentPage {
         notes: [
             "**Older iOS versions are covered.** When your app supports releases before the Liquid Glass icon style, Xcode builds matching images for them from the same Icon Composer file at build time.",
             "**The `.icon` file replaces the asset catalog icon.** Once it's in your project, Xcode uses it instead of an `AppIcon` image set. Keep the asset catalog only if you want the old artwork on older releases.",
+            "**A flat PNG still works, with less control.** The system splits it into a background and a foreground for the other appearances, but only large, simple shapes get glass, not text or thin lines.",
         ],
         api: [
             APIItem("Icon Composer", "Apple's tool for layered icons. Ships with Xcode."),
