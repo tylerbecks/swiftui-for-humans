@@ -13,14 +13,18 @@
 # Products land in .build/DerivedData inside this checkout.
 #
 # Anything after the action is passed to xcodebuild as extra build settings.
-# CI uses this to build without a signing certificate:
-#   scripts/build.sh test-mac CODE_SIGNING_ALLOWED=NO
+# With CI set (GitHub Actions always sets it), it adds
+# CODE_SIGNING_ALLOWED=NO, because the runners have no signing certificate.
+# That covers scripts that call this one, like export-catalog.sh.
 set -euo pipefail
 
 root=${0:A:h:h}
 action=${1:-ios}
 (( $# )) && shift
 extra=("$@")
+if [[ -n ${CI:-} ]]; then
+    extra+=(CODE_SIGNING_ALLOWED=NO)
+fi
 derived="$root/.build/DerivedData"
 lock=/tmp/swiftui-for-humans-build.lock
 
