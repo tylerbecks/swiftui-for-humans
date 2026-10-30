@@ -229,6 +229,12 @@ jobs:
         run: |
           # shellcheck disable=SC2016  # the backticks are Markdown, not expansions
           if [ -f "$EXECUTION_FILE" ]; then
+            # The action hides Claude's output in the log. Its closing
+            # message (no tool output) says why a run stopped short.
+            result=$(jq -r '[.[] | select(.type == "result")] | last | .result // empty' "$EXECUTION_FILE" || true)
+            if [ -n "$result" ]; then
+              printf "### Claude's final message\n\n%s\n\n" "$result" >> "$GITHUB_STEP_SUMMARY"
+            fi
             denials=$(jq -c '[.[] | select(.type == "result") | .permission_denials[]?] | .[]' "$EXECUTION_FILE" || true)
             if [ -n "$denials" ]; then
               echo "::warning::Claude was denied $(wc -l <<< "$denials" | tr -d ' ') tool calls"
