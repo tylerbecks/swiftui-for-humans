@@ -2161,12 +2161,12 @@
       "status": 200
     },
     "https://developer.apple.com/documentation/security/accessing-files-from-the-macos-app-sandbox": {
-      "hash": "1d61798e37127a2d",
+      "hash": "19e4092047cc8a15",
       "sections": {
         "08986b4bb582926e": "b1b26c523878b750",
         "2773a8feeeff4af1": "aea8e1f4138e1dc7",
         "3655c08bdf7fa6c3": "98725cf3c363dc55",
-        "51c5ebdf09d25b90": "578fc7697ef6fe28",
+        "51c5ebdf09d25b90": "1198a167e36d790e",
         "5422b901abba3f9e": "e7050b3c87a9092d",
         "5cb18e41f2c43ee4": "ff545e3218eda13f",
         "5eb6cf647d2c5d14": "03399134850d7124",
@@ -7318,10 +7318,10 @@
       "status": 200
     },
     "https://developer.apple.com/documentation/uikit/uiapplication/opensettingsurlstring": {
-      "hash": "e14d1a64b2d3eb38",
+      "hash": "7e6d91e8ac70e3c1",
       "sections": {
         "5422b901abba3f9e": "3ff7a3254bb4e9cd",
-        "5eb6cf647d2c5d14": "8220fb0c2f559933",
+        "5eb6cf647d2c5d14": "d18c8aa0a8485139",
         "d9da43a406160d9a": "9caa6d6b3d0dba00"
       },
       "status": 200
@@ -9223,7 +9223,7 @@
       "status": 200
     },
     "https://developer.apple.com/help/app-store-connect/release-notes/": {
-      "hash": "de03367de9d143a1",
+      "hash": "ed046c013dcd51c4",
       "sections": {
         "1815a642f28f5c83": "271d9f7379354f48",
         "219e2b5f96e2f583": "216d9ff1be47ca95",
@@ -9231,7 +9231,7 @@
         "46e1c39685e57ab8": "099fca99326a30ea",
         "4dd3bbbeabc01a7d": "c77c45d1b507574a",
         "508e165514365c46": "b0c255d629645c76",
-        "5422b901abba3f9e": "a227679474be16a5",
+        "5422b901abba3f9e": "7b9497e3e1c0c297",
         "5869a5230af8ef42": "f99220945b8fa181",
         "5db636d28b6993fe": "05e57368442fb4d4",
         "61d0ba2b594e6d45": "7a0bfb4d61031ada",
