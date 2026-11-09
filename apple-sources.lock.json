@@ -989,11 +989,11 @@
       "status": 200
     },
     "https://developer.apple.com/design/human-interface-guidelines/outline-views": {
-      "hash": "35dd97e48af425cc",
+      "hash": "e32c2f08c2b7e528",
       "sections": {
         "155d98fa417f1055": "d54c5e01c005bcf9",
         "5422b901abba3f9e": "9fa92d86494a66bd",
-        "5eb6cf647d2c5d14": "6823436b5f913add",
+        "5eb6cf647d2c5d14": "2d1a40dc9c13055f",
         "bfb6cf2330e2f313": "c5960084b850fc9c",
         "d9da43a406160d9a": "e920e129e578815b",
         "e89b30aa1dc30a6a": "749fd62ab7276507"
@@ -1547,7 +1547,7 @@
       "status": 200
     },
     "https://developer.apple.com/design/whats-new/": {
-      "hash": "fe2e736bec6e150c",
+      "hash": "d7e604ea88ec6d5c",
       "links": [
         "02792ff7a442ab02",
         "02a9f2a05d02609a",
@@ -1671,7 +1671,7 @@
         "ffdf2d62067cb73e"
       ],
       "sections": {
-        "5422b901abba3f9e": "3cebe9b3a3fca26f",
+        "5422b901abba3f9e": "06228becd3014bda",
         "d9da43a406160d9a": "f38d4222080f3b2d"
       },
       "status": 200
@@ -1836,13 +1836,13 @@
       "status": 200
     },
     "https://developer.apple.com/documentation/apple-silicon/running-your-ios-apps-in-macos": {
-      "hash": "ee95c023294f926e",
+      "hash": "a3d2ab51df6a5eab",
       "sections": {
-        "1795f78f298436aa": "67d65df21cbc50a4",
+        "1795f78f298436aa": "0860666d4fdcbe56",
         "2da31de9d309c632": "ba339a1998c6a3d2",
         "5422b901abba3f9e": "d51167519fb66d5a",
         "5d608dbd85e7b3c4": "57c4ce5abfc1cb97",
-        "5eb6cf647d2c5d14": "5349bb42571a46c1",
+        "5eb6cf647d2c5d14": "2ba28e0c0d2a18a5",
         "9885733719d4c0e3": "bb3e261251b53e3b",
         "b1ca864f70fba090": "16ebf71ce1020444",
         "d9da43a406160d9a": "4a6c5f2db0ffecc7"
@@ -2161,12 +2161,12 @@
       "status": 200
     },
     "https://developer.apple.com/documentation/security/accessing-files-from-the-macos-app-sandbox": {
-      "hash": "19e4092047cc8a15",
+      "hash": "1d61798e37127a2d",
       "sections": {
         "08986b4bb582926e": "b1b26c523878b750",
         "2773a8feeeff4af1": "aea8e1f4138e1dc7",
         "3655c08bdf7fa6c3": "98725cf3c363dc55",
-        "51c5ebdf09d25b90": "1198a167e36d790e",
+        "51c5ebdf09d25b90": "578fc7697ef6fe28",
         "5422b901abba3f9e": "e7050b3c87a9092d",
         "5cb18e41f2c43ee4": "ff545e3218eda13f",
         "5eb6cf647d2c5d14": "03399134850d7124",
@@ -2448,7 +2448,7 @@
       "status": 200
     },
     "https://developer.apple.com/documentation/swiftui": {
-      "hash": "397e9766b49e59cb",
+      "hash": "35e23adff791eb21",
       "links": [
         "0000b9def092ea5d",
         "001d5e428ca19b6e",
@@ -2457,7 +2457,6 @@
         "0047390642ab5380",
         "00c91d37fa65fe4e",
         "0116bde6b072ba34",
-        "0118aad59b825a05",
         "013e2448847027a7",
         "013f437e8a8786aa",
         "0148234d523f00ff",
@@ -2492,7 +2491,6 @@
         "0513c3bf9e13266c",
         "054777fd21745ddf",
         "055b65066f72f5c1",
-        "056f7d73bf8f25b4",
         "05adce327eefac1d",
         "05e7463c04e22870",
         "065d6fa4042c2002",
@@ -2649,6 +2647,7 @@
         "191b2bf1f32db834",
         "192f3cd7572d9b72",
         "19796f56b14ce97d",
+        "1983fe96df43dbe5",
         "19d7df9c93d7fce1",
         "19f433fd9e92a4aa",
         "1a0d9f9ced3e8f4d",
@@ -2674,6 +2673,7 @@
         "1b8127247b104f61",
         "1bd507a3ee2ad0f1",
         "1c58b6f236da5a2b",
+        "1c710f00d6a8f897",
         "1c933483c2359d25",
         "1d34252115df9455",
         "1d4ef6255eb75226",
@@ -2699,6 +2699,7 @@
         "200aed85ea07d6ad",
         "2024ed512a55f967",
         "20586c2920d59525",
+        "20bfd44071cdbac9",
         "20d78c9c0c2fba7c",
         "20df04fa9a71b8c7",
         "20e32b620e2586c9",
@@ -2780,6 +2781,7 @@
         "29377adb59b393bf",
         "29389d789361c330",
         "296ab8bc0f949f92",
+        "2971de07a5f56e3a",
         "29936e311b579a62",
         "29970d78921cb2b0",
         "29d696f578f5441e",
@@ -2815,6 +2817,7 @@
         "2d6f737ccb3033f6",
         "2dae63516fcbbd25",
         "2dbc1c881abe33ef",
+        "2e16dde26a7ec6d6",
         "2e9f1086fa98a95b",
         "2edd3c6445055fe6",
         "2ef969e7245302e4",
@@ -2908,6 +2911,7 @@
         "3b066ed0e83f0e57",
         "3b4ccb3fe1462d6b",
         "3b6a5ed85db59eb8",
+        "3bb61fc16eba9cc6",
         "3bd6fd2947bf6c9a",
         "3be6fcbfbe454ab2",
         "3c546469447e23a4",
@@ -2923,7 +2927,6 @@
         "3e26dbe5cca3956f",
         "3e30b9c27499e00a",
         "3e704d6ddd82b4de",
-        "3e93f46ac455ccea",
         "3ebc99be01880e74",
         "3f05abea46e28594",
         "3f11f1783a01061f",
@@ -3141,7 +3144,6 @@
         "5c238d4b6105d18f",
         "5c569469584e86be",
         "5c6a558d8f484a71",
-        "5cca6d7d36a33489",
         "5ccc03584e2f6ed9",
         "5cf543db2ec09f08",
         "5d7fa00fd275d6a8",
@@ -3253,6 +3255,7 @@
         "6d8014bb94fa961b",
         "6d814a74034e8e27",
         "6da4e73cb129704a",
+        "6da63a94842de5f5",
         "6dc6c2a7b724b27b",
         "6e213dea318a5afd",
         "6e22b433c0d98658",
@@ -3304,7 +3307,6 @@
         "743c4b7b7a8c343b",
         "74606295b346128a",
         "74632dec50295da4",
-        "749e96906c05e635",
         "74aeccb9369404fe",
         "74bf798c89030bb3",
         "74cd1cfe422f7904",
@@ -3443,8 +3445,8 @@
         "8500d47c60ab4ca2",
         "8520bc59488edbbd",
         "8591d9e0a6d606f2",
-        "85abaddb957a7320",
         "85b2c3b7a5f3f434",
+        "85bd52500c210e63",
         "85f3f0adfc7313b9",
         "864f10660cbec8f1",
         "8652b12e8d7598d5",
@@ -3969,7 +3971,6 @@
         "cb46bbcf02773571",
         "cb789e3879afdf81",
         "cbb4c103fc9b6f44",
-        "cbd1398e9d6b81c5",
         "cc04c9dbd83d3c0b",
         "cc0fbd970c64e6b8",
         "cc2c799c873bfdf3",
@@ -4104,7 +4105,6 @@
         "db86ab799c33ef56",
         "db8fd57273fa5fb2",
         "db9ae5583224ac4e",
-        "dbb1ab54389f14fc",
         "dbb3cc05f57858b1",
         "dbb91d213b9f2068",
         "dc31bff70e1f73ce",
@@ -4168,6 +4168,7 @@
         "e4cdf795bda8770b",
         "e4da628f959825d2",
         "e50c8dcaf9acbda8",
+        "e5264639a83eef75",
         "e5433b65aefa1620",
         "e546761dbc362733",
         "e57f8b025fe4afdb",
@@ -4284,6 +4285,7 @@
         "f640cca60e3a999a",
         "f65cf9e4632e54f3",
         "f66da83040839fe0",
+        "f68c55578d3383e5",
         "f6e288dc16c91e78",
         "f71506eab79b11eb",
         "f76f004ec8fb4826",
@@ -4366,7 +4368,7 @@
         "72249e4a610f1585": "56a45b4dc6addb3d",
         "83216df925718cb5": "35b7acd6b200159e",
         "98d94f75c7b40b96": "62348097b273d19b",
-        "b912533f7f9a318d": "60fe92fb981b8ba6",
+        "b912533f7f9a318d": "bd7cd6d2aac67ec0",
         "d3368cbffe23c98d": "7e2f85ac6faa7dfe",
         "d4b1ea5708dd5329": "474726376abaf43c",
         "d53a65f08392810c": "2e7ddf77bcf0cd74",
@@ -4503,14 +4505,14 @@
       "status": 200
     },
     "https://developer.apple.com/documentation/swiftui/arrangementview": {
-      "hash": "9d18c01e5bab2cb2",
+      "hash": "e232fcdf3a940162",
       "sections": {
         "34d9fd71a1e2c5c5": "3ea2ea4858525472",
-        "3d4e97b473b9f3a8": "f5619cbdb0605a46",
+        "3d4e97b473b9f3a8": "ed743d95d68687b5",
         "5422b901abba3f9e": "8d39ce45bed7d2f0",
         "85752a46aa46dc5e": "e3b0c44298fc1c14",
-        "bf81a4542db38fbc": "e1e8659fee3b30a2",
-        "d4b1ea5708dd5329": "17ceababdd72f58a",
+        "bf81a4542db38fbc": "af1f4c7d980edbd5",
+        "d4b1ea5708dd5329": "aa955f897429effb",
         "d96880ad0d7b7855": "955aaee99ab269de",
         "d9da43a406160d9a": "9da61a3c9c2bee57",
         "e22820fcf5cd90e3": "e3b0c44298fc1c14",
@@ -4782,13 +4784,13 @@
       "status": 200
     },
     "https://developer.apple.com/documentation/swiftui/contentunavailableview": {
-      "hash": "c122e7e5d93ce743",
+      "hash": "40cedd17805bb276",
       "sections": {
         "20505e4064554557": "ebb4d7464d536e29",
         "5422b901abba3f9e": "2601e0ec8711bea3",
         "85752a46aa46dc5e": "e3b0c44298fc1c14",
         "998970161edf2186": "7dd076ce73ee5762",
-        "d4b1ea5708dd5329": "0a9485b972847c33",
+        "d4b1ea5708dd5329": "c52ed12e31f10cd6",
         "d9da43a406160d9a": "722a684ccc49bafa",
         "e08bfe7f8a0b1ab4": "dcb02570756810cb",
         "e22820fcf5cd90e3": "e3b0c44298fc1c14"
@@ -4869,10 +4871,10 @@
       "status": 200
     },
     "https://developer.apple.com/documentation/swiftui/drag-and-drop": {
-      "hash": "22c581d65719f0c5",
+      "hash": "404c23372e240868",
       "sections": {
         "5422b901abba3f9e": "a07bfd99f1bac87f",
-        "6b95085f3cb32c5d": "bb9ebd1951af2642",
+        "6b95085f3cb32c5d": "b7fb458906dca561",
         "97d9fc02e6c450c7": "753c858f433eb132",
         "98d94f75c7b40b96": "2282b5d73c0e0599",
         "b179fdc63ac4adba": "0fe48f5ca903c4a2",
@@ -4916,9 +4918,9 @@
       "status": 200
     },
     "https://developer.apple.com/documentation/swiftui/environmentvalues": {
-      "hash": "281312a55b9bbad8",
+      "hash": "aca51bae9490416d",
       "sections": {
-        "093c2192f38e17fa": "79e7581a330e5478",
+        "093c2192f38e17fa": "db148200d2b02154",
         "0b33dc789c9c0c4a": "ac6ab1ace21fde7c",
         "1029c0df64176778": "358b51fd679d651b",
         "1fda79ffb6597357": "edb16661328e7eb4",
@@ -4931,7 +4933,7 @@
         "85752a46aa46dc5e": "e3b0c44298fc1c14",
         "9b97629352c7291a": "becf21db9a4208be",
         "a3b50c476732c740": "6403e57693f7b5e7",
-        "cadab9d850c99841": "035e7ad819fe5181",
+        "cadab9d850c99841": "f85939f3b9fe85f2",
         "d3368cbffe23c98d": "d275dccba5608427",
         "d4b1ea5708dd5329": "68c5d47380dea518",
         "d978ffabf883416e": "23c0ac7ea4ad2f39",
@@ -5525,7 +5527,7 @@
       "status": 200
     },
     "https://developer.apple.com/documentation/swiftui/navigationsplitview": {
-      "hash": "bf0029c245de7ba7",
+      "hash": "7d5944aae04024ee",
       "sections": {
         "2e097685b9003ffc": "a1b3d264bc1ec7d1",
         "5422b901abba3f9e": "42d87c322aa2d59f",
@@ -5537,7 +5539,7 @@
         "d9da43a406160d9a": "72a6a8925402e31e",
         "dba10cdab4b986dd": "1831f0407ac39561",
         "e22820fcf5cd90e3": "e3b0c44298fc1c14",
-        "ec0f8ae010d01820": "c06befac6a397e06",
+        "ec0f8ae010d01820": "0ea2d3847b448d9f",
         "f41a6421fb0e358b": "758701442bc40552"
       },
       "status": 200
@@ -6157,7 +6159,7 @@
       "status": 200
     },
     "https://developer.apple.com/documentation/swiftui/toolbars": {
-      "hash": "58d0c1f3e7f94a65",
+      "hash": "63273af370b244ec",
       "sections": {
         "0324592b67f390b9": "b7d1d4da07b04821",
         "1dfe0c6a17072da9": "4d355cc89d266fd4",
@@ -6165,7 +6167,6 @@
         "457cdb6ad76e1c7a": "4b3d0ef362fb8c28",
         "4dcf5ad77aab4385": "ad620205572fb22f",
         "5422b901abba3f9e": "d1234dbd3f74190c",
-        "665f6620aed4d2a0": "600d2cb6af35ea2c",
         "704fae8490e34c40": "0e39436ff4574b5a",
         "8b21ee5168176138": "4f6ccb03d3a82e1d",
         "9af0927718b30278": "7b5bcb3f55c93864",
@@ -6174,6 +6175,7 @@
         "b9d1bc8bae8411ec": "d6ccfa16e2874aec",
         "d4b1ea5708dd5329": "6ebf3cfed5c74e8d",
         "d9da43a406160d9a": "33ef61781b5530a4",
+        "da385905b5ffc625": "77be0ce8ff13b7c2",
         "e22820fcf5cd90e3": "e3b0c44298fc1c14"
       },
       "status": 200
@@ -6438,13 +6440,13 @@
       "status": 200
     },
     "https://developer.apple.com/documentation/swiftui/view/draggable(_:)": {
-      "hash": "f63022274cb43096",
+      "hash": "cbaf2b5a6e661aaa",
       "sections": {
         "4329767c30021f6e": "5bb7dbac8fa955eb",
-        "5422b901abba3f9e": "fe20afe7a46b6a30",
-        "5eb6cf647d2c5d14": "c83603335253832a",
-        "d9da43a406160d9a": "07f359c4e638f704",
-        "e68b36b17cbd9908": "a13674f3ae07b390"
+        "5422b901abba3f9e": "6e2e6e443428fa87",
+        "5eb6cf647d2c5d14": "5be402993f24deef",
+        "d9da43a406160d9a": "1e5c0815700fe761",
+        "e68b36b17cbd9908": "8d22487554c901e6"
       },
       "status": 200
     },
@@ -6644,10 +6646,12 @@
       "status": 200
     },
     "https://developer.apple.com/documentation/swiftui/view/managesubscriptionssheet(ispresented:)": {
-      "hash": "d14d8b136ce0b25d",
+      "hash": "47ee2cc00b0ecc56",
       "sections": {
-        "5422b901abba3f9e": "5e79fda4d965ba5a",
-        "d9da43a406160d9a": "513babaa9e938263"
+        "5422b901abba3f9e": "903ccc4f33068b0f",
+        "5eb6cf647d2c5d14": "e36a003514df040c",
+        "d9da43a406160d9a": "bdf203c6aa1feeef",
+        "e68b36b17cbd9908": "ef1809a818ced0cf"
       },
       "status": 200
     },
@@ -7232,14 +7236,14 @@
       "status": 200
     },
     "https://developer.apple.com/documentation/uikit/creating-a-mac-version-of-your-ipad-app": {
-      "hash": "9569f57c6ad8e1e4",
+      "hash": "7f47808b21a00495",
       "sections": {
         "17073f066660d4e8": "36067a07d2460fc7",
         "5422b901abba3f9e": "450392ee7f8dcfb5",
         "5eb6cf647d2c5d14": "2b81afd538544daf",
         "c4be2e53c4d51247": "f7ae0447fc79c752",
         "d9da43a406160d9a": "453c03a679b0e623",
-        "eccba9eaac2fdf83": "e295fb9f7205926d"
+        "eccba9eaac2fdf83": "5ebb55770596bde6"
       },
       "status": 200
     },
@@ -8962,12 +8966,13 @@
       "status": 200
     },
     "https://developer.apple.com/help/app-store-connect/manage-app-information/set-an-app-age-rating/": {
-      "hash": "dead9e9ad7e8c992",
+      "hash": "8b35b4e37566954a",
       "sections": {
         "20e38826056541ac": "e3b0c44298fc1c14",
         "5422b901abba3f9e": "4b2a61d2583e58b4",
-        "99a74f4889336cea": "32258cbbdbc05361",
-        "b016b3dd56c5d987": "02aab61367371795",
+        "876ff1ab43d6409c": "820a9e142bd09350",
+        "99a74f4889336cea": "0e90f60aaaa21dda",
+        "b016b3dd56c5d987": "03f0ee253a288039",
         "b9f36875751ae0c5": "c7066b5fdf8c6035",
         "d9da43a406160d9a": "dab03d7c3ea91e03",
         "e7d43fdd53383a26": "7990f73333d4c616"
@@ -9133,11 +9138,11 @@
       "status": 200
     },
     "https://developer.apple.com/help/app-store-connect/reference/app-information/app-preview-specifications": {
-      "hash": "f792913678466a90",
+      "hash": "f275308adbb3af00",
       "sections": {
         "1bf135b020502777": "2b031333db09395e",
-        "23cbcfc3e80a6fe5": "445eeeaffeb9c443",
-        "38fdf519314e3151": "4cc05cd9bf87991d",
+        "23cbcfc3e80a6fe5": "cb0ecbd13806c498",
+        "38fdf519314e3151": "76d4140a41628eb1",
         "5422b901abba3f9e": "75caecd48fa372a2",
         "7161d3208f3b50ce": "0ff7b75ccb16e224",
         "7b4b81d845f36bfc": "73156be008afed30",
@@ -9151,11 +9156,11 @@
       "status": 200
     },
     "https://developer.apple.com/help/app-store-connect/reference/app-information/app-preview-specifications/": {
-      "hash": "f792913678466a90",
+      "hash": "f275308adbb3af00",
       "sections": {
         "1bf135b020502777": "2b031333db09395e",
-        "23cbcfc3e80a6fe5": "445eeeaffeb9c443",
-        "38fdf519314e3151": "4cc05cd9bf87991d",
+        "23cbcfc3e80a6fe5": "cb0ecbd13806c498",
+        "38fdf519314e3151": "76d4140a41628eb1",
         "5422b901abba3f9e": "75caecd48fa372a2",
         "7161d3208f3b50ce": "0ff7b75ccb16e224",
         "7b4b81d845f36bfc": "73156be008afed30",
@@ -9189,11 +9194,11 @@
       "status": 200
     },
     "https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications": {
-      "hash": "4d682e29119f4ff4",
+      "hash": "76e18c2168fda6fa",
       "sections": {
         "015b4e0a76e50458": "e3b0c44298fc1c14",
-        "23cbcfc3e80a6fe5": "4b3e6bc484c0cd06",
-        "38fdf519314e3151": "5ad8381eea3ffdb1",
+        "23cbcfc3e80a6fe5": "166daceb8d7cb349",
+        "38fdf519314e3151": "469f48bc204f2341",
         "5422b901abba3f9e": "600d87da8a57258d",
         "6599855451ed1919": "974310e9dcb611df",
         "7b4b81d845f36bfc": "42189d20fba8c9c8",
@@ -9206,11 +9211,11 @@
       "status": 200
     },
     "https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/": {
-      "hash": "4d682e29119f4ff4",
+      "hash": "76e18c2168fda6fa",
       "sections": {
         "015b4e0a76e50458": "e3b0c44298fc1c14",
-        "23cbcfc3e80a6fe5": "4b3e6bc484c0cd06",
-        "38fdf519314e3151": "5ad8381eea3ffdb1",
+        "23cbcfc3e80a6fe5": "166daceb8d7cb349",
+        "38fdf519314e3151": "469f48bc204f2341",
         "5422b901abba3f9e": "600d87da8a57258d",
         "6599855451ed1919": "974310e9dcb611df",
         "7b4b81d845f36bfc": "42189d20fba8c9c8",
@@ -9223,16 +9228,16 @@
       "status": 200
     },
     "https://developer.apple.com/help/app-store-connect/release-notes/": {
-      "hash": "ed046c013dcd51c4",
+      "hash": "e34ae4bd74653693",
       "sections": {
         "1815a642f28f5c83": "271d9f7379354f48",
         "219e2b5f96e2f583": "216d9ff1be47ca95",
         "3f07e9e2da87a613": "271d9f7379354f48",
-        "46e1c39685e57ab8": "099fca99326a30ea",
+        "46e1c39685e57ab8": "c1782a4ca4259f7d",
         "4dd3bbbeabc01a7d": "c77c45d1b507574a",
         "508e165514365c46": "b0c255d629645c76",
-        "5422b901abba3f9e": "7b9497e3e1c0c297",
-        "5869a5230af8ef42": "f99220945b8fa181",
+        "5422b901abba3f9e": "6c1e6f5af3d42ad8",
+        "5869a5230af8ef42": "2ddebc9642fa10b5",
         "5db636d28b6993fe": "05e57368442fb4d4",
         "61d0ba2b594e6d45": "7a0bfb4d61031ada",
         "7296b6b636a57c6b": "1ae014fd61b44a5a",
@@ -9249,7 +9254,7 @@
         "cc354ca79e577837": "6bc37a1645d19d3d",
         "d5f47fcb56f2eff2": "1e5d904b1984c26d",
         "d9da43a406160d9a": "16632dd4527376ab",
-        "e487bfb6760c6151": "d6960a98a4d403f1",
+        "e487bfb6760c6151": "843d08d436405a1d",
         "e7bf83af92ecabfb": "71bd9c4c38e70cbd",
         "e8b89b3eea966da5": "271d9f7379354f48",
         "edad4d61ea56f733": "24f5f271a33b285f"
